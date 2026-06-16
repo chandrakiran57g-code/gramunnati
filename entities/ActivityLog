@@ -1,0 +1,61 @@
+{
+  "name": "ActivityLog",
+  "type": "object",
+  "properties": {
+    "loggable_type": {
+      "type": "string",
+      "enum": [
+        "village",
+        "school",
+        "project"
+      ],
+      "description": "Type of entity this activity belongs to"
+    },
+    "loggable_id": {
+      "type": "string",
+      "description": "ID of the related entity"
+    },
+    "title": {
+      "type": "string",
+      "description": "Activity title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Activity description"
+    },
+    "activity_type": {
+      "type": "string",
+      "enum": [
+        "milestone",
+        "update",
+        "donation",
+        "event",
+        "infrastructure",
+        "education",
+        "environment",
+        "general"
+      ],
+      "default": "general"
+    },
+    "activity_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When the activity occurred"
+    },
+    "image": {
+      "type": "string",
+      "description": "Optional image URL"
+    },
+    "village_name": {
+      "type": "string"
+    },
+    "school_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "loggable_type",
+    "activity_date"
+  ]
+}

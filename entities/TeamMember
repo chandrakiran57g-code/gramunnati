@@ -1,0 +1,67 @@
+{
+  "name": "TeamMember",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Full name of the team member"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "designation": {
+      "type": "string",
+      "description": "Job title / designation"
+    },
+    "team_group_id": {
+      "type": "string",
+      "description": "Reference to TeamGroup"
+    },
+    "team_group_name": {
+      "type": "string",
+      "description": "Name of the team group for display"
+    },
+    "photo": {
+      "type": "string",
+      "description": "Profile photo URL"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Short biography"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email"
+    },
+    "mobile": {
+      "type": "string",
+      "description": "Contact mobile"
+    },
+    "linkedin": {
+      "type": "string",
+      "description": "LinkedIn profile URL"
+    },
+    "twitter": {
+      "type": "string",
+      "description": "Twitter profile URL"
+    },
+    "display_order": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "designation",
+    "team_group_name"
+  ]
+}

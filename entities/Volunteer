@@ -1,0 +1,71 @@
+{
+  "name": "Volunteer",
+  "type": "object",
+  "properties": {
+    "full_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Selected skills"
+    },
+    "occupation": {
+      "type": "string"
+    },
+    "availability": {
+      "type": "string",
+      "enum": [
+        "weekdays",
+        "weekends",
+        "both",
+        "flexible"
+      ],
+      "default": "flexible"
+    },
+    "experience": {
+      "type": "string"
+    },
+    "interests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hours_contributed": {
+      "type": "number",
+      "default": 0
+    },
+    "projects_joined": {
+      "type": "number",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "profile_photo": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "full_name",
+    "mobile",
+    "state",
+    "district"
+  ]
+}

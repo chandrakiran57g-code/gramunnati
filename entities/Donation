@@ -1,0 +1,90 @@
+{
+  "name": "Donation",
+  "type": "object",
+  "properties": {
+    "donor_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "INR"
+    },
+    "target_type": {
+      "type": "string",
+      "enum": [
+        "general",
+        "village",
+        "school",
+        "project"
+      ],
+      "default": "general"
+    },
+    "village_name": {
+      "type": "string"
+    },
+    "village_id": {
+      "type": "string"
+    },
+    "school_name": {
+      "type": "string"
+    },
+    "school_id": {
+      "type": "string"
+    },
+    "project_name": {
+      "type": "string"
+    },
+    "project_id": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": false
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "success",
+        "failed",
+        "refunded"
+      ],
+      "default": "pending"
+    },
+    "payment_gateway": {
+      "type": "string",
+      "enum": [
+        "razorpay",
+        "upi",
+        "bank_transfer",
+        "demo"
+      ]
+    },
+    "transaction_id": {
+      "type": "string"
+    },
+    "receipt_number": {
+      "type": "string"
+    },
+    "pan_number": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "donor_name",
+    "amount",
+    "target_type"
+  ]
+}

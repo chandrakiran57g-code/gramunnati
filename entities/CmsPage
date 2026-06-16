@@ -1,0 +1,50 @@
+{
+  "name": "CmsPage",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Page title"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "featured_image": {
+      "type": "string",
+      "description": "Featured image URL"
+    },
+    "short_description": {
+      "type": "string",
+      "description": "Short description for cards"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full HTML content from rich text editor"
+    },
+    "seo_title": {
+      "type": "string",
+      "description": "SEO meta title"
+    },
+    "seo_description": {
+      "type": "string",
+      "description": "SEO meta description"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "published",
+        "draft"
+      ],
+      "default": "draft"
+    },
+    "display_order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "slug"
+  ]
+}

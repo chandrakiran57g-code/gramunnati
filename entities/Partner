@@ -1,0 +1,65 @@
+{
+  "name": "Partner",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Organization/partner name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "logo": {
+      "type": "string",
+      "description": "Logo image URL"
+    },
+    "partner_type": {
+      "type": "string",
+      "enum": [
+        "ngo",
+        "company",
+        "educational_institution",
+        "government",
+        "individual",
+        "csr_partner",
+        "foundation"
+      ],
+      "default": "ngo"
+    },
+    "website": {
+      "type": "string",
+      "description": "Website URL"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email"
+    },
+    "mobile": {
+      "type": "string",
+      "description": "Contact mobile"
+    },
+    "description": {
+      "type": "string",
+      "description": "Partner description"
+    },
+    "partnership_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date partnership started"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "slug",
+    "partner_type"
+  ]
+}

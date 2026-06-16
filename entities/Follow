@@ -1,0 +1,31 @@
+{
+  "name": "Follow",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user following"
+    },
+    "followable_type": {
+      "type": "string",
+      "enum": [
+        "village",
+        "school"
+      ],
+      "description": "Type of entity being followed"
+    },
+    "followable_id": {
+      "type": "string",
+      "description": "ID of the entity being followed"
+    },
+    "followable_name": {
+      "type": "string",
+      "description": "Name of the entity for display"
+    }
+  },
+  "required": [
+    "user_email",
+    "followable_type",
+    "followable_id"
+  ]
+}

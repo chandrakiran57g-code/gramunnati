@@ -1,0 +1,133 @@
+{
+  "name": "Village",
+  "type": "object",
+  "properties": {
+    "village_name": {
+      "type": "string",
+      "description": "Name of the village"
+    },
+    "village_code": {
+      "type": "string",
+      "description": "Unique village code"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "state": {
+      "type": "string",
+      "description": "State name"
+    },
+    "district": {
+      "type": "string",
+      "description": "District name"
+    },
+    "mandal": {
+      "type": "string",
+      "description": "Mandal/Taluk name"
+    },
+    "pincode": {
+      "type": "string",
+      "description": "PIN code"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Latitude coordinate"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "Longitude coordinate"
+    },
+    "short_description": {
+      "type": "string",
+      "description": "Short description"
+    },
+    "description": {
+      "type": "string",
+      "description": "Full description"
+    },
+    "history": {
+      "type": "string",
+      "description": "Village history"
+    },
+    "population": {
+      "type": "number",
+      "default": 0
+    },
+    "male_population": {
+      "type": "number",
+      "default": 0
+    },
+    "female_population": {
+      "type": "number",
+      "default": 0
+    },
+    "children_count": {
+      "type": "number",
+      "default": 0
+    },
+    "senior_citizen_count": {
+      "type": "number",
+      "default": 0
+    },
+    "literacy_rate": {
+      "type": "number",
+      "description": "Literacy rate percentage"
+    },
+    "farmer_count": {
+      "type": "number",
+      "default": 0
+    },
+    "cultivable_land": {
+      "type": "string"
+    },
+    "major_crops": {
+      "type": "string"
+    },
+    "trees_count": {
+      "type": "number",
+      "default": 0
+    },
+    "water_bodies_count": {
+      "type": "number",
+      "default": 0
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover image URL"
+    },
+    "logo": {
+      "type": "string",
+      "description": "Village logo URL"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "total_donations": {
+      "type": "number",
+      "default": 0
+    },
+    "schools_count": {
+      "type": "number",
+      "default": 0
+    },
+    "projects_count": {
+      "type": "number",
+      "default": 0
+    },
+    "volunteers_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "village_name",
+    "state",
+    "district"
+  ]
+}

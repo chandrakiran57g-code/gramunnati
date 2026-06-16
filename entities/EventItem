@@ -1,0 +1,52 @@
+{
+  "name": "EventItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "featured_image": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Environment",
+        "Education",
+        "Volunteer",
+        "Agriculture",
+        "Conference",
+        "Healthcare",
+        "Community"
+      ]
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true
+    },
+    "registration_url": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "start_date"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "name": "Beneficiary",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Beneficiary name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "beneficiary_type": {
+      "type": "string",
+      "enum": [
+        "village",
+        "school",
+        "farmer",
+        "student",
+        "women_shg",
+        "youth_group",
+        "artisan",
+        "other"
+      ],
+      "default": "village"
+    },
+    "image": {
+      "type": "string",
+      "description": "Featured image URL"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of beneficiary"
+    },
+    "village_name": {
+      "type": "string",
+      "description": "Associated village name"
+    },
+    "village_id": {
+      "type": "string",
+      "description": "Reference to Village"
+    },
+    "school_name": {
+      "type": "string",
+      "description": "Associated school name"
+    },
+    "school_id": {
+      "type": "string",
+      "description": "Reference to School"
+    },
+    "impact_details": {
+      "type": "string",
+      "description": "Impact story/details"
+    },
+    "state": {
+      "type": "string",
+      "description": "State for filtering"
+    },
+    "district": {
+      "type": "string",
+      "description": "District for filtering"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "slug",
+    "beneficiary_type"
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "name": "Project",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Village Development",
+        "School Development",
+        "Tree Plantation",
+        "Water Conservation",
+        "Agriculture",
+        "Healthcare",
+        "Skill Development",
+        "Women SHG",
+        "Infrastructure",
+        "Employment Generation"
+      ]
+    },
+    "village_name": {
+      "type": "string"
+    },
+    "village_id": {
+      "type": "string"
+    },
+    "school_name": {
+      "type": "string"
+    },
+    "school_id": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "short_description": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "objective": {
+      "type": "string"
+    },
+    "budget_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "raised_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "spent_amount": {
+      "type": "number",
+      "default": 0
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "upcoming",
+        "active",
+        "completed",
+        "cancelled"
+      ],
+      "default": "upcoming"
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "progress_percentage": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "project_name",
+    "category",
+    "village_name",
+    "state",
+    "district"
+  ]
+}

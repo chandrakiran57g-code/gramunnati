@@ -1,0 +1,122 @@
+{
+  "name": "School",
+  "type": "object",
+  "properties": {
+    "school_name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "village_name": {
+      "type": "string"
+    },
+    "village_id": {
+      "type": "string",
+      "description": "Reference to village record ID"
+    },
+    "state": {
+      "type": "string"
+    },
+    "district": {
+      "type": "string"
+    },
+    "school_type": {
+      "type": "string",
+      "enum": [
+        "government",
+        "private",
+        "aided",
+        "model"
+      ],
+      "default": "government"
+    },
+    "udise_code": {
+      "type": "string"
+    },
+    "principal_name": {
+      "type": "string"
+    },
+    "contact_number": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "student_count": {
+      "type": "number",
+      "default": 0
+    },
+    "teacher_count": {
+      "type": "number",
+      "default": 0
+    },
+    "classroom_count": {
+      "type": "number",
+      "default": 0
+    },
+    "library_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "computer_lab_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "playground_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "drinking_water_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "toilet_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "electricity_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "digital_classroom_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "boundary_wall_available": {
+      "type": "boolean",
+      "default": false
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "string"
+    },
+    "short_description": {
+      "type": "string"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "total_donations": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "school_name",
+    "village_name",
+    "state",
+    "district",
+    "school_type"
+  ]
+}
