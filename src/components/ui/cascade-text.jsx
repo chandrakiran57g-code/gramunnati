@@ -53,7 +53,7 @@ export const TextReveal = React.memo(function TextReveal({
       fontSize,
       color: hoverEffect && hovered ? hoverColor : color,
       transition: hoverEffect ? 'color 0.35s ease' : undefined,
-      lineHeight: isWordMode ? 1.6 : 1.15,
+      lineHeight: isWordMode ? 1.65 : 1.15,
       ...style,
     },
     onMouseEnter: hoverEffect ? () => setHovered(true) : undefined,
@@ -70,7 +70,7 @@ export const TextReveal = React.memo(function TextReveal({
 
   const getTransform = (index) => {
     if (animateOnMount && !entered) {
-      return `translateY(${sign * 0.85}em)`;
+      return `translateY(${sign * (isWordMode ? 0.55 : 0.85)}em)`;
     }
     if (hoverEffect && hovered && entered) {
       return `translateY(${-sign}em)`;
@@ -91,7 +91,7 @@ export const TextReveal = React.memo(function TextReveal({
   };
 
   const segmentWrapperClass = isWordMode
-    ? 'inline-flex flex-wrap justify-center gap-x-[0.28em] gap-y-1'
+    ? 'inline-flex flex-wrap justify-center gap-x-[0.28em] gap-y-0.5'
     : 'inline-flex overflow-hidden relative';
 
   const segmentWrapperStyle = isWordMode ? undefined : { height: '1.15em' };
@@ -103,15 +103,26 @@ export const TextReveal = React.memo(function TextReveal({
           <span
             key={`${segment}-${i}`}
             className={`inline-block relative will-change-transform ${isWordMode && /^\s+$/.test(segment) ? 'w-[0.25em]' : ''}`}
-            style={{
-              textShadow: hoverEffect && !isWordMode ? `0 ${sign}em currentColor` : undefined,
-              transition: `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`,
-              transitionDelay: getTransitionDelay(i),
-              transform: getTransform(i),
-              opacity: getOpacity(),
-              overflow: isWordMode ? 'hidden' : undefined,
-              height: isWordMode ? '1.15em' : undefined,
-            }}
+            style={
+              isWordMode
+                ? {
+                    transition: `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`,
+                    transitionDelay: getTransitionDelay(i),
+                    transform: getTransform(i),
+                    opacity: getOpacity(),
+                    lineHeight: 1.65,
+                    verticalAlign: 'baseline',
+                  }
+                : {
+                    textShadow: hoverEffect ? `0 ${sign}em currentColor` : undefined,
+                    transition: `transform ${duration}ms ${easing}, opacity ${duration}ms ${easing}`,
+                    transitionDelay: getTransitionDelay(i),
+                    transform: getTransform(i),
+                    opacity: getOpacity(),
+                    overflow: 'hidden',
+                    height: '1.15em',
+                  }
+            }
           >
             {segment === ' ' ? '\u00A0' : segment}
           </span>

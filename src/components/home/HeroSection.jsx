@@ -14,61 +14,66 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-[1] hero-green-gradient pointer-events-none" />
 
       <div className="hero-section-inner relative z-10 flex w-full max-w-3xl flex-col items-center px-4 text-center sm:px-6">
-        <h1 className="hero-section-title font-heading font-bold leading-[1.12] text-balance text-white">
-          <TextReveal
-            text={t('home.heroEmpowering')}
-            className="font-heading font-bold"
-            fontSize="inherit"
-            color="#ffffff"
-            hoverColor="#ffffff"
-            hoverEffect={false}
-            animateOnMount
-            baseDelay={0}
-            staggerDelay={35}
-          />{' '}
-          <TextReveal
-            text={t('home.heroVillages')}
-            color="#f59e0b"
-            hoverColor="#fbbf24"
-            className="font-heading font-bold"
-            fontSize="inherit"
-            animateOnMount
-            baseDelay={280}
-            staggerDelay={35}
-          />{' '}
-          <TextReveal
-            text="&"
-            className="font-heading font-bold"
-            fontSize="inherit"
-            color="#ffffff"
-            hoverColor="#ffffff"
-            hoverEffect={false}
-            animateOnMount
-            baseDelay={520}
-            staggerDelay={35}
-          />{' '}
-          <TextReveal
-            text={t('home.heroSchools')}
-            color="#60a5fa"
-            hoverColor="#93c5fd"
-            className="font-heading font-bold"
-            fontSize="inherit"
-            animateOnMount
-            baseDelay={620}
-            staggerDelay={35}
-          />
-          <br />
-          <TextReveal
-            text={t('home.heroAcrossIndia')}
-            className="font-heading font-bold"
-            fontSize="inherit"
-            color="#ffffff"
-            hoverColor="#ffffff"
-            hoverEffect={false}
-            animateOnMount
-            baseDelay={900}
-            staggerDelay={35}
-          />
+        <h1 className="hero-section-title font-heading font-bold leading-[1.12] text-white">
+          <span className="inline-flex flex-col items-center">
+            <TextReveal
+              text={t('home.heroEmpowering')}
+              className="font-heading font-bold text-[0.55em] sm:text-[0.6em] tracking-wide opacity-95"
+              fontSize="inherit"
+              color="#ffffff"
+              hoverColor="#ffffff"
+              hoverEffect={false}
+              animateOnMount
+              baseDelay={0}
+              staggerDelay={30}
+            />
+            <span className="mt-0.5 flex flex-wrap items-center justify-center gap-x-2">
+              <TextReveal
+                text={t('home.heroVillages')}
+                color="#f59e0b"
+                hoverColor="#fbbf24"
+                className="font-heading font-bold"
+                fontSize="inherit"
+                animateOnMount
+                baseDelay={280}
+                staggerDelay={35}
+              />
+              <TextReveal
+                text="&"
+                className="font-heading font-bold"
+                fontSize="inherit"
+                color="#ffffff"
+                hoverColor="#ffffff"
+                hoverEffect={false}
+                animateOnMount
+                baseDelay={520}
+                staggerDelay={35}
+              />
+              <TextReveal
+                text={t('home.heroSchools')}
+                color="#60a5fa"
+                hoverColor="#93c5fd"
+                className="font-heading font-bold"
+                fontSize="inherit"
+                animateOnMount
+                baseDelay={620}
+                staggerDelay={35}
+              />
+            </span>
+          </span>
+          <span className="mt-1 block">
+            <TextReveal
+              text={t('home.heroAcrossIndia')}
+              className="font-heading font-bold"
+              fontSize="inherit"
+              color="#ffffff"
+              hoverColor="#ffffff"
+              hoverEffect={false}
+              animateOnMount
+              baseDelay={900}
+              staggerDelay={35}
+            />
+          </span>
         </h1>
 
         <p className="hero-section-subtitle max-w-2xl font-body text-white/85">
