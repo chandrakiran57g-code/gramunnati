@@ -49,7 +49,7 @@ export default function HeroScrollHint() {
           ? { delay: 2.6, duration: 0.3 }
           : { delay: 2.6, duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
       }}
-      className="mt-8 flex flex-col items-center gap-2.5 border-0 bg-transparent p-2 text-white/70 transition-colors hover:text-white/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+      className="hero-scroll-hint-compact flex flex-col items-center border-0 bg-transparent p-1 text-white/70 transition-colors hover:text-white/90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
       aria-label={t('home.scrollToExplore')}
     >
       <span className="font-body text-sm tracking-wide">{t('home.scrollToExplore')}</span>

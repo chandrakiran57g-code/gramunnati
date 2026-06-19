@@ -5,24 +5,16 @@ import MountainVistaParallax from '@/components/ui/mountain-vista-bg';
 import HeroScrollHint from '@/components/home/HeroScrollHint';
 import { useLanguage } from '@/i18n/LanguageContext';
 
-const headingStyle = {
-  fontSize: 'clamp(2.25rem, 5.5vw, 4rem)',
-  letterSpacing: '-0.02em',
-};
-
 export default function HeroSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden bg-[#1b4332]">
+    <section className="hero-section-viewport relative flex items-center justify-center overflow-hidden bg-[#1b4332]">
       <MountainVistaParallax />
       <div className="absolute inset-0 z-[1] hero-green-gradient pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-3xl mx-auto px-4 sm:px-6 py-28 sm:py-32 text-center flex flex-col items-center">
-        <h1
-          className="font-heading font-bold text-white leading-[1.15] mb-6 text-balance"
-          style={headingStyle}
-        >
+      <div className="hero-section-inner relative z-10 flex w-full max-w-3xl flex-col items-center px-4 text-center sm:px-6">
+        <h1 className="hero-section-title font-heading font-bold leading-[1.12] text-balance text-white">
           <TextReveal
             text={t('home.heroEmpowering')}
             className="font-heading font-bold"
@@ -79,7 +71,7 @@ export default function HeroSection() {
           />
         </h1>
 
-        <p className="text-base sm:text-lg text-white/85 leading-relaxed mb-10 max-w-2xl font-body">
+        <p className="hero-section-subtitle max-w-2xl font-body text-white/85">
           <TextReveal
             text={t('home.heroSubtitleLong')}
             splitBy="word"
@@ -95,12 +87,12 @@ export default function HeroSection() {
           />
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-4 w-full">
+        <div className="hero-section-cta flex w-full flex-wrap items-center justify-center">
           <Link
             to="/villages"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-service-village hover:bg-service-village/90 text-white font-semibold text-sm transition-colors shadow-lg shadow-black/20 group"
+            className="hero-section-cta-link inline-flex items-center gap-1.5 rounded-xl bg-service-village font-semibold text-white shadow-lg shadow-black/20 transition-colors hover:bg-service-village/90 group"
           >
-            <TreePine className="w-4 h-4 shrink-0" />
+            <TreePine className="h-3.5 w-3.5 shrink-0" />
             <TextReveal
               text={t('home.exploreVillages')}
               className="font-semibold"
@@ -112,13 +104,13 @@ export default function HeroSection() {
               baseDelay={1800}
               staggerDelay={22}
             />
-            <ArrowRight className="w-4 h-4 shrink-0 transition-transform group-hover:translate-x-0.5" />
+            <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
             to="/schools"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-service-school hover:bg-service-school/90 text-white font-semibold text-sm transition-colors shadow-lg shadow-black/20"
+            className="hero-section-cta-link inline-flex items-center gap-1.5 rounded-xl bg-service-school font-semibold text-white shadow-lg shadow-black/20 transition-colors hover:bg-service-school/90"
           >
-            <School className="w-4 h-4 shrink-0" />
+            <School className="h-3.5 w-3.5 shrink-0" />
             <TextReveal
               text={t('home.exploreSchools')}
               className="font-semibold"
@@ -133,9 +125,9 @@ export default function HeroSection() {
           </Link>
           <Link
             to="/donate"
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-service-agriculture hover:bg-service-agriculture/90 text-white font-semibold text-sm transition-colors shadow-lg shadow-black/20"
+            className="hero-section-cta-link inline-flex items-center gap-1.5 rounded-xl bg-service-agriculture font-semibold text-white shadow-lg shadow-black/20 transition-colors hover:bg-service-agriculture/90"
           >
-            <Heart className="w-4 h-4 shrink-0" />
+            <Heart className="h-3.5 w-3.5 shrink-0" />
             <TextReveal
               text={t('home.donateNow')}
               className="font-semibold"
@@ -152,9 +144,9 @@ export default function HeroSection() {
 
         <Link
           to="/volunteer"
-          className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-white/10 border border-white/25 text-white font-semibold text-sm hover:bg-white/15 transition-colors backdrop-blur-sm"
+          className="hero-section-volunteer inline-flex items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/15"
         >
-          <Users className="w-4 h-4 shrink-0" />
+          <Users className="h-3.5 w-3.5 shrink-0" />
           <TextReveal
             text={t('home.becomeVolunteer')}
             className="font-semibold"
