@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function AdminSettings() {
   const [saved, setSaved] = useState(false);
@@ -12,12 +13,14 @@ export default function AdminSettings() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="village-gradient py-8 px-6">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="font-heading text-3xl font-bold text-white">Settings</h1>
-          <p className="text-white/70 text-sm mt-1">Platform configuration and preferences</p>
+      <HeroScrollSection size="compact">
+        <div className="brand-gradient py-8 px-6">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="font-heading text-3xl font-bold text-white">Settings</h1>
+            <p className="text-white/70 text-sm mt-1">Platform configuration and preferences</p>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <Tabs defaultValue="general">
@@ -42,7 +45,7 @@ export default function AdminSettings() {
                   <Input id={field.id} placeholder={field.placeholder} className="mt-1 rounded-xl" />
                 </div>
               ))}
-              <Button onClick={handleSave} className="village-gradient text-white border-0 rounded-xl">
+              <Button onClick={handleSave} className="brand-gradient text-white border-0 rounded-xl">
                 <Save className="w-4 h-4 mr-2" />{saved ? '✓ Saved!' : 'Save General Settings'}
               </Button>
             </div>
@@ -105,12 +108,12 @@ export default function AdminSettings() {
               ].map((item, i) => (
                 <div key={i} className="flex items-center justify-between py-3 border-b border-border last:border-0">
                   <span className="text-sm">{item.label}</span>
-                  <div className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${item.checked ? 'bg-village' : 'bg-gray-200'} relative`}>
+                  <div className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${item.checked ? 'bg-primary' : 'bg-gray-200'} relative`}>
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${item.checked ? 'translate-x-6' : 'translate-x-1'}`} />
                   </div>
                 </div>
               ))}
-              <Button onClick={handleSave} className="mt-5 village-gradient text-white border-0 rounded-xl">
+              <Button onClick={handleSave} className="mt-5 brand-gradient text-white border-0 rounded-xl">
                 <Save className="w-4 h-4 mr-2" />{saved ? '✓ Saved!' : 'Save Notifications'}
               </Button>
             </div>

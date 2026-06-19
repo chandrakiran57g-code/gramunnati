@@ -53,7 +53,7 @@ export default function MyDonations() {
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
             { label: 'Total Donated', value: `₹${totalDonated.toLocaleString('en-IN')}`, color: 'text-donation' },
-            { label: 'Total Donations', value: donations.filter(d => d.payment_status === 'success').length, color: 'text-village' },
+            { label: 'Total Donations', value: donations.filter(d => d.payment_status === 'success').length, color: 'text-primary' },
             { label: 'Pending', value: donations.filter(d => d.payment_status === 'pending').length, color: 'text-yellow-600' },
           ].map(card => (
             <div key={card.label} className="bg-white rounded-2xl border border-border p-5 text-center">
@@ -67,7 +67,7 @@ export default function MyDonations() {
         <div className="flex gap-2 mb-6 flex-wrap">
           {['all','success','pending','failed'].map(f => (
             <button key={f} onClick={() => setFilter(f)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filter === f ? 'bg-village text-white' : 'bg-white border border-border text-muted-foreground hover:border-village'}`}>
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filter === f ? 'bg-primary text-white' : 'bg-white border border-border text-muted-foreground hover:border-primary'}`}>
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}

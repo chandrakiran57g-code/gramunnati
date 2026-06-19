@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { ArrowLeft, Calendar, MapPin, School, Heart, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function StoryDetail() {
   const { slug } = useParams();
@@ -25,7 +26,7 @@ export default function StoryDetail() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
@@ -34,7 +35,7 @@ export default function StoryDetail() {
       <div>
         <div className="text-6xl mb-4">📖</div>
         <h2 className="font-heading text-2xl font-bold mb-2">Story Not Found</h2>
-        <Link to="/stories"><Button className="village-gradient text-white border-0">Browse Stories</Button></Link>
+        <Link to="/stories"><Button className="brand-gradient text-white border-0">Browse Stories</Button></Link>
       </div>
     </div>
   );
@@ -42,20 +43,22 @@ export default function StoryDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="relative h-64 sm:h-96 overflow-hidden">
-        <img src={story.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80'} alt={story.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6 max-w-3xl">
-          <Link to="/stories" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ArrowLeft className="w-4 h-4" /> Back to Stories</Link>
-          <h1 className="font-heading text-2xl sm:text-4xl font-bold text-white mb-3">{story.title}</h1>
-          {story.summary && <p className="text-white/80 text-sm max-w-2xl">{story.summary}</p>}
-          <div className="flex flex-wrap items-center gap-3 mt-3 text-white/70 text-sm">
-            {story.published_at && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{new Date(story.published_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
-            {story.village_name && <Badge className="bg-white/20 text-white border-0"><MapPin className="w-3 h-3 mr-1" />{story.village_name}</Badge>}
-            {story.school_name && <Badge className="bg-white/20 text-white border-0"><School className="w-3 h-3 mr-1" />{story.school_name}</Badge>}
+      <HeroScrollSection size="detail">
+        <div className="relative h-64 sm:h-96 overflow-hidden">
+          <img src={story.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80'} alt={story.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6 max-w-3xl">
+            <Link to="/stories" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ArrowLeft className="w-4 h-4" /> Back to Stories</Link>
+            <h1 className="font-heading text-2xl sm:text-4xl font-bold text-white mb-3">{story.title}</h1>
+            {story.summary && <p className="text-white/80 text-sm max-w-2xl">{story.summary}</p>}
+            <div className="flex flex-wrap items-center gap-3 mt-3 text-white/70 text-sm">
+              {story.published_at && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{new Date(story.published_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
+              {story.village_name && <Badge className="bg-white/20 text-white border-0"><MapPin className="w-3 h-3 mr-1" />{story.village_name}</Badge>}
+              {story.school_name && <Badge className="bg-white/20 text-white border-0"><School className="w-3 h-3 mr-1" />{story.school_name}</Badge>}
+            </div>
           </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid lg:grid-cols-3 gap-8">
@@ -72,7 +75,7 @@ export default function StoryDetail() {
             {/* Impact Numbers */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">
               {[
-                { label: 'Village', value: story.village_name || 'N/A', icon: MapPin, color: 'text-village', bg: 'bg-village/5' },
+                { label: 'Village', value: story.village_name || 'N/A', icon: MapPin, color: 'text-primary', bg: 'bg-primary/5' },
                 { label: 'School', value: story.school_name || 'N/A', icon: School, color: 'text-school', bg: 'bg-school/5' },
                 { label: 'Published', value: story.published_at ? new Date(story.published_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'N/A', icon: Calendar, color: 'text-donation', bg: 'bg-donation/5' },
               ].map(item => (
@@ -113,7 +116,7 @@ export default function StoryDetail() {
                     <Link key={r.id} to={`/stories/${r.slug || r.id}`} className="flex gap-3 group">
                       <img src={r.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=200&q=60'} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
                       <div>
-                        <h5 className="text-sm font-semibold group-hover:text-village transition-colors line-clamp-2">{r.title}</h5>
+                        <h5 className="text-sm font-semibold group-hover:text-primary transition-colors line-clamp-2">{r.title}</h5>
                         <p className="text-xs text-muted-foreground mt-0.5">{r.village_name || 'GramUnnati'}</p>
                       </div>
                     </Link>

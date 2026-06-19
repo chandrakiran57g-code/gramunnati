@@ -9,7 +9,7 @@ const mockLeaders = [
   { rank: 5, name: 'Suresh Patil', hours: 134, projects: 6, badge: 'bronze' },
 ];
 
-const rankIcons = { 1: <Trophy className="w-5 h-5 text-yellow-500" />, 2: <Medal className="w-5 h-5 text-gray-400" />, 3: <Medal className="w-5 h-5 text-amber-700" /> };
+const rankIcons = { 1: <Trophy className="w-5 h-5 text-yellow-500" />, 2: <Medal className="w-5 h-5 text-brown-400" />, 3: <Medal className="w-5 h-5 text-amber-700" /> };
 
 export default function VolunteerLeaderboard() {
   return (
@@ -26,7 +26,7 @@ export default function VolunteerLeaderboard() {
             <div className="w-7 text-center font-bold text-sm text-muted-foreground">
               {rankIcons[v.rank] || <span>{v.rank}</span>}
             </div>
-            <div className="w-8 h-8 bg-village/10 rounded-full flex items-center justify-center text-village font-bold text-xs">
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-xs">
               {v.name.charAt(0)}
             </div>
             <div className="flex-1 min-w-0">

@@ -54,12 +54,12 @@ export default function AdminBeneficiaries() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <Heart className="w-6 h-6 text-village" /> Beneficiaries
+            <Heart className="w-6 h-6 text-primary" /> Beneficiaries
           </h1>
           <p className="text-muted-foreground mt-1">Manage beneficiaries displayed on the public website</p>
         </div>
         <Button onClick={() => { setEditing(null); setForm({ name: '', slug: '', beneficiary_type: 'village', image: '', description: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', status: 'active' }); }}
-          className="village-gradient text-white border-0"><Plus className="w-4 h-4 mr-2" /> New</Button>
+          className="brand-gradient text-white border-0"><Plus className="w-4 h-4 mr-2" /> New</Button>
       </div>
 
       <div className="bg-white rounded-xl border border-border p-6 mb-8">
@@ -87,7 +87,7 @@ export default function AdminBeneficiaries() {
         <div className="mb-4"><Label>Description</Label><Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} /></div>
         <div className="mb-4"><Label>Impact Details</Label><Textarea value={form.impact_details} onChange={e => setForm({ ...form, impact_details: e.target.value })} rows={2} /></div>
         <div className="flex gap-3">
-          <Button onClick={handleSave} disabled={saving} className="village-gradient text-white border-0">{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{editing ? 'Update' : 'Create'}</Button>
+          <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{editing ? 'Update' : 'Create'}</Button>
           {editing && <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>}
         </div>
       </div>

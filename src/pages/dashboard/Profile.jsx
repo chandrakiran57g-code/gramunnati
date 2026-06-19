@@ -33,7 +33,7 @@ export default function Profile() {
     setTimeout(() => setSaved(false), 3000);
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" /></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>;
 
   return (
     <div className="min-h-screen bg-background py-12 px-4">
@@ -45,7 +45,7 @@ export default function Profile() {
             {/* Avatar */}
             <div className="flex items-center gap-6 mb-8 pb-8 border-b border-border">
               <div className="relative">
-                <div className="w-20 h-20 bg-village/10 rounded-2xl flex items-center justify-center text-3xl font-bold text-village">
+                <div className="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center text-3xl font-bold text-primary">
                   {user?.full_name?.charAt(0) || '?'}
                 </div>
                 <button className="absolute -bottom-1 -right-1 w-7 h-7 bg-school rounded-full flex items-center justify-center">
@@ -55,7 +55,7 @@ export default function Profile() {
               <div>
                 <div className="font-heading text-xl font-bold">{user?.full_name}</div>
                 <div className="text-muted-foreground text-sm flex items-center gap-1 mt-1"><Mail className="w-3.5 h-3.5" />{user?.email}</div>
-                <div className="mt-2"><span className="text-xs bg-village/10 text-village px-2.5 py-1 rounded-full font-medium">Member</span></div>
+                <div className="mt-2"><span className="text-xs bg-primary/10 text-primary px-2.5 py-1 rounded-full font-medium">Member</span></div>
               </div>
             </div>
 
@@ -81,7 +81,7 @@ export default function Profile() {
                 <Label htmlFor="occupation">Occupation</Label>
                 <Input id="occupation" value={form.occupation || ''} onChange={e => setForm(f => ({...f, occupation: e.target.value}))} placeholder="Your occupation" className="mt-1 rounded-xl" />
               </div>
-              <Button type="submit" disabled={saving} className="w-full village-gradient text-white border-0 rounded-xl py-3">
+              <Button type="submit" disabled={saving} className="w-full brand-gradient text-white border-0 rounded-xl py-3">
                 <Save className="w-4 h-4 mr-2" />{saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Changes'}
               </Button>
             </form>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TreePine, School, Heart, Users, Droplets, Wheat, MapPin } from 'lucide-react';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 function CountUp({ end, suffix = '', prefix = '', duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -32,7 +33,7 @@ function CountUp({ end, suffix = '', prefix = '', duration = 2000 }) {
 }
 
 const metrics = [
-  { label: 'Villages with Digital Profiles', value: 1200, suffix: '+', icon: TreePine, color: 'text-village', bg: 'bg-village/10', gradient: 'from-village/20 to-village/5' },
+  { label: 'Villages with Digital Profiles', value: 1200, suffix: '+', icon: TreePine, color: 'text-primary', bg: 'bg-primary/10', gradient: 'from-village/20 to-village/5' },
   { label: 'Schools Empowered', value: 450, suffix: '+', icon: School, color: 'text-school', bg: 'bg-school/10', gradient: 'from-school/20 to-school/5' },
   { label: 'Donations Raised (₹)', value: 25000000, prefix: '₹', suffix: '+', icon: Heart, color: 'text-donation', bg: 'bg-donation/10', gradient: 'from-donation/20 to-donation/5' },
   { label: 'Trees Planted', value: 50000, suffix: '+', icon: TreePine, color: 'text-green-600', bg: 'bg-green-100', gradient: 'from-green-100 to-green-50' },
@@ -57,15 +58,17 @@ export default function Impact() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div style={{ background: 'linear-gradient(135deg, #0F766E, #2D6A4F)' }} className="py-20 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-80" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Our Impact Dashboard</h1>
-            <p className="text-white/80 max-w-2xl mx-auto">Real numbers. Real change. Track the measurable impact of GramUnnati's work across India.</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div style={{ background: 'linear-gradient(135deg, #0F766E, #2D6A4F)' }} className="py-20 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-80" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Our Impact Dashboard</h1>
+              <p className="text-white/80 max-w-2xl mx-auto">Real numbers. Real change. Track the measurable impact of GramUnnati's work across India.</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       {/* Key Metrics */}
       <section className="py-16 bg-white">
@@ -97,7 +100,7 @@ export default function Impact() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
             <div className="flex items-center gap-2 mb-2">
-              <MapPin className="w-5 h-5 text-village" />
+              <MapPin className="w-5 h-5 text-primary" />
               <h2 className="font-heading text-2xl font-bold">Impact by State</h2>
             </div>
             <p className="text-muted-foreground text-sm">Top states driving rural transformation through GramUnnati</p>
@@ -115,7 +118,7 @@ export default function Impact() {
                 className="grid grid-cols-4 px-5 py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors items-center"
               >
                 <span className="font-medium text-sm">{s.state}</span>
-                <span className="text-center text-village font-semibold text-sm">{s.villages}</span>
+                <span className="text-center text-primary font-semibold text-sm">{s.villages}</span>
                 <span className="text-center text-school font-semibold text-sm">{s.schools}</span>
                 <span className="text-right text-donation font-semibold text-sm">{s.donations}</span>
               </motion.div>
@@ -132,7 +135,7 @@ export default function Impact() {
           </motion.div>
           <div className="grid sm:grid-cols-4 gap-6">
             {[
-              { step: '1', title: 'Identify Village Needs', desc: 'Village reps assess local infrastructure and development needs', color: 'bg-village' },
+              { step: '1', title: 'Identify Village Needs', desc: 'Village reps assess local infrastructure and development needs', color: 'bg-primary' },
               { step: '2', title: 'Secure Funding', desc: 'Donors and CSR partners fund specific projects and requirements', color: 'bg-school' },
               { step: '3', title: 'Build & Operate', desc: 'Community and contractors implement approved projects', color: 'bg-projects' },
               { step: '4', title: 'Measure Success', desc: 'Track progress, beneficiaries, and long-term community impact', color: 'bg-donation' },

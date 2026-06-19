@@ -5,6 +5,7 @@ import { Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Link } from 'react-router-dom';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function AdminCMS() {
   const [stories, setStories] = useState([]);
@@ -22,15 +23,17 @@ export default function AdminCMS() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="py-8 px-6" style={{ background: 'linear-gradient(135deg, #7C3AED, #4f46e5)' }}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">CMS & Content</h1>
-            <p className="text-white/70 text-sm mt-1">Manage stories, programs, and content</p>
+      <HeroScrollSection size="compact">
+        <div className="py-8 px-6" style={{ background: 'linear-gradient(135deg, #7C3AED, #4f46e5)' }}>
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">CMS & Content</h1>
+              <p className="text-white/70 text-sm mt-1">Manage stories, programs, and content</p>
+            </div>
+            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
           </div>
-          <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <Tabs defaultValue="stories">
@@ -61,7 +64,7 @@ export default function AdminCMS() {
                     </div>
                     <div className="flex gap-2">
                       <Link to="/stories"><button className="p-1.5 rounded-lg hover:bg-school/10 text-muted-foreground hover:text-school transition-colors"><Eye className="w-4 h-4" /></button></Link>
-                      <button className="p-1.5 rounded-lg hover:bg-village/10 text-muted-foreground hover:text-village transition-colors"><Edit className="w-4 h-4" /></button>
+                      <button className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"><Edit className="w-4 h-4" /></button>
                       <button onClick={() => deleteStory(s.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </motion.div>

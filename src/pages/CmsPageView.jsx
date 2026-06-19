@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function CmsPageView() {
   const { slug } = useParams();
@@ -40,28 +41,30 @@ export default function CmsPageView() {
 
   return (
     <div className="min-h-screen bg-background">
-      {page.featured_image && (
-        <div className="h-48 sm:h-64 bg-muted overflow-hidden">
-          <img src={page.featured_image} alt={page.title} className="w-full h-full object-cover" />
-        </div>
-      )}
+      <HeroScrollSection size="detail">
+        {page.featured_image && (
+          <div className="h-48 sm:h-64 bg-muted overflow-hidden">
+            <img src={page.featured_image} alt={page.title} className="w-full h-full object-cover" />
+          </div>
+        )}
 
-      <section className={`${page.featured_image ? '-mt-8' : 'hero-gradient py-16'}`}>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <Link to="/" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-village text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Home
-          </Link>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className={`font-heading text-3xl sm:text-4xl font-bold mb-4 ${page.featured_image ? 'text-foreground' : 'text-white'}`}>
-            {page.title}
-          </motion.h1>
-          {page.short_description && (
-            <p className={`text-lg ${page.featured_image ? 'text-muted-foreground' : 'text-white/70'}`}>
-              {page.short_description}
-            </p>
-          )}
-        </div>
-      </section>
+        <section className={`${page.featured_image ? '-mt-8' : 'hero-gradient py-16'}`}>
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <Link to="/" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary text-sm mb-6 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to Home
+            </Link>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className={`font-heading text-3xl sm:text-4xl font-bold mb-4 ${page.featured_image ? 'text-foreground' : 'text-white'}`}>
+              {page.title}
+            </motion.h1>
+            {page.short_description && (
+              <p className={`text-lg ${page.featured_image ? 'text-muted-foreground' : 'text-white/70'}`}>
+                {page.short_description}
+              </p>
+            )}
+          </div>
+        </section>
+      </HeroScrollSection>
 
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">

@@ -4,10 +4,11 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Calendar, MapPin, ChevronLeft, Clock, Users, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700', Education: 'bg-school/10 text-school', Volunteer: 'bg-volunteer/10 text-volunteer',
-  Agriculture: 'bg-yellow-100 text-yellow-700', Conference: 'bg-projects/10 text-projects', Healthcare: 'bg-red-100 text-red-700', Community: 'bg-village/10 text-village',
+  Agriculture: 'bg-yellow-100 text-yellow-700', Conference: 'bg-projects/10 text-projects', Healthcare: 'bg-red-100 text-red-700', Community: 'bg-primary/10 text-primary',
 };
 
 export default function EventDetail() {
@@ -33,15 +34,17 @@ export default function EventDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative h-64 sm:h-80 overflow-hidden">
-        <img src={event.featured_image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80'} alt={event.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6">
-          <Link to="/events" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Events</Link>
-          {event.category && <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${categoryColors[event.category] || ''}`}>{event.category}</span>}
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mt-2">{event.title}</h1>
+      <HeroScrollSection size="detail">
+        <div className="relative h-64 sm:h-80 overflow-hidden">
+          <img src={event.featured_image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80'} alt={event.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <Link to="/events" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Events</Link>
+            {event.category && <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${categoryColors[event.category] || ''}`}>{event.category}</span>}
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mt-2">{event.title}</h1>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid sm:grid-cols-3 gap-4 mb-8">

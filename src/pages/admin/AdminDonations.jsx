@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const byType = [
   { type: 'General', amount: 85000, count: 34 },
@@ -42,18 +43,20 @@ export default function AdminDonations() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="donation-gradient py-8 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">Donations</h1>
-            <p className="text-white/80 text-sm mt-1">Total: ₹{totalSuccess.toLocaleString('en-IN')} received</p>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
-            <Button size="sm" className="bg-white text-donation font-semibold"><Download className="w-4 h-4 mr-1" />Export CSV</Button>
+      <HeroScrollSection size="compact">
+        <div className="donation-gradient py-8 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">Donations</h1>
+              <p className="text-white/80 text-sm mt-1">Total: ₹{totalSuccess.toLocaleString('en-IN')} received</p>
+            </div>
+            <div className="flex gap-3">
+              <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
+              <Button size="sm" className="bg-white text-donation font-semibold"><Download className="w-4 h-4 mr-1" />Export CSV</Button>
+            </div>
           </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Summary Cards */}
@@ -89,7 +92,7 @@ export default function AdminDonations() {
           </div>
           {['all','success','pending','failed'].map(s => (
             <button key={s} onClick={() => setStatusFilter(s)}
-              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${statusFilter === s ? 'bg-village text-white' : 'bg-white border border-border text-muted-foreground hover:border-village'}`}>
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${statusFilter === s ? 'bg-primary text-white' : 'bg-white border border-border text-muted-foreground hover:border-primary'}`}>
               {s.charAt(0).toUpperCase() + s.slice(1)}
             </button>
           ))}

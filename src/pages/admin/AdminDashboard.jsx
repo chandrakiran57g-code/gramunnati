@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Users, MapPin, School, FolderOpen, Heart, TrendingUp, MessageSquare, Activity, Settings, BarChart3, Bell } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const donationTrend = [
   { month: 'Jan', amount: 42000 },
@@ -26,7 +27,7 @@ const projectDist = [
 const recentActivity = [
   { text: '₹5,000 donated to Kondapur School', time: '2 min ago', icon: '💛', color: 'bg-donation/10' },
   { text: 'New volunteer joined from Hyderabad', time: '15 min ago', icon: '🌱', color: 'bg-volunteer/10' },
-  { text: 'Village: Rajapet updated their profile', time: '1 hr ago', icon: '🏘️', color: 'bg-village/10' },
+  { text: 'Village: Rajapet updated their profile', time: '1 hr ago', icon: '🏘️', color: 'bg-primary/10' },
   { text: 'Library project completed in Warangal', time: '3 hr ago', icon: '✅', color: 'bg-green-100' },
   { text: '20 trees planted in Nalgonda', time: '5 hr ago', icon: '🌳', color: 'bg-green-50' },
   { text: 'New contact message from Priya Sharma', time: '6 hr ago', icon: '📧', color: 'bg-school/10' },
@@ -51,7 +52,7 @@ export default function AdminDashboard() {
   }, []);
 
   const statCards = [
-    { label: 'Villages', value: stats.villages, icon: MapPin, color: 'text-village', bg: 'bg-village/10', link: '/administrator/villages' },
+    { label: 'Villages', value: stats.villages, icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', link: '/administrator/villages' },
     { label: 'Schools', value: stats.schools, icon: School, color: 'text-school', bg: 'bg-school/10', link: '/administrator/schools' },
     { label: 'Projects', value: stats.projects, icon: FolderOpen, color: 'text-projects', bg: 'bg-projects/10', link: '/administrator/projects' },
     { label: 'Volunteers', value: stats.volunteers, icon: Users, color: 'text-volunteer', bg: 'bg-volunteer/10', link: '/administrator/volunteers' },
@@ -62,21 +63,23 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="village-gradient py-8 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">Admin Dashboard</h1>
-            <p className="text-white/70 text-sm mt-1">GramUnnati Platform Management</p>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/administrator/settings"><button className="p-2 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"><Settings className="w-5 h-5" /></button></Link>
-            <button className="p-2 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-donation rounded-full" />
-            </button>
+      <HeroScrollSection size="compact">
+        <div className="brand-gradient py-8 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">Admin Dashboard</h1>
+              <p className="text-white/70 text-sm mt-1">GramUnnati Platform Management</p>
+            </div>
+            <div className="flex gap-3">
+              <Link to="/administrator/settings"><button className="p-2 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors"><Settings className="w-5 h-5" /></button></Link>
+              <button className="p-2 bg-white/10 rounded-xl text-white hover:bg-white/20 transition-colors relative">
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-donation rounded-full" />
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Stat Cards */}
@@ -148,7 +151,7 @@ export default function AdminDashboard() {
             <h3 className="font-heading font-bold text-lg mb-4">Quick Actions</h3>
             <div className="space-y-2">
               {[
-                { label: 'Manage Villages', icon: '🏘️', link: '/administrator/villages', color: 'hover:bg-village/5 hover:text-village' },
+                { label: 'Manage Villages', icon: '🏘️', link: '/administrator/villages', color: 'hover:bg-primary/5 hover:text-primary' },
                 { label: 'Manage Schools', icon: '🏫', link: '/administrator/schools', color: 'hover:bg-school/5 hover:text-school' },
                 { label: 'Manage Projects', icon: '📋', link: '/administrator/projects', color: 'hover:bg-projects/5 hover:text-projects' },
                 { label: 'View Donations', icon: '💰', link: '/administrator/donations', color: 'hover:bg-donation/5 hover:text-donation' },
@@ -168,7 +171,7 @@ export default function AdminDashboard() {
           {/* Live Activity Feed */}
           <div className="lg:col-span-2 bg-white rounded-2xl border border-border p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Activity className="w-5 h-5 text-village" />
+              <Activity className="w-5 h-5 text-primary" />
               <h3 className="font-heading font-bold text-lg">Live Activity Feed</h3>
               <span className="ml-auto w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             </div>

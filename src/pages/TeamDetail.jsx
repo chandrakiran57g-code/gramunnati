@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Users, Mail, Phone, ArrowLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function TeamDetail() {
   const { slug } = useParams();
@@ -50,20 +51,22 @@ export default function TeamDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="hero-gradient py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Teams
-          </Link>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
-            {group.name}
-          </motion.h1>
-          {group.description && (
-            <p className="text-white/70 text-lg max-w-2xl">{group.description}</p>
-          )}
-        </div>
-      </section>
+      <HeroScrollSection size="page">
+        <section className="hero-gradient py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to Teams
+            </Link>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
+              {group.name}
+            </motion.h1>
+            {group.description && (
+              <p className="text-white/70 text-lg max-w-2xl">{group.description}</p>
+            )}
+          </div>
+        </section>
+      </HeroScrollSection>
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -80,28 +83,28 @@ export default function TeamDetail() {
                   viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                   className="bg-white rounded-2xl border border-border p-6 text-center hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="w-20 h-20 rounded-full bg-village/10 mx-auto mb-4 overflow-hidden flex items-center justify-center">
+                  <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 overflow-hidden flex items-center justify-center">
                     {member.photo ? (
                       <img src={member.photo} alt={member.full_name} className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-2xl font-bold text-village">{member.full_name?.charAt(0)}</span>
+                      <span className="text-2xl font-bold text-primary">{member.full_name?.charAt(0)}</span>
                     )}
                   </div>
                   <h3 className="font-semibold text-foreground">{member.full_name}</h3>
                   {member.designation && (
-                    <p className="text-village text-sm font-medium mt-1">{member.designation}</p>
+                    <p className="text-primary text-sm font-medium mt-1">{member.designation}</p>
                   )}
                   {member.description && (
                     <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{member.description}</p>
                   )}
                   <div className="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-border">
                     {member.email && (
-                      <a href={`mailto:${member.email}`} className="text-muted-foreground hover:text-village transition-colors" title={member.email}>
+                      <a href={`mailto:${member.email}`} className="text-muted-foreground hover:text-primary transition-colors" title={member.email}>
                         <Mail className="w-4 h-4" />
                       </a>
                     )}
                     {member.mobile && (
-                      <a href={`tel:${member.mobile}`} className="text-muted-foreground hover:text-village transition-colors" title={member.mobile}>
+                      <a href={`tel:${member.mobile}`} className="text-muted-foreground hover:text-primary transition-colors" title={member.mobile}>
                         <Phone className="w-4 h-4" />
                       </a>
                     )}

@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Heart, MapPin, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const typeLabels = { village: 'Village', school: 'School', farmer: 'Farmer', student: 'Student', women_shg: 'Women SHG', youth_group: 'Youth Group', artisan: 'Artisan', other: 'Other' };
 
@@ -38,23 +39,25 @@ export default function BeneficiaryDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="hero-gradient py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <Link to="/beneficiaries" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Beneficiaries
-          </Link>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{beneficiary.name}</motion.h1>
-          <div className="flex flex-wrap items-center gap-3">
-            <Badge className="bg-white/20 text-white border-white/20">{typeLabels[beneficiary.beneficiary_type] || beneficiary.beneficiary_type}</Badge>
-            {[beneficiary.village_name, beneficiary.district, beneficiary.state].filter(Boolean).length > 0 && (
-              <span className="text-white/70 text-sm flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" /> {[beneficiary.village_name, beneficiary.district, beneficiary.state].filter(Boolean).join(', ')}
-              </span>
-            )}
+      <HeroScrollSection size="page">
+        <section className="hero-gradient py-16">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <Link to="/beneficiaries" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to Beneficiaries
+            </Link>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{beneficiary.name}</motion.h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge className="bg-white/20 text-white border-white/20">{typeLabels[beneficiary.beneficiary_type] || beneficiary.beneficiary_type}</Badge>
+              {[beneficiary.village_name, beneficiary.district, beneficiary.state].filter(Boolean).length > 0 && (
+                <span className="text-white/70 text-sm flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5" /> {[beneficiary.village_name, beneficiary.district, beneficiary.state].filter(Boolean).join(', ')}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </HeroScrollSection>
 
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Eye, Target, Star, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const pillars = [
   { icon: '🏘️', title: 'Village Development', desc: 'Build model villages with complete infrastructure, sanitation, roads, electricity, and connectivity.' },
@@ -29,22 +30,24 @@ export default function Vision() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="hero-gradient py-20 px-4">
-        <div className="max-w-5xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Eye className="w-16 h-16 mx-auto mb-6 opacity-70" />
-            <h1 className="font-heading text-5xl sm:text-6xl font-bold mb-4">Our Vision</h1>
-            <p className="text-2xl sm:text-3xl font-heading text-white/80 italic mb-4">"Our Village – Our Responsibility – Our Development"</p>
-            <p className="text-white/60 text-sm">మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="hero-gradient py-20 px-4">
+          <div className="max-w-5xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Eye className="w-16 h-16 mx-auto mb-6 opacity-70" />
+              <h1 className="font-heading text-5xl sm:text-6xl font-bold mb-4">Our Vision</h1>
+              <p className="text-2xl sm:text-3xl font-heading text-white/80 italic mb-4">"Our Village – Our Responsibility – Our Development"</p>
+              <p className="text-white/60 text-sm">మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       {/* Mission */}
       <section className="py-20 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
-            <Target className="w-10 h-10 text-village mx-auto mb-4" />
+            <Target className="w-10 h-10 text-primary mx-auto mb-4" />
             <h2 className="font-heading text-3xl font-bold mb-4">Our Mission</h2>
           </motion.div>
           <div className="grid sm:grid-cols-2 gap-8 items-center">
@@ -56,8 +59,8 @@ export default function Vision() {
                 By uniting citizens, communities, professionals, institutions, and stakeholders on a common digital platform, we aim to create sustainable, self-reliant, and model villages and schools that serve as examples for future generations.
               </p>
             </div>
-            <div className="bg-village/5 rounded-2xl p-6 border border-village/10">
-              <p className="text-village font-heading text-lg font-bold italic mb-4">
+            <div className="bg-primary/5 rounded-2xl p-6 border border-primary/10">
+              <p className="text-primary font-heading text-lg font-bold italic mb-4">
                 "బాధ్యతగల పౌరులుగా మన సమాజం మరియు గ్రామాల అభివృద్ధి పట్ల ప్రతి ఒక్కరికీ సామాజిక బాధ్యత ఉంది."
               </p>
               <p className="text-muted-foreground text-sm">
@@ -89,7 +92,7 @@ export default function Vision() {
       </section>
 
       {/* Objectives */}
-      <section className="py-20 bg-village">
+      <section className="py-20 bg-primary">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <Star className="w-10 h-10 text-donation mx-auto mb-4" />

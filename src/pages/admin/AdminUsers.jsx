@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Users, Search, Shield, UserCheck, UserX } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
@@ -21,10 +22,12 @@ export default function AdminUsers() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-emerald-600 text-white py-8 px-6"><div className="max-w-7xl mx-auto">
-        <h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Users className="w-8 h-8"/>User Management</h1>
-        <p className="text-white/70 text-sm mt-1">{users.length} registered users</p>
-      </div></div>
+      <HeroScrollSection size="compact">
+        <div className="bg-emerald-600 text-white py-8 px-6"><div className="max-w-7xl mx-auto">
+          <h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Users className="w-8 h-8"/>User Management</h1>
+          <p className="text-white/70 text-sm mt-1">{users.length} registered users</p>
+        </div></div>
+      </HeroScrollSection>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-6 relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"/>

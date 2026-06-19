@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Building2, Globe, Mail, Phone, Calendar, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
 
@@ -38,23 +39,25 @@ export default function PartnerDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="hero-gradient py-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <Link to="/partners" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Partners
-          </Link>
-          <div className="flex items-start gap-6">
-            <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm overflow-hidden flex-shrink-0 flex items-center justify-center">
-              {partner.logo ? <img src={partner.logo} alt={partner.name} className="w-full h-full object-cover" /> : <Building2 className="w-10 h-10 text-white/60" />}
-            </div>
-            <div>
-              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{partner.name}</motion.h1>
-              <Badge className="bg-white/20 text-white border-white/20">{typeLabels[partner.partner_type] || partner.partner_type}</Badge>
+      <HeroScrollSection size="page">
+        <section className="hero-gradient py-16">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6">
+            <Link to="/partners" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> Back to Partners
+            </Link>
+            <div className="flex items-start gap-6">
+              <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm overflow-hidden flex-shrink-0 flex items-center justify-center">
+                {partner.logo ? <img src={partner.logo} alt={partner.name} className="w-full h-full object-cover" /> : <Building2 className="w-10 h-10 text-white/60" />}
+              </div>
+              <div>
+                <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{partner.name}</motion.h1>
+                <Badge className="bg-white/20 text-white border-white/20">{typeLabels[partner.partner_type] || partner.partner_type}</Badge>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </HeroScrollSection>
 
       <section className="py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -68,25 +71,25 @@ export default function PartnerDetail() {
             <div className="grid sm:grid-cols-2 gap-4">
               {partner.website && (
                 <a href={partner.website} target="_blank" rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-village/5 transition-colors">
-                  <Globe className="w-5 h-5 text-village" /> <span className="text-sm font-medium">{partner.website}</span>
+                  className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-primary/5 transition-colors">
+                  <Globe className="w-5 h-5 text-primary" /> <span className="text-sm font-medium">{partner.website}</span>
                 </a>
               )}
               {partner.email && (
                 <a href={`mailto:${partner.email}`}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-village/5 transition-colors">
-                  <Mail className="w-5 h-5 text-village" /> <span className="text-sm font-medium">{partner.email}</span>
+                  className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-primary/5 transition-colors">
+                  <Mail className="w-5 h-5 text-primary" /> <span className="text-sm font-medium">{partner.email}</span>
                 </a>
               )}
               {partner.mobile && (
                 <a href={`tel:${partner.mobile}`}
-                  className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-village/5 transition-colors">
-                  <Phone className="w-5 h-5 text-village" /> <span className="text-sm font-medium">{partner.mobile}</span>
+                  className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-primary/5 transition-colors">
+                  <Phone className="w-5 h-5 text-primary" /> <span className="text-sm font-medium">{partner.mobile}</span>
                 </a>
               )}
               {partner.partnership_date && (
                 <div className="flex items-center gap-3 p-4 rounded-xl bg-muted/50">
-                  <Calendar className="w-5 h-5 text-village" />
+                  <Calendar className="w-5 h-5 text-primary" />
                   <span className="text-sm font-medium">Partner since {new Date(partner.partnership_date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long' })}</span>
                 </div>
               )}

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Building2, Globe, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
 const typeColors = { ngo: 'bg-green-100 text-green-700', company: 'bg-blue-100 text-blue-700', educational_institution: 'bg-purple-100 text-purple-700', government: 'bg-orange-100 text-orange-700', individual: 'bg-gray-100 text-gray-700', csr_partner: 'bg-yellow-100 text-yellow-700', foundation: 'bg-pink-100 text-pink-700' };
@@ -22,17 +23,19 @@ export default function Partners() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="hero-gradient py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
-            Partner Organizations
-          </motion.h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Organizations, institutions, and individuals collaborating to transform rural India
-          </p>
-        </div>
-      </section>
+      <HeroScrollSection size="page">
+        <section className="hero-gradient py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
+              Partner Organizations
+            </motion.h1>
+            <p className="text-white/70 text-lg max-w-2xl mx-auto">
+              Organizations, institutions, and individuals collaborating to transform rural India
+            </p>
+          </div>
+        </section>
+      </HeroScrollSection>
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -40,7 +43,7 @@ export default function Partners() {
             {Object.entries({ all: 'All', ...typeLabels }).map(([key, label]) => (
               <button key={key} onClick={() => setFilter(key)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  filter === key ? 'bg-village text-white shadow-md' : 'bg-muted text-muted-foreground hover:bg-village/10 hover:text-village'
+                  filter === key ? 'bg-primary text-white shadow-md' : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
                 }`}
               >{label}</button>
             ))}
@@ -64,7 +67,7 @@ export default function Partners() {
                   viewport={{ once: true }} transition={{ delay: i * 0.07 }}
                 >
                   <Link to={`/partners/${partner.slug}`}
-                    className="block group bg-white rounded-2xl border border-border p-8 hover:shadow-lg hover:border-village/30 transition-all duration-300 h-full"
+                    className="block group bg-white rounded-2xl border border-border p-8 hover:shadow-lg hover:border-primary/30 transition-all duration-300 h-full"
                   >
                     <div className="flex items-start gap-4 mb-4">
                       <div className="w-16 h-16 rounded-xl bg-muted overflow-hidden flex-shrink-0 flex items-center justify-center">
@@ -75,7 +78,7 @@ export default function Partners() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground group-hover:text-village transition-colors">{partner.name}</h3>
+                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{partner.name}</h3>
                         <Badge className={`mt-1.5 ${typeColors[partner.partner_type] || 'bg-gray-100'}`}>
                           {typeLabels[partner.partner_type] || partner.partner_type}
                         </Badge>
@@ -84,7 +87,7 @@ export default function Partners() {
                     {partner.description && (
                       <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-3">{partner.description}</p>
                     )}
-                    <span className="inline-flex items-center gap-1 text-village text-sm font-medium group-hover:gap-2 transition-all">
+                    <span className="inline-flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
                       View Details <ArrowRight className="w-4 h-4" />
                     </span>
                   </Link>

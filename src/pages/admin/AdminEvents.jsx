@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const EMPTY = { title:'',slug:'',description:'',location:'',start_date:'',end_date:'',featured_image:'',is_published:false,registration_link:'' };
 
@@ -28,10 +29,12 @@ export default function AdminEvents() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-cyan-600 text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Calendar className="w-8 h-8"/>Events Management</h1><p className="text-white/70 text-sm mt-1">{items.length} events · {upcoming.length} upcoming</p></div>
-        <Button onClick={()=>{setEditing(null);setForm(EMPTY);setShowForm(true);}} className="bg-white text-cyan-600 hover:bg-white/90"><Plus className="w-4 h-4 mr-2"/>New Event</Button>
-      </div></div>
+      <HeroScrollSection size="compact">
+        <div className="bg-cyan-600 text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Calendar className="w-8 h-8"/>Events Management</h1><p className="text-white/70 text-sm mt-1">{items.length} events · {upcoming.length} upcoming</p></div>
+          <Button onClick={()=>{setEditing(null);setForm(EMPTY);setShowForm(true);}} className="bg-white text-cyan-600 hover:bg-white/90"><Plus className="w-4 h-4 mr-2"/>New Event</Button>
+        </div></div>
+      </HeroScrollSection>
       <div className="max-w-7xl mx-auto px-4 py-8">
         {loading?<div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-cyan-200 border-t-cyan-600 rounded-full animate-spin"/></div>
         :items.length===0?<div className="text-center py-20"><Calendar className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4"/><p className="text-muted-foreground">No events yet.</p></div>

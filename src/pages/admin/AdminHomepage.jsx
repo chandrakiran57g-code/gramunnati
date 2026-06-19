@@ -70,7 +70,7 @@ export default function AdminHomepage() {
               {entity !== 'SuccessStory' && (
                 <button onClick={() => toggleActive(entity, item)} disabled={toggling[item.id]}
                   className={`text-xs px-2.5 py-1 rounded-full font-medium transition-colors ${
-                    item.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    item.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-brown-400'
                   }`}>
                   {toggling[item.id] ? <Loader2 className="w-3 h-3 animate-spin" /> : item.is_active ? 'Active' : 'Hidden'}
                 </button>
@@ -91,7 +91,7 @@ export default function AdminHomepage() {
     <div className="p-6 max-w-5xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-          <Layout className="w-6 h-6 text-village" /> Homepage Manager
+          <Layout className="w-6 h-6 text-primary" /> Homepage Manager
         </h1>
         <p className="text-muted-foreground mt-1">Control which villages, schools, projects, and stories appear on the homepage</p>
       </div>

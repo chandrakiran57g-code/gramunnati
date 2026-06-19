@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const EMPTY_FORM = {
   school_name: '', slug: '', village_name: '', village_id: '', state: '', district: '',
@@ -67,15 +68,17 @@ export default function AdminSchools() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-school text-white py-8 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold flex items-center gap-3"><School className="w-8 h-8" /> Schools Management</h1>
-            <p className="text-white/70 text-sm mt-1">{items.length} schools registered</p>
+      <HeroScrollSection size="compact">
+        <div className="bg-school text-white py-8 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold flex items-center gap-3"><School className="w-8 h-8" /> Schools Management</h1>
+              <p className="text-white/70 text-sm mt-1">{items.length} schools registered</p>
+            </div>
+            <Button onClick={openCreate} className="bg-white text-school hover:bg-white/90"><Plus className="w-4 h-4 mr-2" /> Add School</Button>
           </div>
-          <Button onClick={openCreate} className="bg-white text-school hover:bg-white/90"><Plus className="w-4 h-4 mr-2" /> Add School</Button>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex gap-4 mb-6">

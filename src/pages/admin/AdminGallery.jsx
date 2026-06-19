@@ -4,6 +4,7 @@ import { Image, Upload, Grid3X3, List, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const GALLERY_CATS = ['Village Gallery','School Gallery','Project Gallery','Program Gallery','Event Gallery'];
 
@@ -13,10 +14,12 @@ export default function AdminGallery() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Image className="w-8 h-8"/>Gallery Manager</h1><p className="text-white/70 text-sm mt-1">Manage media across all modules</p></div>
-        <Button className="bg-white text-purple-600 hover:bg-white/90"><Upload className="w-4 h-4 mr-2"/>Upload Media</Button>
-      </div></div>
+      <HeroScrollSection size="compact">
+        <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Image className="w-8 h-8"/>Gallery Manager</h1><p className="text-white/70 text-sm mt-1">Manage media across all modules</p></div>
+          <Button className="bg-white text-purple-600 hover:bg-white/90"><Upload className="w-4 h-4 mr-2"/>Upload Media</Button>
+        </div></div>
+      </HeroScrollSection>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-wrap gap-4 mb-6 items-center">
           <div className="flex gap-1 bg-muted rounded-xl p-1 flex-1 min-w-[300px]">

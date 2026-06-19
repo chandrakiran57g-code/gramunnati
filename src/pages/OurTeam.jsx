@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Linkedin, Mail, Users } from 'lucide-react';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const team = [
   { name: 'Dr. Ravi Kumar', role: 'Founder & Director', bio: 'A visionary leader with 20+ years in rural development and community empowerment across Andhra Pradesh and Telangana.', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80', dept: 'Leadership' },
@@ -13,7 +14,7 @@ const team = [
 ];
 
 const deptColors = {
-  Leadership: 'bg-village/10 text-village',
+  Leadership: 'bg-primary/10 text-primary',
   Programs: 'bg-school/10 text-school',
   Technology: 'bg-projects/10 text-projects',
   Education: 'bg-donation/10 text-donation',
@@ -26,15 +27,17 @@ const deptColors = {
 export default function OurTeam() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="village-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-70" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Our Team</h1>
-            <p className="text-white/80 max-w-2xl mx-auto">Passionate individuals dedicated to transforming rural India through technology, compassion, and community action</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="brand-gradient py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Users className="w-12 h-12 mx-auto mb-4 opacity-70" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Our Team</h1>
+              <p className="text-white/80 max-w-2xl mx-auto">Passionate individuals dedicated to transforming rural India through technology, compassion, and community action</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -52,7 +55,7 @@ export default function OurTeam() {
                 <p className="text-xs text-muted-foreground leading-relaxed">{member.bio}</p>
                 <div className="flex justify-center gap-3 mt-4">
                   <button className="p-1.5 rounded-lg hover:bg-school/10 text-muted-foreground hover:text-school transition-colors"><Linkedin className="w-4 h-4" /></button>
-                  <button className="p-1.5 rounded-lg hover:bg-village/10 text-muted-foreground hover:text-village transition-colors"><Mail className="w-4 h-4" /></button>
+                  <button className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"><Mail className="w-4 h-4" /></button>
                 </div>
               </div>
             </motion.div>
@@ -69,10 +72,10 @@ export default function OurTeam() {
               { name: 'Dr. Meera Rao', role: 'Education Policy Specialist', org: 'UNICEF India' },
               { name: 'Shri Ramaiah Goud', role: 'Agriculture & Cooperative Expert', org: 'NABARD' },
             ].map(adv => (
-              <div key={adv.name} className="bg-village/5 rounded-2xl border border-village/10 p-6 text-center">
-                <div className="w-16 h-16 bg-village/10 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">👤</div>
+              <div key={adv.name} className="bg-primary/5 rounded-2xl border border-primary/10 p-6 text-center">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">👤</div>
                 <h4 className="font-heading font-bold text-base">{adv.name}</h4>
-                <div className="text-xs text-village font-medium mt-1">{adv.role}</div>
+                <div className="text-xs text-primary font-medium mt-1">{adv.role}</div>
                 <div className="text-xs text-muted-foreground mt-1">{adv.org}</div>
               </div>
             ))}

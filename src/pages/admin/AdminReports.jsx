@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Download, TrendingUp, FileText, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const COLORS = ['#2D6A4F', '#2563EB', '#7C3AED', '#F59E0B', '#22C55E', '#EF4444', '#06B6D4'];
 
@@ -35,22 +36,24 @@ export default function AdminReports() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="py-8 px-6" style={{ background: 'linear-gradient(135deg, #0F766E, #2D6A4F)' }}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">Reports & Analytics</h1>
-            <p className="text-white/70 text-sm mt-1">Exportable summaries and platform insights</p>
+      <HeroScrollSection size="compact">
+        <div className="py-8 px-6" style={{ background: 'linear-gradient(135deg, #0F766E, #2D6A4F)' }}>
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">Reports & Analytics</h1>
+              <p className="text-white/70 text-sm mt-1">Exportable summaries and platform insights</p>
+            </div>
+            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
+              <Download className="w-4 h-4 mr-2" />Export CSV
+            </Button>
           </div>
-          <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
-            <Download className="w-4 h-4 mr-2" />Export CSV
-          </Button>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           {[
-            { label: 'Villages', value: stats.villages, color: 'text-village', bg: 'bg-village/10' },
+            { label: 'Villages', value: stats.villages, color: 'text-primary', bg: 'bg-primary/10' },
             { label: 'Schools', value: stats.schools, color: 'text-school', bg: 'bg-school/10' },
             { label: 'Projects', value: stats.projects, color: 'text-projects', bg: 'bg-projects/10' },
             { label: 'Donations', value: stats.donations, color: 'text-donation', bg: 'bg-donation/10' },

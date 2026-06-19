@@ -5,6 +5,7 @@ import { Users, Search, MapPin, Clock } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function AdminVolunteers() {
   const [volunteers, setVolunteers] = useState([]);
@@ -24,15 +25,17 @@ export default function AdminVolunteers() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="py-8 px-6" style={{ background: 'linear-gradient(135deg, #22C55E, #16a34a)' }}>
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">Volunteers</h1>
-            <p className="text-white/70 text-sm mt-1">{volunteers.length} registered volunteers</p>
+      <HeroScrollSection size="compact">
+        <div className="py-8 px-6" style={{ background: 'linear-gradient(135deg, #22C55E, #16a34a)' }}>
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">Volunteers</h1>
+              <p className="text-white/70 text-sm mt-1">{volunteers.length} registered volunteers</p>
+            </div>
+            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
           </div>
-          <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Summary */}

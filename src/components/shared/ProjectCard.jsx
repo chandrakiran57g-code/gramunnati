@@ -4,25 +4,37 @@ import { MapPin, Calendar, Heart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import SafeImage from '@/components/shared/SafeImage';
 
 const categoryColors = {
-  'Village Development': 'bg-village/10 text-village border-village/20',
-  'School Development': 'bg-school/10 text-school border-school/20',
-  'Tree Plantation': 'bg-green-100 text-green-700 border-green-200',
-  'Water Conservation': 'bg-cyan-100 text-cyan-700 border-cyan-200',
-  'Agriculture': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  'Healthcare': 'bg-red-100 text-red-700 border-red-200',
-  'Skill Development': 'bg-purple-100 text-purple-700 border-purple-200',
-  'Women SHG': 'bg-pink-100 text-pink-700 border-pink-200',
-  'Infrastructure': 'bg-orange-100 text-orange-700 border-orange-200',
-  'Employment Generation': 'bg-indigo-100 text-indigo-700 border-indigo-200',
+  'Village Development': 'bg-service-village-tint text-service-village border-service-village/30',
+  'School Development': 'bg-service-school-tint text-service-school border-service-school/30',
+  'Tree Plantation': 'bg-service-tree-tint text-service-tree border-service-tree/30',
+  'Water Conservation': 'bg-service-water-tint text-service-water border-service-water/30',
+  Agriculture: 'bg-service-agriculture-tint text-service-agriculture border-service-agriculture/30',
+  Healthcare: 'bg-service-healthcare-tint text-service-healthcare border-service-healthcare/30',
+  'Skill Development': 'bg-service-skill-tint text-service-skill border-service-skill/30',
+  'Women SHG': 'bg-service-women-tint text-service-women border-service-women/30',
+  Infrastructure: 'bg-cream-300 text-brown-700 border-brown-300',
+  'Employment Generation': 'bg-cream-200 text-brown-600 border-brown-300',
+};
+
+const categoryProgress = {
+  'Village Development': '[&>div]:bg-service-village',
+  'School Development': '[&>div]:bg-service-school',
+  'Tree Plantation': '[&>div]:bg-service-tree',
+  'Water Conservation': '[&>div]:bg-service-water',
+  Agriculture: '[&>div]:bg-service-agriculture',
+  Healthcare: '[&>div]:bg-service-healthcare',
+  'Skill Development': '[&>div]:bg-service-skill',
+  'Women SHG': '[&>div]:bg-service-women',
 };
 
 const statusColors = {
-  upcoming: 'bg-blue-100 text-blue-700',
-  active: 'bg-green-100 text-green-700',
-  completed: 'bg-gray-100 text-gray-600',
-  cancelled: 'bg-red-100 text-red-700',
+  upcoming: 'bg-service-school-tint text-service-school',
+  active: 'bg-service-tree-tint text-service-tree',
+  completed: 'bg-cream-200 text-brown-500',
+  cancelled: 'bg-service-healthcare-tint text-service-healthcare',
 };
 
 export default function ProjectCard({ project, index = 0 }) {
@@ -30,6 +42,7 @@ export default function ProjectCard({ project, index = 0 }) {
   const raisedPct = project.budget_amount > 0
     ? Math.min(Math.round((project.raised_amount / project.budget_amount) * 100), 100)
     : project.progress_percentage || 0;
+  const progressClass = categoryProgress[project.category] || '[&>div]:bg-primary';
 
   return (
     <motion.div
@@ -37,64 +50,63 @@ export default function ProjectCard({ project, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group bg-white rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      className="group bg-white rounded-2xl border border-brown-300 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
     >
-      <div className="relative h-44 overflow-hidden">
-        <img
-          src={project.cover_image || `https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=600&q=80`}
-          alt={project.project_name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-        <div className="absolute top-3 left-3 flex gap-2">
-          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${categoryColors[project.category] || 'bg-white/90 text-gray-700'} bg-white/90`}>
+      <Link to={`/projects/${slug}`}>
+        <div className="relative h-44 overflow-hidden">
+          <SafeImage
+            src={project.cover_image}
+            alt={project.project_name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          {project.is_featured && (
+            <div className="absolute top-3 left-3 bg-brown-600 text-white text-xs px-2.5 py-1 rounded-full font-medium">
+              Featured
+            </div>
+          )}
+          <Badge className={`absolute top-3 right-3 text-xs border ${categoryColors[project.category] || 'bg-cream-100 text-brown-600'}`}>
             {project.category}
-          </span>
+          </Badge>
         </div>
-        <span className={`absolute top-3 right-3 text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[project.status] || statusColors.upcoming} bg-white/90`}>
-          {project.status || 'upcoming'}
-        </span>
-        <div className="absolute bottom-3 left-3 right-3">
-          <h3 className="font-heading font-bold text-white text-base leading-tight line-clamp-2">{project.project_name}</h3>
-        </div>
-      </div>
+      </Link>
 
-      <div className="p-4">
+      <div className="p-5">
+        <Link to={`/projects/${slug}`}>
+          <h3 className="font-heading font-bold text-base mb-1 group-hover:text-primary transition-colors line-clamp-1">
+            {project.project_name}
+          </h3>
+        </Link>
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
           <MapPin className="w-3 h-3" />
-          <span>{project.village_name}, {project.district}</span>
+          {project.village_name}, {project.district}
         </div>
+        <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
+          {project.short_description}
+        </p>
 
-        {project.short_description && (
-          <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{project.short_description}</p>
-        )}
-
-        {/* Fundraising progress */}
         <div className="mb-4">
-          <div className="flex justify-between items-center text-xs mb-1.5">
-            <span className="text-muted-foreground">Fundraising Progress</span>
-            <span className="font-semibold text-village">{raisedPct}%</span>
+          <div className="flex justify-between text-xs mb-1.5">
+            <span className="text-muted-foreground">Progress</span>
+            <span className="font-semibold text-primary">{raisedPct}%</span>
           </div>
-          <Progress value={raisedPct} className="h-2 bg-muted [&>div]:bg-village" />
+          <Progress value={raisedPct} className={`h-2 bg-cream-200 ${progressClass}`} />
           <div className="flex justify-between text-xs mt-1.5">
-            <span className="text-village font-medium">
+            <span className="text-primary font-medium">
               ₹{(project.raised_amount || 0).toLocaleString('en-IN')} raised
             </span>
-            {project.budget_amount > 0 && (
-              <span className="text-muted-foreground">of ₹{project.budget_amount.toLocaleString('en-IN')}</span>
-            )}
+            <span className="text-muted-foreground">
+              of ₹{(project.budget_amount || 0).toLocaleString('en-IN')}
+            </span>
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <Link to={`/projects/${slug}`} className="flex-1">
-            <Button variant="outline" size="sm" className="w-full text-xs border-projects text-projects hover:bg-projects hover:text-white">
-              View Project
-            </Button>
-          </Link>
-          <Link to={`/donate?type=project&project_id=${project.id}`}>
-            <Button size="sm" className="donation-gradient text-white border-0 text-xs px-3">
-              <Heart className="w-3 h-3 mr-1" />Support
+        <div className="flex items-center justify-between">
+          <Badge variant="outline" className={`text-xs ${statusColors[project.status] || ''}`}>
+            {project.status}
+          </Badge>
+          <Link to={`/donate?project=${slug}`}>
+            <Button size="sm" className="donation-gradient text-white border-0 text-xs">
+              <Heart className="w-3 h-3 mr-1" /> Support
             </Button>
           </Link>
         </div>

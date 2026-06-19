@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Newspaper, Calendar, Tag, ArrowRight, Search } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const CATEGORIES = ['All', 'Village Development', 'School Empowerment', 'Tree Plantation', 'Water Conservation', 'Healthcare', 'Volunteer Stories'];
 
@@ -37,15 +38,17 @@ export default function News() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="school-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Newspaper className="w-12 h-12 mx-auto mb-4 opacity-70" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Latest News</h1>
-            <p className="text-white/80 max-w-xl mx-auto">Updates, announcements and stories from GramUnnati's village and school empowerment work</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="school-gradient py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Newspaper className="w-12 h-12 mx-auto mb-4 opacity-70" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Latest News</h1>
+              <p className="text-white/80 max-w-xl mx-auto">Updates, announcements and stories from GramUnnati's village and school empowerment work</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         {/* Search + Filters */}

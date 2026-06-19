@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Camera, Play, Image, Video } from 'lucide-react';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const galleryItems = [
   { id: 1, category: 'Villages', type: 'image', title: 'Kondapur Village Development', src: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80', location: 'Telangana' },
@@ -35,22 +36,24 @@ export default function Gallery() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div style={{ background: 'linear-gradient(135deg, #1B1B2F, #2D6A4F)' }} className="py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Camera className="w-12 h-12 mx-auto mb-4 opacity-70" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Photo & Video Gallery</h1>
-            <p className="text-white/70 max-w-xl mx-auto">A visual journey of transformation across rural India</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div style={{ background: 'linear-gradient(135deg, #1B1B2F, #2D6A4F)' }} className="py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Camera className="w-12 h-12 mx-auto mb-4 opacity-70" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Photo & Video Gallery</h1>
+              <p className="text-white/70 max-w-xl mx-auto">A visual journey of transformation across rural India</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       {/* Tab + Category filter */}
       <div className="bg-white border-b border-border sticky top-[88px] z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex gap-4">
           {TABS.map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab ? 'bg-village text-white' : 'bg-muted text-muted-foreground hover:bg-village/10'}`}>
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeTab === tab ? 'bg-primary text-white' : 'bg-muted text-muted-foreground hover:bg-primary/10'}`}>
               {tab === 'Photos' ? <Image className="w-4 h-4" /> : <Video className="w-4 h-4" />}{tab}
             </button>
           ))}
@@ -64,8 +67,8 @@ export default function Gallery() {
             <button key={cat} onClick={() => setActiveCategory(cat)}
               className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                 activeCategory === cat
-                  ? 'bg-village text-white shadow-sm'
-                  : 'bg-muted text-muted-foreground hover:bg-village/10 hover:text-village'
+                  ? 'bg-primary text-white shadow-sm'
+                  : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
               }`}
             >
               {cat}
@@ -81,7 +84,7 @@ export default function Gallery() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {videoItems.map(v => (
               <div key={v.id} className="bg-white rounded-xl border border-border overflow-hidden">
-                <div className="aspect-video bg-gray-900 relative">
+                <div className="aspect-video bg-brown-900 relative">
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Play className="w-12 h-12 text-white/70" />
                   </div>

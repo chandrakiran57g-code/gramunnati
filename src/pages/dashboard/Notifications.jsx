@@ -6,7 +6,7 @@ import { Bell, BellRing, Heart, MapPin, School, FolderOpen, Info } from 'lucide-
 import { Button } from '@/components/ui/button';
 
 const DEMO_NOTIFICATIONS = [
-  { id: 1, type: 'village', title: 'Solar lights installed in your village', desc: '20 solar street lights have been installed in Medaram village.', date: '2 hours ago', icon: MapPin, color: 'text-village', bg: 'bg-village/10', read: false },
+  { id: 1, type: 'village', title: 'Solar lights installed in your village', desc: '20 solar street lights have been installed in Medaram village.', date: '2 hours ago', icon: MapPin, color: 'text-primary', bg: 'bg-primary/10', read: false },
   { id: 2, type: 'donation', title: 'Thank you for your donation!', desc: 'Your donation of ₹1,000 to ZPHS Medaram has been received.', date: '1 day ago', icon: Heart, color: 'text-donation', bg: 'bg-donation/10', read: false },
   { id: 3, type: 'school', title: 'New library inaugurated', desc: 'ZPHS Medaram school library with 500 books is now open.', date: '2 days ago', icon: School, color: 'text-school', bg: 'bg-school/10', read: true },
   { id: 4, type: 'project', title: 'Tree plantation drive completed', desc: '500 saplings planted across 3 villages this weekend.', date: '3 days ago', icon: FolderOpen, color: 'text-projects', bg: 'bg-projects/10', read: true },
@@ -49,7 +49,7 @@ export default function Notifications() {
           <div className="flex gap-2 mb-6 flex-wrap">
             {[{ label: 'All', value: 'all' }, { label: 'Unread', value: 'unread' }, { label: 'Villages', value: 'village' }, { label: 'Schools', value: 'school' }, { label: 'Donations', value: 'donation' }, { label: 'Projects', value: 'project' }].map(f => (
               <button key={f.value} onClick={() => setFilter(f.value)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filter === f.value ? 'bg-village text-white' : 'bg-white border border-border text-muted-foreground hover:border-village'}`}>
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${filter === f.value ? 'bg-primary text-white' : 'bg-white border border-border text-muted-foreground hover:border-primary'}`}>
                 {f.label}
               </button>
             ))}
@@ -65,7 +65,7 @@ export default function Notifications() {
             <div className="space-y-2">
               {filtered.map(n => (
                 <motion.div key={n.id} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }}
-                  className={`bg-white rounded-xl border p-4 flex items-start gap-4 cursor-pointer hover:shadow-md transition-all ${!n.read ? 'border-l-4 border-l-village bg-village/5' : 'border-border'}`}
+                  className={`bg-white rounded-xl border p-4 flex items-start gap-4 cursor-pointer hover:shadow-md transition-all ${!n.read ? 'border-l-4 border-l-primary bg-primary/5' : 'border-border'}`}
                   onClick={() => toggleRead(n.id)}
                 >
                   <div className={`w-10 h-10 ${n.bg} rounded-xl flex items-center justify-center flex-shrink-0`}>
@@ -77,7 +77,7 @@ export default function Notifications() {
                         <h4 className={`text-sm font-semibold ${!n.read ? 'text-foreground' : 'text-foreground/70'}`}>{n.title}</h4>
                         <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{n.desc}</p>
                       </div>
-                      {!n.read && <span className="w-2 h-2 bg-village rounded-full flex-shrink-0 mt-1.5" />}
+                      {!n.read && <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1.5" />}
                     </div>
                     <div className="text-xs text-muted-foreground mt-2">{n.date}</div>
                   </div>

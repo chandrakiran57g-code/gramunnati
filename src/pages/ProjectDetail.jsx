@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import BeforeAfterSlider from '@/components/shared/BeforeAfterSlider';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const categoryColors = {
   'Village Development': 'text-village bg-village/10',
@@ -56,19 +57,21 @@ export default function ProjectDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative h-64 sm:h-80 overflow-hidden">
-        <img src={project.cover_image || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80'} alt={project.project_name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6">
-          <Link to="/projects" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Projects</Link>
-          <div className="flex flex-wrap gap-2 mb-2">
-            <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${categoryColors[project.category] || ''}`}>{project.category}</span>
-            <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${statusColors[project.status]}`}>{statusLabels[project.status]}</span>
+      <HeroScrollSection size="detail">
+        <div className="relative h-64 sm:h-80 overflow-hidden">
+          <img src={project.cover_image || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80'} alt={project.project_name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <Link to="/projects" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Projects</Link>
+            <div className="flex flex-wrap gap-2 mb-2">
+              <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${categoryColors[project.category] || ''}`}>{project.category}</span>
+              <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${statusColors[project.status]}`}>{statusLabels[project.status]}</span>
+            </div>
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">{project.project_name}</h1>
+            <p className="text-white/80 text-sm mt-1"><MapPin className="w-3.5 h-3.5 inline mr-1" />{project.village_name}, {project.district}, {project.state}</p>
           </div>
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">{project.project_name}</h1>
-          <p className="text-white/80 text-sm mt-1"><MapPin className="w-3.5 h-3.5 inline mr-1" />{project.village_name}, {project.district}, {project.state}</p>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {/* Progress Tracker */}

@@ -28,7 +28,7 @@ export default function MyVillages() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
@@ -38,15 +38,15 @@ export default function MyVillages() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center justify-between mb-8">
             <h1 className="font-heading text-3xl font-bold">My Villages</h1>
-            <Link to="/villages"><Button className="village-gradient text-white border-0"><MapPin className="w-4 h-4 mr-2" />Explore Villages</Button></Link>
+            <Link to="/villages"><Button className="brand-gradient text-white border-0"><MapPin className="w-4 h-4 mr-2" />Explore Villages</Button></Link>
           </div>
 
           {villages.length === 0 ? (
             <div className="bg-white rounded-2xl border border-border p-16 text-center">
-              <MapPin className="w-16 h-16 text-village/20 mx-auto mb-4" />
+              <MapPin className="w-16 h-16 text-primary/20 mx-auto mb-4" />
               <h2 className="font-heading text-xl font-bold mb-2">No Villages Followed</h2>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">Follow villages to track their development progress and receive updates directly on your dashboard.</p>
-              <Link to="/villages"><Button variant="outline" className="border-village text-village">Browse Villages</Button></Link>
+              <Link to="/villages"><Button variant="outline" className="border-primary text-primary">Browse Villages</Button></Link>
             </div>
           ) : (
             <div className="space-y-4">
@@ -55,7 +55,7 @@ export default function MyVillages() {
                   className="bg-white rounded-2xl border border-border p-5 hover:shadow-md transition-all">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-grow">
-                      <Link to={`/villages/${v.slug || v.id}`} className="font-heading font-bold text-lg hover:text-village transition-colors flex items-center gap-1">
+                      <Link to={`/villages/${v.slug || v.id}`} className="font-heading font-bold text-lg hover:text-primary transition-colors flex items-center gap-1">
                         {v.village_name} <ExternalLink className="w-3.5 h-3.5" />
                       </Link>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">

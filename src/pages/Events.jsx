@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Clock, ArrowRight, Filter } from 'lucide-react';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { Button } from '@/components/ui/button';
 
 const upcomingEvents = [
@@ -32,15 +33,17 @@ export default function Events() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="py-16 px-4" style={{ background: 'linear-gradient(135deg, #7C3AED, #4f46e5)' }}>
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Calendar className="w-12 h-12 mx-auto mb-4 opacity-70" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Events</h1>
-            <p className="text-white/80 max-w-xl mx-auto">Plantation drives, inaugurations, camps, summits — join the movement for rural development</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="py-16 px-4" style={{ background: 'linear-gradient(135deg, #7C3AED, #4f46e5)' }}>
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Calendar className="w-12 h-12 mx-auto mb-4 opacity-70" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Events</h1>
+              <p className="text-white/80 max-w-xl mx-auto">Plantation drives, inaugurations, camps, summits — join the movement for rural development</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         {/* Tabs */}

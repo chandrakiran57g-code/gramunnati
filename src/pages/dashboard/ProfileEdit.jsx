@@ -47,7 +47,7 @@ export default function ProfileEdit() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
@@ -55,7 +55,7 @@ export default function ProfileEdit() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Link to="/profile" className="flex items-center gap-1 text-muted-foreground hover:text-village text-sm mb-6 transition-colors">
+          <Link to="/profile" className="flex items-center gap-1 text-muted-foreground hover:text-primary text-sm mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to Profile
           </Link>
 
@@ -65,7 +65,7 @@ export default function ProfileEdit() {
             <form onSubmit={handleSave} className="space-y-5">
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-border">
                 <div className="relative">
-                  <div className="w-16 h-16 bg-village/10 rounded-2xl flex items-center justify-center text-2xl font-bold text-village">
+                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-2xl font-bold text-primary">
                     {user?.full_name?.charAt(0) || '?'}
                   </div>
                   <button type="button" className="absolute -bottom-1 -right-1 w-6 h-6 bg-school rounded-full flex items-center justify-center">
@@ -120,7 +120,7 @@ export default function ProfileEdit() {
                 <Textarea id="bio" value={form.bio || ''} onChange={e => setForm(f => ({...f, bio: e.target.value}))} className="mt-1 rounded-xl h-24" placeholder="Tell us a bit about yourself" />
               </div>
 
-              <Button type="submit" disabled={saving} className="w-full village-gradient text-white border-0 rounded-xl py-3 text-base">
+              <Button type="submit" disabled={saving} className="w-full brand-gradient text-white border-0 rounded-xl py-3 text-base">
                 <Save className="w-4 h-4 mr-2" />{saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save Changes'}
               </Button>
             </form>

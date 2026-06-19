@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const EMPTY = { title:'',slug:'',summary:'',content:'',featured_image:'',village_name:'',school_name:'',is_featured:false,status:'draft' };
 
@@ -25,18 +26,20 @@ export default function AdminStories() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="village-gradient text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Quote className="w-8 h-8"/>Success Stories</h1><p className="text-white/70 text-sm mt-1">{items.length} stories</p></div>
-        <Button onClick={()=>{setEditing(null);setForm(EMPTY);setShowForm(true);}} className="bg-white text-village hover:bg-white/90"><Plus className="w-4 h-4 mr-2"/>New Story</Button>
-      </div></div>
+      <HeroScrollSection size="compact">
+        <div className="brand-gradient text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Quote className="w-8 h-8"/>Success Stories</h1><p className="text-white/70 text-sm mt-1">{items.length} stories</p></div>
+          <Button onClick={()=>{setEditing(null);setForm(EMPTY);setShowForm(true);}} className="bg-white text-primary hover:bg-white/90"><Plus className="w-4 h-4 mr-2"/>New Story</Button>
+        </div></div>
+      </HeroScrollSection>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {loading?<div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-village/20 border-t-village rounded-full animate-spin"/></div>
+        {loading?<div className="flex justify-center py-20"><div className="w-10 h-10 border-4 border-primary/20 border-t-primary rounded-full animate-spin"/></div>
         :items.length===0?<div className="text-center py-20"><Quote className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4"/><p className="text-muted-foreground">No stories yet.</p></div>
         :<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{items.map((item,i)=>
           <motion.div key={item.id} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:i*0.05}} className="bg-white rounded-2xl border border-border overflow-hidden hover:shadow-md">
             {item.featured_image&&<img src={item.featured_image} alt="" className="w-full h-40 object-cover"/>}
             <div className="p-5">
-              <div className="flex justify-between items-start mb-2"><h3 className="font-semibold line-clamp-1">{item.title}</h3><div className="flex gap-1"><button onClick={()=>{setEditing(item);setForm(item);setShowForm(true);}} className="p-1 rounded hover:bg-village/10 text-village"><Pencil className="w-3.5 h-3.5"/></button><button onClick={()=>del(item.id)} className="p-1 rounded hover:bg-red-50 text-red-500"><Trash2 className="w-3.5 h-3.5"/></button></div></div>
+              <div className="flex justify-between items-start mb-2"><h3 className="font-semibold line-clamp-1">{item.title}</h3><div className="flex gap-1"><button onClick={()=>{setEditing(item);setForm(item);setShowForm(true);}} className="p-1 rounded hover:bg-primary/10 text-primary"><Pencil className="w-3.5 h-3.5"/></button><button onClick={()=>del(item.id)} className="p-1 rounded hover:bg-red-50 text-red-500"><Trash2 className="w-3.5 h-3.5"/></button></div></div>
               <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{item.summary||'No summary'}</p>
               <div className="flex items-center gap-2"><span className={`text-xs px-2 py-0.5 rounded-full ${item.status==='published'?'bg-green-100 text-green-700':'bg-yellow-100 text-yellow-700'}`}>{item.status||'draft'}</span>{item.is_featured&&<span className="text-xs px-2 py-0.5 rounded-full bg-donation/10 text-donation">Featured</span>}</div>
             </div>
@@ -55,7 +58,7 @@ export default function AdminStories() {
             <div><Label>Status</Label><select value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value}))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="draft">Draft</option><option value="published">Published</option></select></div>
             <div className="flex items-center gap-2 pt-6"><Switch checked={form.is_featured} onCheckedChange={v=>setForm(f=>({...f,is_featured:v}))}/><span className="text-sm">Featured</span></div>
           </div>
-          <div className="flex justify-end gap-3 pt-4 border-t"><Button type="button" variant="outline" onClick={()=>setShowForm(false)}>Cancel</Button><Button type="submit" className="village-gradient text-white border-0"><Check className="w-4 h-4 mr-2"/>{editing?'Update':'Create'}</Button></div>
+          <div className="flex justify-end gap-3 pt-4 border-t"><Button type="button" variant="outline" onClick={()=>setShowForm(false)}>Cancel</Button><Button type="submit" className="brand-gradient text-white border-0"><Check className="w-4 h-4 mr-2"/>{editing?'Update':'Create'}</Button></div>
         </form>
       </div></div>}
     </div>

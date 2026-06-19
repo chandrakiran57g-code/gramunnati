@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { MapPin, Users, BookOpen, Heart, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import SafeImage from '@/components/shared/SafeImage';
 
 const typeColors = {
-  government: 'bg-village/10 text-village',
-  private: 'bg-school/10 text-school',
-  aided: 'bg-purple-100 text-purple-700',
-  model: 'bg-donation/10 text-donation',
+  government: 'bg-service-village-tint text-service-village',
+  private: 'bg-service-school-tint text-service-school',
+  aided: 'bg-service-skill-tint text-service-skill',
+  model: 'bg-service-agriculture-tint text-service-agriculture',
 };
 
 const typeLabel = {
@@ -31,9 +32,11 @@ export default function SchoolCard({ school, index = 0 }) {
     >
       {/* Image */}
       <div className="relative h-44 overflow-hidden">
-        <img
-          src={school.cover_image || `https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80`}
+        <SafeImage
+          src={school.cover_image}
           alt={school.school_name}
+          fallbackIndex={index + 2}
+          width={600}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -62,14 +65,14 @@ export default function SchoolCard({ school, index = 0 }) {
               <Users className="w-3 h-3" />Students
             </div>
           </div>
-          <div className="text-center bg-village/5 rounded-lg py-2">
-            <div className="font-bold text-sm text-village">{school.teacher_count || 0}</div>
+          <div className="text-center bg-service-school-tint rounded-lg py-2">
+            <div className="font-bold text-sm text-service-school">{school.teacher_count || 0}</div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-0.5 mt-0.5">
               <GraduationCap className="w-3 h-3" />Teachers
             </div>
           </div>
-          <div className="text-center bg-projects/5 rounded-lg py-2">
-            <div className="font-bold text-sm text-projects">{school.classroom_count || 0}</div>
+          <div className="text-center bg-service-skill-tint rounded-lg py-2">
+            <div className="font-bold text-sm text-service-skill">{school.classroom_count || 0}</div>
             <div className="text-xs text-muted-foreground flex items-center justify-center gap-0.5 mt-0.5">
               <BookOpen className="w-3 h-3" />Rooms
             </div>
@@ -83,7 +86,7 @@ export default function SchoolCard({ school, index = 0 }) {
             </Button>
           </Link>
           <Link to={`/donate?type=school&school_id=${school.id}`}>
-            <Button size="sm" className="bg-donation hover:bg-donation-light text-white border-0 text-xs px-3">
+            <Button size="sm" className="donation-gradient text-white border-0 text-xs px-3">
               <Heart className="w-3 h-3 mr-1" />Donate
             </Button>
           </Link>

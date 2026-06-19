@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import toast from 'react-hot-toast';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const CATEGORIES = ['Village Development','School Development','Tree Plantation','Water Conservation','Agriculture','Healthcare','Skill Development','Women SHG','Infrastructure','Employment Generation'];
 const STATUSES = ['upcoming','active','completed','cancelled'];
@@ -33,10 +34,12 @@ export default function AdminProjects() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="bg-projects text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
-        <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Briefcase className="w-8 h-8"/>Project Management</h1><p className="text-white/70 text-sm mt-1">{items.length} projects</p></div>
-        <Button onClick={add} className="bg-white text-projects hover:bg-white/90"><Plus className="w-4 h-4 mr-2"/>New Project</Button>
-      </div></div>
+      <HeroScrollSection size="compact">
+        <div className="bg-projects text-white py-8 px-6"><div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div><h1 className="font-heading text-3xl font-bold flex items-center gap-3"><Briefcase className="w-8 h-8"/>Project Management</h1><p className="text-white/70 text-sm mt-1">{items.length} projects</p></div>
+          <Button onClick={add} className="bg-white text-projects hover:bg-white/90"><Plus className="w-4 h-4 mr-2"/>New Project</Button>
+        </div></div>
+      </HeroScrollSection>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-wrap gap-4 mb-6">
           <div className="flex-1 min-w-[200px] relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"/><Input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="pl-10 rounded-xl"/></div>

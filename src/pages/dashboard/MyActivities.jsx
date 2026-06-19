@@ -37,7 +37,7 @@ export default function MyActivities() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
@@ -59,12 +59,12 @@ export default function MyActivities() {
             </div>
           ) : (
             <div className="relative">
-              <div className="absolute left-5 top-2 bottom-2 w-0.5 bg-village/15" />
+              <div className="absolute left-5 top-2 bottom-2 w-0.5 bg-primary/15" />
               <div className="space-y-5 pl-14">
                 {activities.map((a, i) => (
                   <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}
                     className="relative bg-white rounded-xl border border-border p-4">
-                    <div className="absolute -left-8 w-8 h-8 bg-village/10 rounded-full flex items-center justify-center text-sm border-2 border-white">
+                    <div className="absolute -left-8 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm border-2 border-white">
                       {a.icon}
                     </div>
                     <div className="font-medium text-sm">{a.title}</div>

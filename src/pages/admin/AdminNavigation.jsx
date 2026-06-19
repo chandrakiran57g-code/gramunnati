@@ -54,7 +54,7 @@ export default function AdminNavigation() {
     <div className="p-6 max-w-5xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-          <Navigation className="w-6 h-6 text-village" /> Navigation Manager
+          <Navigation className="w-6 h-6 text-primary" /> Navigation Manager
         </h1>
         <p className="text-muted-foreground mt-1">Control what appears in the website navbar and their order</p>
       </div>
@@ -82,7 +82,7 @@ export default function AdminNavigation() {
                 <div className="divide-y divide-border">
                   {cmsPages.length === 0 ? (
                     <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-                      No CMS pages yet. <a href="/administrator/pages" className="text-village font-medium">Create pages →</a>
+                      No CMS pages yet. <a href="/administrator/pages" className="text-primary font-medium">Create pages →</a>
                     </div>
                   ) : (
                     cmsPages.map((page, pi) => (
@@ -110,7 +110,7 @@ export default function AdminNavigation() {
                 <div className="divide-y divide-border">
                   {teamGroups.length === 0 ? (
                     <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-                      No team groups yet. <a href="/administrator/teams" className="text-village font-medium">Create teams →</a>
+                      No team groups yet. <a href="/administrator/teams" className="text-primary font-medium">Create teams →</a>
                     </div>
                   ) : (
                     teamGroups.map((group, gi) => (
@@ -134,7 +134,7 @@ export default function AdminNavigation() {
                 <div className="divide-y divide-border">
                   {programs.length === 0 ? (
                     <div className="px-5 py-8 text-center text-sm text-muted-foreground">
-                      No programs yet. <a href="/administrator/programs" className="text-village font-medium">Add programs →</a>
+                      No programs yet. <a href="/administrator/programs" className="text-primary font-medium">Add programs →</a>
                     </div>
                   ) : (
                     programs.map((prog, pi) => (

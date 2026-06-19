@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Calendar, ChevronLeft, Tag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function NewsDetail() {
   const { slug } = useParams();
@@ -27,16 +28,18 @@ export default function NewsDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative h-64 sm:h-96 overflow-hidden">
-        <img src={article.featured_image || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80'} alt={article.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6">
-          <Link to="/news" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to News</Link>
-          {article.category && <span className="bg-school text-white text-xs px-3 py-1 rounded-full font-medium mb-3 inline-block">{article.category}</span>}
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">{article.title}</h1>
-          {article.published_at && <div className="text-white/60 text-sm flex items-center gap-1 mt-2"><Calendar className="w-3.5 h-3.5" />{article.published_at}</div>}
+      <HeroScrollSection size="detail">
+        <div className="relative h-64 sm:h-96 overflow-hidden">
+          <img src={article.featured_image || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80'} alt={article.title} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <Link to="/news" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to News</Link>
+            {article.category && <span className="bg-school text-white text-xs px-3 py-1 rounded-full font-medium mb-3 inline-block">{article.category}</span>}
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white">{article.title}</h1>
+            {article.published_at && <div className="text-white/60 text-sm flex items-center gap-1 mt-2"><Calendar className="w-3.5 h-3.5" />{article.published_at}</div>}
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>

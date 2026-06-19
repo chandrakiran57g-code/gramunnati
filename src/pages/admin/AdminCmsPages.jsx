@@ -64,11 +64,11 @@ export default function AdminCmsPages() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <FileText className="w-6 h-6 text-village" /> CMS Pages
+            <FileText className="w-6 h-6 text-primary" /> CMS Pages
           </h1>
           <p className="text-muted-foreground mt-1">Manage dynamic content pages — these appear in the About Us dropdown</p>
         </div>
-        <Button onClick={handleNew} className="village-gradient text-white border-0">
+        <Button onClick={handleNew} className="brand-gradient text-white border-0">
           <Plus className="w-4 h-4 mr-2" /> New Page
         </Button>
       </div>
@@ -122,7 +122,7 @@ export default function AdminCmsPages() {
           </div>
         </div>
         <div className="flex gap-3">
-          <Button onClick={handleSave} disabled={saving} className="village-gradient text-white border-0">
+          <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
             {editing ? 'Update Page' : 'Create Page'}
           </Button>

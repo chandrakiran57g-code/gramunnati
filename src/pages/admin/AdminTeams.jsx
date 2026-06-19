@@ -79,7 +79,7 @@ export default function AdminTeams() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
-            <Users className="w-6 h-6 text-village" /> Teams Management
+            <Users className="w-6 h-6 text-primary" /> Teams Management
           </h1>
           <p className="text-muted-foreground mt-1">Manage team groups and members — these appear in the Teams dropdown</p>
         </div>
@@ -120,7 +120,7 @@ export default function AdminTeams() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <Button onClick={handleSave} disabled={saving} className="village-gradient text-white border-0">
+                <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
                   {editingMember ? 'Update' : 'Add Member'}
                 </Button>
@@ -158,7 +158,7 @@ export default function AdminTeams() {
                       groupMembers.map((m) => (
                         <div key={m.id} className="px-5 py-3 flex items-center justify-between hover:bg-muted/20 transition-colors">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-village/10 flex items-center justify-center text-xs font-bold text-village">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
                               {m.full_name?.charAt(0)}
                             </div>
                             <div>

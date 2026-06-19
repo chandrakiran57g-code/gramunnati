@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const SKILLS = ['Teaching', 'Agriculture', 'Engineering', 'Healthcare', 'IT', 'Environment', 'Construction', 'Social Work', 'Legal', 'Finance', 'Marketing', 'Photography'];
 const STATES = ['Andhra Pradesh','Telangana','Karnataka','Tamil Nadu','Maharashtra','Gujarat','Rajasthan','Uttar Pradesh','Madhya Pradesh','West Bengal','Bihar','Odisha','Kerala','Punjab','Haryana','Delhi','Other'];
@@ -48,7 +49,7 @@ export default function Volunteer() {
           </div>
           <h2 className="font-heading text-3xl font-bold mb-3">Welcome, Volunteer! 🎉</h2>
           <p className="text-muted-foreground mb-6">Thank you for joining our mission. We'll match you with projects that fit your skills and availability.</p>
-          <Button onClick={() => setSubmitted(false)} variant="outline" className="border-village text-village hover:bg-village hover:text-white">Register Another</Button>
+          <Button onClick={() => setSubmitted(false)} variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">Register Another</Button>
         </motion.div>
       </div>
     );
@@ -56,15 +57,17 @@ export default function Volunteer() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div style={{ background: 'linear-gradient(135deg, #22C55E, #16a34a)' }} className="py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-80" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Become a Volunteer</h1>
-            <p className="text-white/80 max-w-xl mx-auto">Join thousands of volunteers transforming rural India. Your skills, time, and passion can change lives.</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div style={{ background: 'linear-gradient(135deg, #22C55E, #16a34a)' }} className="py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Users className="w-12 h-12 mx-auto mb-4 opacity-80" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Become a Volunteer</h1>
+              <p className="text-white/80 max-w-xl mx-auto">Join thousands of volunteers transforming rural India. Your skills, time, and passion can change lives.</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       {/* Benefits */}
       <section className="py-16 bg-white">

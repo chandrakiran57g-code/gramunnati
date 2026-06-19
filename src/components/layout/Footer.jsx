@@ -6,7 +6,7 @@ const LOGO_URL = "https://media.base44.com/images/public/user_6a19a4df98ac03e9b7
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-brown-900 text-cream-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
@@ -15,13 +15,13 @@ export default function Footer() {
               <img src={LOGO_URL} alt="GramUnnati" className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
               <div>
                 <div className="font-heading font-bold text-xl text-white">GramUnnati</div>
-                <div className="text-xs text-gray-400">Village Development</div>
+                <div className="text-xs text-brown-400">Village Development</div>
               </div>
             </div>
-            <p className="text-sm text-gray-400 leading-relaxed mb-4">
+            <p className="text-sm text-brown-400 leading-relaxed mb-4">
               "Our Village – Our Responsibility – Our Development"
             </p>
-            <p className="text-xs text-gray-500 italic">
+            <p className="text-xs text-brown-400 italic">
               "మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి"
             </p>
             <div className="flex gap-3 mt-5">
@@ -31,7 +31,7 @@ export default function Footer() {
               { IconComp: Instagram, label: 'Instagram' },
               { IconComp: Youtube, label: 'YouTube' },
             ].map(({ IconComp, label }) => (
-                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-village transition-colors">
+                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
                   <IconComp className="w-4 h-4" />
                 </a>
               ))}
@@ -55,7 +55,7 @@ export default function Footer() {
                 { label: 'Compare Villages', path: '/compare' },
               ].map(item => (
                 <li key={item.path}>
-                  <Link to={item.path} className="hover:text-village-light transition-colors">{item.label}</Link>
+                  <Link to={item.path} className="hover:text-cream-100 transition-colors">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -80,7 +80,7 @@ export default function Footer() {
                 { label: 'FAQs', path: '/faqs' },
               ].map(item => (
                 <li key={item.path}>
-                  <Link to={item.path} className="hover:text-village-light transition-colors">{item.label}</Link>
+                  <Link to={item.path} className="hover:text-cream-100 transition-colors">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -91,15 +91,15 @@ export default function Footer() {
             <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Contact Us</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-village-light mt-0.5 flex-shrink-0" />
-                <span className="text-gray-400">India — Nationwide Coverage</span>
+                <MapPin className="w-4 h-4 text-cream-200 mt-0.5 flex-shrink-0" />
+                <span className="text-brown-400">India — Nationwide Coverage</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-village-light flex-shrink-0" />
+                <Mail className="w-4 h-4 text-cream-200 flex-shrink-0" />
                 <a href="mailto:contact@GramUnnati.in" className="hover:text-white transition-colors">contact@GramUnnati.in</a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-village-light flex-shrink-0" />
+                <Phone className="w-4 h-4 text-cream-200 flex-shrink-0" />
                 <a href="tel:+919999999999" className="hover:text-white transition-colors">+91 99999 99999</a>
               </li>
             </ul>
@@ -114,7 +114,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brown-400">
           <p>© {new Date().getFullYear()} GramUnnati — Village Development & School Empowerment Platform. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Made with</span>

@@ -8,9 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const schoolTypeLabel = { government: 'Government', private: 'Private', aided: 'Aided', model: 'Model School' };
-const schoolTypeColor = { government: 'bg-village/10 text-village', private: 'bg-school/10 text-school', aided: 'bg-purple-100 text-purple-700', model: 'bg-donation/10 text-donation' };
+const schoolTypeColor = { government: 'bg-primary/10 text-primary', private: 'bg-school/10 text-school', aided: 'bg-purple-100 text-purple-700', model: 'bg-donation/10 text-donation' };
 
 export default function SchoolDetail() {
   const { slug } = useParams();
@@ -53,18 +54,20 @@ export default function SchoolDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative h-64 sm:h-80 overflow-hidden">
-        <img src={school.cover_image || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80'} alt={school.school_name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6">
-          <Link to="/schools" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Schools</Link>
-          <div className="flex flex-wrap gap-2 mb-2">
-            <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${schoolTypeColor[school.school_type]}`}>{schoolTypeLabel[school.school_type]}</span>
+      <HeroScrollSection size="detail">
+        <div className="relative h-64 sm:h-80 overflow-hidden">
+          <img src={school.cover_image || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80'} alt={school.school_name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <Link to="/schools" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Schools</Link>
+            <div className="flex flex-wrap gap-2 mb-2">
+              <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${schoolTypeColor[school.school_type]}`}>{schoolTypeLabel[school.school_type]}</span>
+            </div>
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">{school.school_name}</h1>
+            <div className="text-white/80 text-sm flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{school.village_name}, {school.district}, {school.state}</div>
           </div>
-          <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">{school.school_name}</h1>
-          <div className="text-white/80 text-sm flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{school.village_name}, {school.district}, {school.state}</div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {/* Quick stats */}
@@ -74,7 +77,7 @@ export default function SchoolDetail() {
             <div className="text-xs text-muted-foreground mt-0.5">Students</div>
           </div>
           <div className="bg-white rounded-xl border border-border p-4 text-center">
-            <div className="text-2xl font-bold text-village">{school.teacher_count || 0}</div>
+            <div className="text-2xl font-bold text-primary">{school.teacher_count || 0}</div>
             <div className="text-xs text-muted-foreground mt-0.5">Teachers</div>
           </div>
           <div className="bg-white rounded-xl border border-border p-4 text-center">
@@ -184,7 +187,7 @@ export default function SchoolDetail() {
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { label: 'Total Students', value: school.student_count?.toLocaleString('en-IN') || '—', color: 'text-school' },
-                  { label: 'Teaching Staff', value: school.teacher_count || '—', color: 'text-village' },
+                  { label: 'Teaching Staff', value: school.teacher_count || '—', color: 'text-primary' },
                   { label: 'Classrooms', value: school.classroom_count || '—', color: 'text-projects' },
                 ].map(item => (
                   <div key={item.label} className="text-center bg-muted/50 rounded-xl p-5">

@@ -22,7 +22,7 @@ export default function FAQs() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="village-gradient py-16 px-4">
+      <div className="brand-gradient py-16 px-4">
         <div className="max-w-4xl mx-auto text-center text-white">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <HelpCircle className="w-12 h-12 mx-auto mb-4 opacity-70" />
@@ -38,7 +38,7 @@ export default function FAQs() {
             <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.04 }}
               className="bg-white rounded-2xl border border-border overflow-hidden">
               <button onClick={() => setOpen(open === i ? null : i)}
-                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-village/3 transition-colors">
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-primary/3 transition-colors">
                 <span className="font-semibold text-sm pr-4">{faq.q}</span>
                 <ChevronDown className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${open === i ? 'rotate-180' : ''}`} />
               </button>
@@ -55,10 +55,10 @@ export default function FAQs() {
           ))}
         </div>
 
-        <div className="mt-12 text-center bg-village/5 rounded-2xl p-8 border border-village/10">
+        <div className="mt-12 text-center bg-primary/5 rounded-2xl p-8 border border-primary/10">
           <h3 className="font-heading text-xl font-bold mb-2">Still have questions?</h3>
           <p className="text-muted-foreground text-sm mb-4">Our team is happy to help. Reach out to us directly.</p>
-          <a href="/contact" className="inline-block bg-village text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-village-light transition-colors">Contact Us</a>
+          <a href="/contact" className="inline-block bg-primary text-white px-6 py-2.5 rounded-xl font-semibold text-sm hover:bg-brown-800 transition-colors">Contact Us</a>
         </div>
       </div>
     </div>

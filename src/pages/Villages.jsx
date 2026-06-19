@@ -6,6 +6,7 @@ import { Search, Filter, MapPin, Grid, Map } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const STATES = ['Andhra Pradesh','Telangana','Karnataka','Tamil Nadu','Maharashtra','Gujarat','Rajasthan','Uttar Pradesh','Madhya Pradesh','West Bengal','Bihar','Odisha','Kerala','Punjab','Haryana','Delhi','Other'];
 
@@ -41,19 +42,21 @@ export default function Villages() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="village-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
-              <MapPin className="w-4 h-4" /> Villages Directory
-            </div>
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Explore Villages Across India</h1>
-            <p className="text-white/80 max-w-2xl mx-auto">
-              Every village deserves a digital identity. Discover, support, and connect with rural communities building a better tomorrow.
-            </p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="brand-gradient py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
+                <MapPin className="w-4 h-4" /> Villages Directory
+              </div>
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Explore Villages Across India</h1>
+              <p className="text-white/80 max-w-2xl mx-auto">
+                Every village deserves a digital identity. Discover, support, and connect with rural communities building a better tomorrow.
+              </p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       {/* Filters */}
       <div className="bg-white border-b border-border sticky top-[88px] z-30 shadow-sm">

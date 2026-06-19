@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { MessageSquare, Mail, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const statusColor = { new: 'bg-blue-100 text-blue-700', read: 'bg-yellow-100 text-yellow-700', resolved: 'bg-green-100 text-green-700' };
 
@@ -32,15 +33,17 @@ export default function AdminMessages() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="school-gradient py-8 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">Contact Messages</h1>
-            <p className="text-white/70 text-sm mt-1">{messages.filter(m => m.status === 'new').length} new messages</p>
+      <HeroScrollSection size="compact">
+        <div className="school-gradient py-8 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">Contact Messages</h1>
+              <p className="text-white/70 text-sm mt-1">{messages.filter(m => m.status === 'new').length} new messages</p>
+            </div>
+            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
           </div>
-          <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="flex gap-2 mb-6">

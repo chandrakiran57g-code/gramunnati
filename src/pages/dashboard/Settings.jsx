@@ -34,7 +34,7 @@ export default function Settings() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
@@ -47,7 +47,7 @@ export default function Settings() {
           {/* Profile Section */}
           <div className="bg-white rounded-2xl border border-border p-6 mb-4">
             <div className="flex items-center gap-3 mb-4">
-              <User className="w-5 h-5 text-village" />
+              <User className="w-5 h-5 text-primary" />
               <h2 className="font-heading font-bold text-lg">Profile</h2>
             </div>
             <Link to="/profile/edit">
@@ -78,7 +78,7 @@ export default function Settings() {
             </div>
             <div className="flex gap-2">
               {['English', 'తెలుగు', 'हिंदी'].map(lang => (
-                <button key={lang} className={`px-4 py-2 rounded-lg text-sm border transition-all ${lang === 'English' ? 'bg-village text-white border-village' : 'bg-white border-border hover:border-village text-muted-foreground'}`}>
+                <button key={lang} className={`px-4 py-2 rounded-lg text-sm border transition-all ${lang === 'English' ? 'bg-primary text-white border-primary' : 'bg-white border-border hover:border-primary text-muted-foreground'}`}>
                   {lang}
                 </button>
               ))}

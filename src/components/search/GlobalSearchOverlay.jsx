@@ -71,8 +71,8 @@ export default function GlobalSearchOverlay() {
                   <div className="text-xs font-semibold text-muted-foreground px-3 py-1.5 uppercase">Villages</div>
                   {results.villages.map(v => (
                     <button key={v.id} onClick={() => { setOpen(false); navigate(`/villages/${v.slug || v.id}`); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-village/5 text-left transition-colors">
-                      <MapPin className="w-4 h-4 text-village flex-shrink-0" />
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-primary/5 text-left transition-colors">
+                      <MapPin className="w-4 h-4 text-primary flex-shrink-0" />
                       <div><div className="text-sm font-medium">{v.village_name}</div><div className="text-xs text-muted-foreground">{v.district}, {v.state}</div></div>
                     </button>
                   ))}
@@ -116,5 +116,5 @@ export default function GlobalSearchOverlay() {
 
 function LinkButton({ to, onClick, children }) {
   const navigate = useNavigate();
-  return <button type="button" onClick={() => { onClick?.(); navigate(to); }} className="text-village font-medium hover:underline">{children}</button>;
+  return <button type="button" onClick={() => { onClick?.(); navigate(to); }} className="text-primary font-medium hover:underline">{children}</button>;
 }

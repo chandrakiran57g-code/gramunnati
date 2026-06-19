@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function VillageDetail() {
   const { slug } = useParams();
@@ -25,7 +26,7 @@ export default function VillageDetail() {
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
-      <div className="w-10 h-10 border-4 border-village/30 border-t-village rounded-full animate-spin" />
+      <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
   );
 
@@ -35,7 +36,7 @@ export default function VillageDetail() {
         <div className="text-6xl mb-4">🏘️</div>
         <h2 className="font-heading text-2xl font-bold mb-2">Village Not Found</h2>
         <p className="text-muted-foreground mb-6">This village hasn't been registered on the platform yet.</p>
-        <Link to="/villages"><Button className="village-gradient text-white border-0">Browse Villages</Button></Link>
+        <Link to="/villages"><Button className="brand-gradient text-white border-0">Browse Villages</Button></Link>
       </div>
     </div>
   );
@@ -60,21 +61,23 @@ export default function VillageDetail() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
-      <div className="relative h-72 sm:h-96 overflow-hidden">
-        <img src={village.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={village.village_name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-        <div className="absolute bottom-6 left-6 right-6">
-          <Link to="/villages" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3 transition-colors">
-            <ChevronLeft className="w-4 h-4" /> Back to Villages
-          </Link>
-          <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{village.village_name}</h1>
-          <div className="flex flex-wrap items-center gap-3 text-white/80 text-sm">
-            <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{village.district}, {village.mandal}</span>
-            <span className="flex items-center gap-1">📍 {village.state}</span>
-            {village.pincode && <span>📮 {village.pincode}</span>}
+      <HeroScrollSection size="detail">
+        <div className="relative h-72 sm:h-96 overflow-hidden">
+          <img src={village.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={village.village_name} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+          <div className="absolute bottom-6 left-6 right-6">
+            <Link to="/villages" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3 transition-colors">
+              <ChevronLeft className="w-4 h-4" /> Back to Villages
+            </Link>
+            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{village.village_name}</h1>
+            <div className="flex flex-wrap items-center gap-3 text-white/80 text-sm">
+              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{village.district}, {village.mandal}</span>
+              <span className="flex items-center gap-1">📍 {village.state}</span>
+              {village.pincode && <span>📮 {village.pincode}</span>}
+            </div>
           </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Quick stats */}
@@ -94,7 +97,7 @@ export default function VillageDetail() {
               <Heart className="w-4 h-4 mr-2" /> Donate to this Village
             </Button>
           </Link>
-          <Button variant="outline" className="border-village text-village hover:bg-village hover:text-white rounded-xl">
+          <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white rounded-xl">
             <Star className="w-4 h-4 mr-1.5" /> Follow Village
           </Button>
           <Link to={`/compare`}><Button variant="outline" className="border-projects text-projects hover:bg-projects hover:text-white rounded-xl">Compare</Button></Link>
@@ -159,7 +162,7 @@ export default function VillageDetail() {
                 <h3 className="font-heading font-bold text-lg mb-4">Population Statistics</h3>
                 {village.population > 0 && (
                   <>
-                    <div className="text-3xl font-bold text-village mb-1">{village.population.toLocaleString('en-IN')}</div>
+                    <div className="text-3xl font-bold text-primary mb-1">{village.population.toLocaleString('en-IN')}</div>
                     <div className="text-sm text-muted-foreground mb-4">Total Population</div>
                     {village.male_population > 0 && (
                       <div className="space-y-2">
@@ -171,8 +174,8 @@ export default function VillageDetail() {
                     )}
                     {village.literacy_rate && (
                       <div className="mt-4 pt-4 border-t border-border">
-                        <div className="flex justify-between text-sm mb-1"><span className="text-muted-foreground">Literacy Rate</span><span className="font-bold text-village">{village.literacy_rate}%</span></div>
-                        <Progress value={village.literacy_rate} className="h-2 [&>div]:bg-village" />
+                        <div className="flex justify-between text-sm mb-1"><span className="text-muted-foreground">Literacy Rate</span><span className="font-bold text-primary">{village.literacy_rate}%</span></div>
+                        <Progress value={village.literacy_rate} className="h-2 [&>div]:bg-primary" />
                       </div>
                     )}
                   </>
@@ -224,7 +227,7 @@ export default function VillageDetail() {
             <div className="bg-white rounded-xl border border-border p-6">
               <h3 className="font-heading font-bold text-lg mb-6">Village Development Timeline</h3>
               <div className="relative">
-                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-village/20" />
+                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-primary/20" />
                 <div className="space-y-6 pl-12">
                   {[
                     { date: 'Jun 2026', title: 'Solar Street Lights Installed', desc: '20 solar-powered street lights installed across main roads of the village.', type: 'infrastructure', icon: '💡' },
@@ -235,13 +238,13 @@ export default function VillageDetail() {
                     { date: 'Jan 2026', title: 'Village Registered on GramUnnati', desc: `${village.village_name} was officially registered on the GramUnnati digital platform.`, type: 'milestone', icon: '🏘️' },
                   ].map((event, i) => (
                     <div key={i} className="relative">
-                      <div className="absolute -left-8 w-8 h-8 bg-village/10 rounded-full flex items-center justify-center text-sm border-2 border-white">
+                      <div className="absolute -left-8 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm border-2 border-white">
                         {event.icon}
                       </div>
                       <div className="bg-muted/30 rounded-xl p-4">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-xs font-semibold text-village">{event.date}</span>
-                          <span className="text-xs bg-village/10 text-village px-2 py-0.5 rounded-full capitalize">{event.type}</span>
+                          <span className="text-xs font-semibold text-primary">{event.date}</span>
+                          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full capitalize">{event.type}</span>
                         </div>
                         <h4 className="font-semibold text-sm mb-1">{event.title}</h4>
                         <p className="text-xs text-muted-foreground leading-relaxed">{event.desc}</p>

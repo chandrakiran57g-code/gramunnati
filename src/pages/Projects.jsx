@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const CATEGORIES = ['Village Development','School Development','Tree Plantation','Water Conservation','Agriculture','Healthcare','Skill Development','Women SHG','Infrastructure','Employment Generation'];
 const STATUSES = ['upcoming', 'active', 'completed', 'cancelled'];
@@ -43,17 +44,19 @@ export default function Projects() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div style={{ background: 'linear-gradient(135deg, #7C3AED, #9333EA)' }} className="py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
-              <FolderOpen className="w-4 h-4" /> Development Projects
-            </div>
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Development Projects</h1>
-            <p className="text-white/80 max-w-2xl mx-auto">Every project is a step towards a better rural India. Support the ones that matter to you.</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div style={{ background: 'linear-gradient(135deg, #7C3AED, #9333EA)' }} className="py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
+                <FolderOpen className="w-4 h-4" /> Development Projects
+              </div>
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Development Projects</h1>
+              <p className="text-white/80 max-w-2xl mx-auto">Every project is a step towards a better rural India. Support the ones that matter to you.</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="bg-white border-b border-border sticky top-[88px] z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-3 flex-wrap">
@@ -92,8 +95,8 @@ export default function Projects() {
             <Filter className="w-4 h-4" /> {filtered.length} projects
           </div>
           <div className="flex border border-border rounded-lg overflow-hidden">
-            <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-village text-white' : 'bg-white text-muted-foreground hover:bg-muted'}`}><LayoutGrid className="w-4 h-4" /></button>
-            <button onClick={() => setViewMode('kanban')} className={`p-2 ${viewMode === 'kanban' ? 'bg-village text-white' : 'bg-white text-muted-foreground hover:bg-muted'}`}><Columns className="w-4 h-4" /></button>
+            <button onClick={() => setViewMode('grid')} className={`p-2 ${viewMode === 'grid' ? 'bg-primary text-white' : 'bg-white text-muted-foreground hover:bg-muted'}`}><LayoutGrid className="w-4 h-4" /></button>
+            <button onClick={() => setViewMode('kanban')} className={`p-2 ${viewMode === 'kanban' ? 'bg-primary text-white' : 'bg-white text-muted-foreground hover:bg-muted'}`}><Columns className="w-4 h-4" /></button>
           </div>
         </div>
       </div>
@@ -118,7 +121,7 @@ export default function Projects() {
                         {p.budget_amount > 0 && (
                           <div>
                             <div className="flex justify-between text-xs mb-0.5"><span>₹{p.raised_amount?.toLocaleString('en-IN') || 0}</span><span>{Math.round((p.raised_amount || 0) / p.budget_amount * 100)}%</span></div>
-                            <div className="w-full bg-muted rounded-full h-1"><div className="bg-village h-1 rounded-full" style={{ width: `${Math.min(100, Math.round((p.raised_amount || 0) / p.budget_amount * 100))}%` }} /></div>
+                            <div className="w-full bg-muted rounded-full h-1"><div className="bg-primary h-1 rounded-full" style={{ width: `${Math.min(100, Math.round((p.raised_amount || 0) / p.budget_amount * 100))}%` }} /></div>
                           </div>
                         )}
                       </Link>

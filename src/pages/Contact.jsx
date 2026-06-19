@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', mobile: '', subject: '', message: '' });
@@ -22,14 +23,16 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="village-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Contact Us</h1>
-            <p className="text-white/80 max-w-xl mx-auto">Have questions about villages, schools, or projects? We'd love to hear from you.</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="brand-gradient py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Contact Us</h1>
+              <p className="text-white/80 max-w-xl mx-auto">Have questions about villages, schools, or projects? We'd love to hear from you.</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid lg:grid-cols-5 gap-8">
@@ -42,8 +45,8 @@ export default function Contact() {
                 { icon: Phone, title: 'Phone', value: '+91 99999 99999' },
               ].map((item, i) => (
                 <div key={item.title} className="flex items-start gap-4 bg-white rounded-xl border border-border p-5">
-                  <div className="w-10 h-10 bg-village/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <item.icon className="w-5 h-5 text-village" />
+                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <item.icon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-foreground">{item.title}</div>
@@ -52,8 +55,8 @@ export default function Contact() {
                 </div>
               ))}
 
-              <div className="bg-village/5 border border-village/20 rounded-xl p-5">
-                <h4 className="font-semibold text-village mb-2">Village Representative?</h4>
+              <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
+                <h4 className="font-semibold text-primary mb-2">Village Representative?</h4>
                 <p className="text-sm text-muted-foreground">If you want to register your village or school on the platform, contact us directly and we'll guide you through the process.</p>
               </div>
             </motion.div>
@@ -96,7 +99,7 @@ export default function Contact() {
                     <Label htmlFor="message">Message *</Label>
                     <Textarea id="message" value={form.message} onChange={e => setForm(f => ({...f, message: e.target.value}))} placeholder="How can we help you?" className="mt-1 rounded-xl h-32" required />
                   </div>
-                  <Button type="submit" disabled={loading} className="w-full village-gradient text-white border-0 rounded-xl py-3 font-semibold hover:opacity-90">
+                  <Button type="submit" disabled={loading} className="w-full brand-gradient text-white border-0 rounded-xl py-3 font-semibold hover:opacity-90">
                     <Send className="w-4 h-4 mr-2" />
                     {loading ? 'Sending...' : 'Send Message'}
                   </Button>

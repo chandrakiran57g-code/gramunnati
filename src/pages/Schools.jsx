@@ -6,6 +6,7 @@ import { Search, Filter, School } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const STATES = ['Andhra Pradesh','Telangana','Karnataka','Tamil Nadu','Maharashtra','Gujarat','Rajasthan','Uttar Pradesh','Madhya Pradesh','West Bengal','Bihar','Odisha','Kerala','Punjab','Haryana','Delhi','Other'];
 const SCHOOL_TYPES = ['government', 'private', 'aided', 'model'];
@@ -43,19 +44,21 @@ export default function Schools() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="school-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
-              <School className="w-4 h-4" /> Schools Directory
-            </div>
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Schools Directory</h1>
-            <p className="text-white/80 max-w-2xl mx-auto">
-              Every child deserves quality education. Discover and support schools across rural India.
-            </p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="school-gradient py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
+                <School className="w-4 h-4" /> Schools Directory
+              </div>
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Schools Directory</h1>
+              <p className="text-white/80 max-w-2xl mx-auto">
+                Every child deserves quality education. Discover and support schools across rural India.
+              </p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="bg-white border-b border-border sticky top-[88px] z-30 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-3 items-center">

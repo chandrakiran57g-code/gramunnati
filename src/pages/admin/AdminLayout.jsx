@@ -45,7 +45,7 @@ const sidebarSections = [
   {
     label: 'Village Management',
     icon: MapPin,
-    color: 'text-village',
+    color: 'text-primary',
     children: [
       { label: 'Villages', icon: MapPin, path: '/administrator/villages' },
       { label: 'Village Activities', icon: BarChart3, path: '/administrator/village-activities' },
@@ -140,12 +140,12 @@ export default function AdminLayout() {
   }, [location.pathname]);
 
   const Sidebar = () => (
-    <div className="h-full flex flex-col bg-gray-900 text-white w-64">
+    <div className="h-full flex flex-col bg-brown-900 text-white w-64">
       <div className="p-4 border-b border-gray-800 flex items-center gap-3">
         <img src={LOGO_URL} alt="GramUnnati" className="w-9 h-9 rounded-full object-contain" />
         <div>
           <div className="font-heading font-bold text-sm">GramUnnati Admin</div>
-          <div className="text-[11px] text-gray-400">Management Panel</div>
+          <div className="text-[11px] text-brown-400">Management Panel</div>
         </div>
       </div>
       <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
@@ -156,8 +156,8 @@ export default function AdminLayout() {
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   isActive(section.path, section.exact)
-                    ? 'bg-village text-white'
-                    : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    ? 'bg-primary text-white'
+                    : 'text-cream-200 hover:bg-brown-800 hover:text-white'
                 }`}>
                 <section.icon className="w-4 h-4 flex-shrink-0" />
                 {section.label}
@@ -173,7 +173,7 @@ export default function AdminLayout() {
               <button
                 onClick={() => toggleSection(section.label)}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                  anyChildActive ? 'text-white bg-gray-800/60' : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  anyChildActive ? 'text-white bg-brown-800/60' : 'text-cream-200 hover:bg-brown-800 hover:text-white'
                 }`}
               >
                 <section.icon className={`w-4 h-4 flex-shrink-0 ${section.color || ''}`} />
@@ -196,8 +196,8 @@ export default function AdminLayout() {
                         onClick={() => setSidebarOpen(false)}
                         className={`flex items-center gap-2.5 pl-3 pr-3 py-1.5 rounded-r-lg text-[13px] transition-all ${
                           isActive(child.path)
-                            ? 'bg-village/20 text-white font-medium'
-                            : 'text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+                            ? 'bg-primary/20 text-white font-medium'
+                            : 'text-brown-400 hover:bg-brown-800 hover:text-gray-200'
                         }`}
                       >
                         <child.icon className="w-3.5 h-3.5 flex-shrink-0" />
@@ -212,7 +212,7 @@ export default function AdminLayout() {
         })}
       </nav>
       <div className="p-3 border-t border-gray-800">
-        <Link to="/" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-gray-400 hover:text-white hover:bg-gray-800 transition-colors">
+        <Link to="/" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-brown-400 hover:text-white hover:bg-brown-800 transition-colors">
           ← Back to Public Site
         </Link>
       </div>
@@ -233,8 +233,8 @@ export default function AdminLayout() {
         )}
       </AnimatePresence>
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="lg:hidden bg-gray-900 text-white px-4 py-3 flex items-center justify-between border-b border-gray-800">
-          <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-gray-800"><Menu className="w-5 h-5" /></button>
+        <div className="lg:hidden bg-brown-900 text-white px-4 py-3 flex items-center justify-between border-b border-gray-800">
+          <button onClick={() => setSidebarOpen(true)} className="p-1.5 rounded-lg hover:bg-brown-800"><Menu className="w-5 h-5" /></button>
           <span className="font-heading font-bold text-sm">GramUnnati Admin</span>
           <div className="w-8" />
         </div>

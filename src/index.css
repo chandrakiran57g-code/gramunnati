@@ -6,81 +6,116 @@
 
 @layer base {
   :root {
-    /* Brand Colors */
-    --village: 158 57% 29%;         /* #2D6A4F */
-    --village-light: 158 46% 41%;   /* #40916C */
-    --school: 219 83% 53%;          /* #2563EB */
-    --school-light: 217 91% 60%;    /* #3B82F6 */
-    --donation: 38 92% 50%;         /* #F59E0B */
-    --donation-light: 43 96% 56%;   /* #FBBF24 */
-    --volunteer: 142 71% 45%;       /* #22C55E */
-    --projects: 262 83% 58%;        /* #7C3AED */
-    --reports: 183 78% 26%;         /* #0F766E */
-    --cms: 220 9% 46%;              /* #6B7280 */
+    /* ── Cream scale (platform surfaces) ── */
+    --cream-50: 60 14% 97%;         /* #f9f9f7 */
+    --cream-100: 50 13% 95%;        /* #f4f3ef */
+    --cream-200: 50 13% 93%;        /* #efeee8 */
+    --cream-300: 48 13% 90%;        /* #eae8e0 */
+    --cream-400: 45 12% 87%;        /* #e5e3d9 */
 
-    /* Base tokens */
-    --background: 210 40% 98%;      /* #F8FAFC */
-    --foreground: 220 26% 14%;      /* #111827 */
+    /* ── Brown scale (platform text & chrome) ── */
+    --brown-900: 35 29% 13%;        /* #2C2418 Deep Brown */
+    --brown-800: 28 50% 16%;        /* #3D2914 Espresso */
+    --brown-600: 21 29% 28%;        /* #5C4033 Coffee Brown */
+    --brown-500: 25 22% 34%;        /* #6B5344 Warm Stone */
+    --brown-400: 30 14% 55%;        /* #9C8B7A Clay Gray */
+    --brown-300: 33 36% 71%;        /* #D4B896 Sand Clay */
+    --brown-200: 36 37% 84%;        /* #E7D9C4 Light Clay */
+
+    /* ── Service accents (programs only — do not use for global UI) ── */
+    --service-village: 158 57% 29%;       /* #2D6A4F */
+    --service-village-tint: 152 41% 93%;  /* #E8F5EE */
+    --service-school: 219 83% 53%;        /* #2563EB */
+    --service-school-tint: 214 100% 97%;  /* #EFF6FF */
+    --service-tree: 142 76% 36%;          /* #16A34A */
+    --service-tree-tint: 152 81% 96%;     /* #ECFDF5 */
+    --service-water: 188 94% 37%;         /* #0891B2 */
+    --service-water-tint: 183 100% 96%;   /* #ECFEFF */
+    --service-agriculture: 41 96% 40%;    /* #CA8A04 */
+    --service-agriculture-tint: 55 92% 95%; /* #FEFCE8 */
+    --service-women: 330 81% 50%;         /* #DB2777 */
+    --service-women-tint: 326 78% 95%;    /* #FDF2F8 */
+    --service-skill: 271 91% 56%;         /* #9333EA */
+    --service-skill-tint: 270 100% 98%;   /* #FAF5FF */
+    --service-healthcare: 0 72% 51%;      /* #DC2626 */
+    --service-healthcare-tint: 0 86% 97%; /* #FEF2F2 */
+
+    /* ── shadcn / platform UI tokens (cream + brown) ── */
+    --background: var(--cream-50);
+    --foreground: var(--brown-900);
     --card: 0 0% 100%;
-    --card-foreground: 220 26% 14%;
+    --card-foreground: var(--brown-900);
     --popover: 0 0% 100%;
-    --popover-foreground: 220 26% 14%;
-    --primary: 158 57% 29%;         /* Village green */
+    --popover-foreground: var(--brown-900);
+    --primary: var(--brown-600);
     --primary-foreground: 0 0% 100%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 220 26% 14%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 220 9% 46%; /* #6B7280 */
-    --accent: 38 92% 50%;           /* Donation gold */
-    --accent-foreground: 220 26% 14%;
-    --destructive: 0 84% 60%;       /* #EF4444 */
+    --secondary: var(--cream-200);
+    --secondary-foreground: var(--brown-900);
+    --muted: var(--cream-200);
+    --muted-foreground: var(--brown-500);
+    --accent: var(--cream-300);
+    --accent-foreground: var(--brown-900);
+    --destructive: 0 72% 51%;       /* #DC2626 */
     --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;          /* #E5E7EB */
-    --input: 220 13% 91%;
-    --ring: 158 57% 29%;
-    --success: 142 71% 45%;         /* #22C55E */
+    --border: var(--brown-300);
+    --input: var(--brown-200);
+    --ring: var(--brown-600);
+    --success: 142 76% 36%;         /* #16A34A */
     --radius: 0.75rem;
     --font-heading: 'Playfair Display', Georgia, serif;
     --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Playfair Display', Georgia, serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    /* Sidebar */
-    --sidebar-background: 220 26% 14%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 158 57% 29%;
+    /* Charts — service pillar colors */
+    --chart-1: var(--service-village);
+    --chart-2: var(--service-school);
+    --chart-3: var(--service-agriculture);
+    --chart-4: var(--service-skill);
+    --chart-5: var(--service-water);
+
+    /* Sidebar / admin */
+    --sidebar-background: var(--brown-900);
+    --sidebar-foreground: var(--cream-100);
+    --sidebar-primary: var(--brown-600);
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 20%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 220 20% 22%;
-    --sidebar-ring: 158 57% 29%;
+    --sidebar-accent: var(--brown-800);
+    --sidebar-accent-foreground: var(--cream-100);
+    --sidebar-border: var(--brown-800);
+    --sidebar-ring: var(--brown-600);
+
+    /* Legacy aliases (service-scoped — prefer service-* tokens) */
+    --village: var(--service-village);
+    --village-light: 158 46% 41%;
+    --school: var(--service-school);
+    --school-light: 217 91% 60%;
   }
 
   .dark {
-    --background: 220 26% 9%;
-    --foreground: 210 40% 96%;
-    --card: 220 26% 12%;
-    --card-foreground: 210 40% 96%;
-    --popover: 220 26% 12%;
-    --popover-foreground: 210 40% 96%;
-    --primary: 158 46% 41%;
+    --background: var(--brown-900);
+    --foreground: var(--cream-100);
+    --card: var(--brown-800);
+    --card-foreground: var(--cream-100);
+    --popover: var(--brown-800);
+    --popover-foreground: var(--cream-100);
+    --primary: var(--brown-600);
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 26% 16%;
-    --secondary-foreground: 210 40% 96%;
-    --muted: 220 26% 16%;
-    --muted-foreground: 220 9% 60%;
-    --accent: 38 92% 50%;
-    --accent-foreground: 220 26% 14%;
+    --secondary: var(--brown-800);
+    --secondary-foreground: var(--cream-100);
+    --muted: var(--brown-800);
+    --muted-foreground: var(--brown-400);
+    --accent: var(--brown-800);
+    --accent-foreground: var(--cream-100);
     --destructive: 0 62% 31%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 26% 20%;
-    --input: 220 26% 20%;
-    --ring: 158 46% 41%;
-    --sidebar-background: 220 26% 7%;
-    --sidebar-foreground: 210 40% 90%;
-    --sidebar-accent: 220 26% 12%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 220 26% 14%;
+    --border: var(--brown-800);
+    --input: var(--brown-800);
+    --ring: var(--brown-600);
+    --sidebar-background: 35 29% 8%;
+    --sidebar-foreground: var(--cream-100);
+    --sidebar-accent: var(--brown-900);
+    --sidebar-accent-foreground: var(--cream-100);
+    --sidebar-border: var(--brown-800);
   }
 }
 
@@ -97,18 +132,85 @@
 }
 
 @layer utilities {
+  /* Platform gradients (cream + brown) */
+  .brand-gradient {
+    background: linear-gradient(135deg, #2C2418 0%, #3D2914 50%, #5C4033 100%);
+  }
+  .hero-gradient {
+    background: linear-gradient(135deg, #2C2418 0%, #3D2914 45%, #5C4033 100%);
+  }
+
+  /* Service gradients (programs only) */
   .village-gradient {
     background: linear-gradient(135deg, #2D6A4F, #40916C);
   }
   .school-gradient {
     background: linear-gradient(135deg, #2563EB, #3B82F6);
   }
+  .service-village-gradient { background: linear-gradient(135deg, #2D6A4F, #40916C); }
+  .service-school-gradient { background: linear-gradient(135deg, #2563EB, #3B82F6); }
+  .service-tree-gradient { background: linear-gradient(135deg, #16A34A, #22C55E); }
+  .service-water-gradient { background: linear-gradient(135deg, #0891B2, #06B6D4); }
+  .service-agriculture-gradient { background: linear-gradient(135deg, #CA8A04, #EAB308); }
+  .service-women-gradient { background: linear-gradient(135deg, #DB2777, #EC4899); }
+  .service-skill-gradient { background: linear-gradient(135deg, #9333EA, #A855F7); }
+  .service-healthcare-gradient { background: linear-gradient(135deg, #DC2626, #EF4444); }
   .donation-gradient {
-    background: linear-gradient(135deg, #F59E0B, #FBBF24);
+    background: linear-gradient(135deg, #5C4033, #3D2914);
   }
-  .hero-gradient {
-    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 40%, #1e40af 100%);
+
+  /* Hero — green gradient + mountain parallax */
+  .hero-green-gradient {
+    background: linear-gradient(
+      160deg,
+      rgba(27, 67, 50, 0.94) 0%,
+      rgba(45, 106, 79, 0.9) 40%,
+      rgba(21, 94, 80, 0.82) 70%,
+      rgba(30, 58, 95, 0.65) 100%
+    );
   }
+
+  .mountain-vista-hero {
+    background: linear-gradient(180deg, #1b4332 0%, #2d6a4f 50%, #1e3a5f 100%);
+  }
+
+  .mountain-vista-hero .parallax-layer {
+    position: absolute;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    background-position: 0 bottom;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    pointer-events: none;
+  }
+
+  @keyframes parallax_scroll {
+    from { background-position: 0 bottom; }
+    to { background-position: -50% bottom; }
+  }
+
+  @keyframes parallax_bike {
+    0% { background-position: -200px bottom; opacity: 0; }
+    8% { opacity: 1; }
+    92% { opacity: 1; }
+    100% { background-position: calc(100vw + 200px) bottom; opacity: 0; }
+  }
+
+  /* Cream hero */
+  .hero-cream-section {
+    background: linear-gradient(180deg, hsl(var(--cream-50)) 0%, hsl(var(--cream-100)) 45%, hsl(var(--cream-200)) 100%);
+  }
+  .hero-cream-glow {
+    background:
+      radial-gradient(ellipse 55% 45% at 15% 20%, rgba(212, 184, 150, 0.22) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 40% at 85% 75%, rgba(92, 64, 51, 0.08) 0%, transparent 55%);
+  }
+  .hero-cream-texture {
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
   .text-village { color: #2D6A4F; }
   .text-school { color: #2563EB; }
   .text-donation { color: #F59E0B; }
@@ -123,4 +225,457 @@
   .border-school { border-color: #2563EB; }
   .border-donation { border-color: #F59E0B; }
   .animate-counter { transition: all 2s ease-out; }
+
+  /* ── Home page — old-school village vibe ── */
+  .home-hero-fallback {
+    background: linear-gradient(180deg, #E8A838 0%, #C4855A 40%, #8B6914 100%);
+  }
+
+  .home-hero-photo-frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    border: 2px solid rgba(212, 184, 106, 0.45);
+    box-shadow: 0 8px 24px rgba(61, 41, 20, 0.4);
+  }
+
+  .home-hero-photo-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.65rem;
+    font-style: italic;
+    color: rgba(255, 248, 231, 0.9);
+    background: linear-gradient(to top, rgba(61, 41, 20, 0.85), transparent);
+  }
+
+  .home-hero-vignette {
+    background:
+      linear-gradient(to right, rgba(61, 41, 20, 0.55) 0%, rgba(61, 41, 20, 0.15) 45%, rgba(61, 41, 20, 0.08) 100%),
+      linear-gradient(to top, rgba(92, 64, 51, 0.65) 0%, transparent 45%);
+  }
+
+  .home-hero-texture {
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .home-hero-badge {
+    background: rgba(92, 64, 51, 0.45);
+    border: 1px solid rgba(212, 184, 106, 0.35);
+    backdrop-filter: blur(8px);
+  }
+
+  .home-hero-category-badge {
+    display: inline-flex;
+    padding: 0.4rem 0.875rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 248, 231, 0.95);
+    background: rgba(61, 41, 20, 0.65);
+    border: 1px solid rgba(212, 184, 106, 0.4);
+    border-radius: 9999px;
+    backdrop-filter: blur(8px);
+  }
+
+  .home-hero-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    color: rgba(255, 248, 231, 0.9);
+    background: rgba(61, 41, 20, 0.55);
+    border: 1px solid rgba(212, 184, 106, 0.35);
+    backdrop-filter: blur(6px);
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .home-hero-nav:hover {
+    background: rgba(61, 41, 20, 0.8);
+    transform: translateY(-50%) scale(1.05);
+  }
+
+  .home-hero-nav-prev { left: 1rem; }
+  .home-hero-nav-next { right: 1rem; }
+
+  .home-hero-dot {
+    height: 0.375rem;
+    width: 0.375rem;
+    border-radius: 9999px;
+    background: rgba(255, 248, 231, 0.35);
+    transition: width 0.3s ease, background 0.3s ease;
+  }
+
+  .home-hero-dot-active {
+    width: 1.5rem;
+    background: rgba(255, 248, 231, 0.92);
+  }
+
+  .home-hero-kenburns {
+    will-change: transform;
+  }
+
+  @keyframes home-kenburns {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+  }
+
+  .home-hero-panel {
+    background: rgba(92, 64, 51, 0.55);
+    border: 1px solid rgba(212, 184, 106, 0.25);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 16px 40px rgba(61, 41, 20, 0.35);
+  }
+
+  .home-hero-stat {
+    padding: 1rem 1.25rem;
+    border-radius: 0.5rem;
+    background: rgba(61, 41, 20, 0.35);
+    border: 1px solid rgba(212, 184, 106, 0.15);
+  }
+
+  .home-hero-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+  }
+
+  .home-hero-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .home-hero-btn-primary {
+    background: linear-gradient(135deg, #D4A017, #E8C547);
+    color: #3D2914;
+    box-shadow: 0 6px 20px rgba(212, 160, 23, 0.4);
+  }
+
+  .home-hero-btn-village {
+    background: linear-gradient(135deg, #5C7A3A, #6B8E23);
+    color: #f9f9f7;
+    box-shadow: 0 6px 20px rgba(92, 122, 58, 0.35);
+  }
+
+  .home-hero-btn-school {
+    background: linear-gradient(135deg, #8B6914, #A0785A);
+    color: #f9f9f7;
+    box-shadow: 0 6px 20px rgba(139, 105, 20, 0.35);
+  }
+
+  .home-hero-btn-ghost {
+    background: rgba(255, 248, 231, 0.1);
+    border: 1px solid rgba(255, 248, 231, 0.28);
+    color: #f9f9f7;
+    backdrop-filter: blur(6px);
+  }
+
+  .home-hero-btn-ghost:hover {
+    background: rgba(255, 248, 231, 0.18);
+  }
+
+  .home-search-panel {
+    background: #f9f9f7;
+    border: 1px solid #D4B896;
+    border-radius: 0.75rem;
+    box-shadow: 0 12px 32px rgba(92, 64, 51, 0.12);
+  }
+
+  .home-programs-section {
+    background: linear-gradient(180deg, #f4f3ef 0%, #EDD9B8 50%, #e5e3d9 100%);
+  }
+
+  .home-programs-texture {
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .home-program-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    min-height: 160px;
+    border: 1px solid rgba(139, 105, 20, 0.2);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .home-program-card:hover {
+    box-shadow: 0 12px 28px rgba(92, 64, 51, 0.15);
+  }
+
+  .home-program-earth { background: linear-gradient(145deg, #E8D5B5, #DCC4A0); }
+  .home-program-clay { background: linear-gradient(145deg, #E5C9A8, #D4B896); }
+  .home-program-leaf { background: linear-gradient(145deg, #D4DDB8, #C4CFA8); }
+  .home-program-water { background: linear-gradient(145deg, #C8D8D0, #B8C8C0); }
+  .home-program-terracotta { background: linear-gradient(145deg, #E0B898, #D4A888); }
+  .home-program-wheat { background: linear-gradient(145deg, #EDE0B8, #E0D0A0); }
+
+  .home-section-divider {
+    height: 2px;
+    max-width: 72rem;
+    margin: 0 auto;
+    background: linear-gradient(90deg, transparent, #D4B896, transparent);
+  }
+
+  .home-skeleton-card {
+    background: #f9f9f7;
+    border-radius: 0.75rem;
+    border: 1px solid #D4B896;
+    overflow: hidden;
+  }
+
+  .home-metric-card {
+    padding: 1.25rem 1.5rem;
+    border-radius: 0.625rem;
+    border: 1px solid #D4B896;
+    background: #f9f9f7;
+  }
+
+  .home-metric-donation { background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), #f9f9f7 55%); }
+  .home-metric-volunteer { background: linear-gradient(135deg, rgba(107, 142, 35, 0.12), #f9f9f7 55%); }
+  .home-metric-green { background: linear-gradient(135deg, rgba(92, 122, 58, 0.12), #f9f9f7 55%); }
+  .home-metric-project { background: linear-gradient(135deg, rgba(139, 105, 20, 0.12), #f9f9f7 55%); }
+
+  .home-testimonials {
+    background: linear-gradient(145deg, #8B6914 0%, #6B5344 50%, #5C4033 100%);
+  }
+
+  .home-testimonials-glow {
+    background: radial-gradient(ellipse 50% 50% at 20% 30%, rgba(232, 200, 71, 0.15) 0%, transparent 60%);
+  }
+
+  .home-testimonial-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 248, 231, 0.08);
+    border: 1px solid rgba(212, 184, 106, 0.2);
+    min-height: 240px;
+  }
+
+  .home-cta-bg {
+    background:
+      radial-gradient(ellipse 50% 40% at 50% 100%, rgba(139, 105, 20, 0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 80% 40%, rgba(212, 160, 23, 0.06) 0%, transparent 60%);
+  }
+
+  .home-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    border: 1px dashed #D4B896;
+    border-radius: 0.75rem;
+    background: rgba(245, 230, 200, 0.4);
+  }
+
+  .home-news-item {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .home-news-item:hover {
+    background: rgba(255, 248, 231, 0.8);
+    border-color: #D4B896;
+  }
+
+  .home-event-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.5rem;
+    background: #f9f9f7;
+    border: 1px solid #D4B896;
+  }
+
+  .home-activity-feed {
+    background: #f9f9f7;
+    border: 1px solid #D4B896;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    height: 100%;
+  }
+
+  .home-chart-card {
+    background: #f9f9f7;
+    border: 1px solid #D4B896;
+    border-radius: 0.75rem;
+  }
+
+  /* Trust pills — hero */
+  .home-trust-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: rgba(255, 248, 231, 0.92);
+    background: rgba(61, 41, 20, 0.45);
+    border: 1px solid rgba(212, 184, 106, 0.35);
+    border-radius: 9999px;
+    backdrop-filter: blur(6px);
+  }
+
+  /* Live trust marquee */
+  .home-marquee-inner {
+    animation: home-marquee 40s linear infinite;
+  }
+
+  @keyframes home-marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* How it works */
+  .home-vision-bg {
+    background:
+      radial-gradient(ellipse 60% 50% at 10% 20%, rgba(212, 160, 23, 0.06) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 90% 80%, rgba(107, 142, 35, 0.05) 0%, transparent 50%);
+  }
+
+  .home-vision-image {
+    border: 2px solid #D4B896;
+    box-shadow: 0 20px 48px rgba(92, 64, 51, 0.18);
+  }
+
+  .home-step-card {
+    display: flex;
+    flex-direction: column;
+    padding: 1.75rem;
+    border-radius: 0.875rem;
+    background: #f9f9f7;
+    border: 1px solid #D4B896;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .home-step-card:hover {
+    box-shadow: 0 16px 36px rgba(92, 64, 51, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .home-step-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.625rem;
+    background: linear-gradient(145deg, #f4f3ef, #EDD9B8);
+    border: 1px solid rgba(139, 105, 20, 0.2);
+  }
+
+  /* Urgent projects strip */
+  .home-urgent-glow {
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(232, 200, 71, 0.08) 0%, transparent 65%);
+  }
+
+  .home-urgent-card {
+    border-radius: 0.875rem;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .home-urgent-card:hover {
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45);
+  }
+
+  .home-urgent-badge {
+    display: inline-block;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #3D2914;
+    background: #E8C547;
+    border-radius: 9999px;
+  }
+
+  .home-progress-bar {
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: rgba(139, 105, 20, 0.15);
+    overflow: hidden;
+  }
+
+  .home-progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #8B6914, #E8C547);
+    transition: width 0.6s ease;
+  }
+
+  .home-scroll-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .home-scroll-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Gallery marquee */
+  .home-gallery-inner {
+    animation: home-gallery-scroll 50s linear infinite;
+  }
+
+  @keyframes home-gallery-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .home-gallery-item {
+    border: 2px solid #D4B896;
+    box-shadow: 0 8px 24px rgba(92, 64, 51, 0.12);
+  }
+
+  /* Partners */
+  .home-partner-logo {
+    min-width: 5rem;
+  }
+
+  /* Mega CTA */
+  .home-mega-cta-gradient {
+    background: radial-gradient(ellipse 80% 60% at 50% 100%, rgba(232, 200, 71, 0.12) 0%, transparent 70%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-btn:hover,
+    .home-program-card:hover,
+    .home-step-card:hover {
+      transform: none;
+    }
+
+    .home-marquee-inner,
+    .home-gallery-inner {
+      animation: none;
+    }
+
+    .home-hero-kenburns {
+      transform: none !important;
+    }
+  }
 }

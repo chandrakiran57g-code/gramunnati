@@ -6,6 +6,7 @@ import { Search, Plus, Edit, Eye, MapPin, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function AdminVillages() {
   const [villages, setVillages] = useState([]);
@@ -26,18 +27,20 @@ export default function AdminVillages() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="village-gradient py-8 px-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="font-heading text-3xl font-bold text-white">Villages</h1>
-            <p className="text-white/70 text-sm mt-1">{villages.length} villages registered</p>
-          </div>
-          <div className="flex gap-3">
-            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
-            <Button size="sm" className="donation-gradient text-white border-0"><Plus className="w-4 h-4 mr-1" />Add Village</Button>
+      <HeroScrollSection size="compact">
+        <div className="brand-gradient py-8 px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="font-heading text-3xl font-bold text-white">Villages</h1>
+              <p className="text-white/70 text-sm mt-1">{villages.length} villages registered</p>
+            </div>
+            <div className="flex gap-3">
+              <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
+              <Button size="sm" className="donation-gradient text-white border-0"><Plus className="w-4 h-4 mr-1" />Add Village</Button>
+            </div>
           </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Filters */}
@@ -76,8 +79,8 @@ export default function AdminVillages() {
                   <motion.tr key={v.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="hover:bg-muted/20 transition-colors">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-village/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <MapPin className="w-4 h-4 text-village" />
+                        <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <MapPin className="w-4 h-4 text-primary" />
                         </div>
                         <div>
                           <div className="font-semibold text-sm">{v.village_name}</div>
@@ -99,7 +102,7 @@ export default function AdminVillages() {
                         <Link to={`/villages/${v.slug || v.id}`}>
                           <button className="p-1.5 rounded-lg hover:bg-school/10 text-muted-foreground hover:text-school transition-colors"><Eye className="w-4 h-4" /></button>
                         </Link>
-                        <button className="p-1.5 rounded-lg hover:bg-village/10 text-muted-foreground hover:text-village transition-colors"><Edit className="w-4 h-4" /></button>
+                        <button className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"><Edit className="w-4 h-4" /></button>
                       </div>
                     </td>
                   </motion.tr>

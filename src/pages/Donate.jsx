@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const _urlParams = new URLSearchParams(window.location.search);
 const defaultType = _urlParams.get('type') || 'general';
@@ -112,15 +113,17 @@ export default function Donate() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="donation-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-white">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <Heart className="w-12 h-12 mx-auto mb-4 fill-white/20" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Make a Donation</h1>
-            <p className="text-white/80 max-w-xl mx-auto">Your contribution transforms lives in rural India. Every rupee makes a difference.</p>
-          </motion.div>
+      <HeroScrollSection size="page">
+        <div className="donation-gradient py-16 px-4">
+          <div className="max-w-7xl mx-auto text-center text-white">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Heart className="w-12 h-12 mx-auto mb-4 fill-white/20" />
+              <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Make a Donation</h1>
+              <p className="text-white/80 max-w-xl mx-auto">Your contribution transforms lives in rural India. Every rupee makes a difference.</p>
+            </motion.div>
+          </div>
         </div>
-      </div>
+      </HeroScrollSection>
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12">
         <div className="grid lg:grid-cols-5 gap-8 items-start">
@@ -137,7 +140,7 @@ export default function Donate() {
                   { label: 'Impact Preview', active: false },
                 ].map((step, i) => (
                   <div key={step.label} className="flex items-center gap-1">
-                    <span className={`px-2 py-1 rounded-full font-medium ${step.active ? 'bg-village text-white' : 'bg-muted text-muted-foreground'}`}>{i + 1}. {step.label.split(' ')[0]}</span>
+                    <span className={`px-2 py-1 rounded-full font-medium ${step.active ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>{i + 1}. {step.label.split(' ')[0]}</span>
                     {i < 3 && <span className="text-muted-foreground">→</span>}
                   </div>
                 ))}
@@ -244,8 +247,8 @@ export default function Donate() {
           {/* Side info */}
           <div className="lg:col-span-2 space-y-5">
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-              <div className="bg-village/5 border border-village/20 rounded-2xl p-6">
-                <h3 className="font-heading font-bold text-village mb-4">Why Donate?</h3>
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
+                <h3 className="font-heading font-bold text-primary mb-4">Why Donate?</h3>
                 {[
                   { icon: TreePine, text: 'Directly impacts a village or school' },
                   { icon: School, text: 'Children get better education resources' },
@@ -253,7 +256,7 @@ export default function Donate() {
                   { icon: Shield, text: '100% transparent fund utilization' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
-                    <item.icon className="w-5 h-5 text-village mt-0.5 flex-shrink-0" />
+                    <item.icon className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                     <span className="text-sm text-foreground">{item.text}</span>
                   </div>
                 ))}
@@ -277,7 +280,7 @@ export default function Donate() {
                 <div className="text-sm text-muted-foreground">Total donations raised through our platform</div>
                 <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
                   <div className="bg-white rounded-lg p-2 border border-border">
-                    <div className="font-bold text-village">1,200+</div>
+                    <div className="font-bold text-primary">1,200+</div>
                     <div className="text-muted-foreground">Villages Helped</div>
                   </div>
                   <div className="bg-white rounded-lg p-2 border border-border">

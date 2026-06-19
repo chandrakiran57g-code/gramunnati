@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 
 const ACHIEVEMENTS = [
   { tier: 'bronze', label: 'Bronze Volunteer', icon: '🥉', hours: 10, color: 'from-amber-600 to-amber-700', textColor: 'text-amber-600', bg: 'bg-amber-50' },
-  { tier: 'silver', label: 'Silver Volunteer', icon: '🥈', hours: 50, color: 'from-gray-400 to-gray-500', textColor: 'text-gray-500', bg: 'bg-gray-50' },
+  { tier: 'silver', label: 'Silver Volunteer', icon: '🥈', hours: 50, color: 'from-gray-400 to-gray-500', textColor: 'text-brown-400', bg: 'bg-gray-50' },
   { tier: 'gold', label: 'Gold Volunteer', icon: '🥇', hours: 100, color: 'from-yellow-500 to-amber-500', textColor: 'text-yellow-600', bg: 'bg-yellow-50' },
   { tier: 'platinum', label: 'Platinum Volunteer', icon: '💎', hours: 250, color: 'from-cyan-500 to-blue-500', textColor: 'text-cyan-600', bg: 'bg-cyan-50' },
 ];
