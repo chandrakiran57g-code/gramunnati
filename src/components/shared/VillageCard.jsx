@@ -13,7 +13,7 @@ export default function VillageCard({ village, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group bg-white rounded-2xl overflow-hidden border border-brown-300 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      className="group cs-hover-card bg-white rounded-2xl overflow-hidden border border-brown-300 hover:shadow-xl transition-all duration-300"
     >
       <div className="relative h-44 overflow-hidden">
         <SafeImage
@@ -21,7 +21,7 @@ export default function VillageCard({ village, index = 0 }) {
           alt={village.village_name}
           fallbackIndex={index}
           width={600}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="cs-hover-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-brown-900/60 to-transparent" />
         {village.is_featured && (

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 
 import { Link, useLocation } from 'react-router-dom';
 
@@ -72,6 +72,8 @@ export default function Navbar() {
 
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
+  const [mobileExpanded, setMobileExpanded] = useState(null);
+  const dropdownTimer = useRef(null);
   const location = useLocation();
 
 
@@ -98,20 +100,26 @@ export default function Navbar() {
 
 
 
-  const handleDropdownEnter = (label) => {
-
-    setActiveDropdown(label);
-
-    if (label === t('nav.whatWeDo') && programs.length === 0 && !programsLoading) {
-
-      setProgramsLoading(true);
-
-      base44.entities.Program.filter({ status: 'active' }, 'sort_order', 50)
-
-        .then(setPrograms).catch(() => {}).finally(() => setProgramsLoading(false));
-
+  const clearDropdownTimer = () => {
+    if (dropdownTimer.current) {
+      clearTimeout(dropdownTimer.current);
+      dropdownTimer.current = null;
     }
+  };
 
+  const openDropdown = (label) => {
+    clearDropdownTimer();
+    setActiveDropdown(label);
+    if (label === t('nav.whatWeDo') && programs.length === 0 && !programsLoading) {
+      setProgramsLoading(true);
+      base44.entities.Program.filter({ status: 'active' }, 'sort_order', 50)
+        .then(setPrograms).catch(() => {}).finally(() => setProgramsLoading(false));
+    }
+  };
+
+  const closeDropdown = () => {
+    clearDropdownTimer();
+    dropdownTimer.current = setTimeout(() => setActiveDropdown(null), 180);
   };
 
 
@@ -133,6 +141,10 @@ export default function Navbar() {
     setMobileOpen(false);
 
     setActiveDropdown(null);
+
+    setMobileExpanded(null);
+
+    clearDropdownTimer();
 
   }, [location]);
 
@@ -228,13 +240,9 @@ export default function Navbar() {
 
   const linkClass = (path, active) =>
 
-    `flex items-center gap-1 px-2 py-2 text-[13px] font-medium rounded-md transition-all duration-200 whitespace-nowrap ${
+    `nav-link-cs flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-semibold whitespace-nowrap ${
 
-      active
-
-        ? 'text-primary bg-primary/10'
-
-        : 'text-foreground hover:text-primary hover:bg-primary/5'
+      active ? 'nav-link-active text-primary' : 'text-foreground hover:text-primary'
 
     }`;
 
@@ -272,81 +280,61 @@ export default function Navbar() {
 
           <div className="hidden xl:flex items-center gap-0 flex-1 justify-center">
 
-            {navItems.map((item) => (
+            {navItems.map((item) => {
+              const hasChildren = item.children && item.children.length > 0;
+              const isOpen = activeDropdown === item.label;
+              const pathActive = isActive(item.path.replace(/\/page\/.*/, ''));
 
+              return (
               <div
-
                 key={item.label}
-
                 className="relative"
-
-                onMouseEnter={() => handleDropdownEnter(item.label)}
-
-                onMouseLeave={() => setActiveDropdown(null)}
-
+                onMouseEnter={() => hasChildren && openDropdown(item.label)}
+                onMouseLeave={closeDropdown}
               >
-
                 <Link
-
                   to={item.path}
-
-                  className={linkClass(item.path.replace(/\/page\/.*/, ''), isActive(item.path.replace(/\/page\/.*/, '')))}
-
+                  className={linkClass(item.path.replace(/\/page\/.*/, ''), pathActive)}
                 >
-
                   {item.label}
-
-                  {item.children && item.children.length > 0 && <ChevronDown className="w-3.5 h-3.5 opacity-60" />}
-
+                  {hasChildren && (
+                    <ChevronDown className={`nav-chevron w-3.5 h-3.5 opacity-70 ${isOpen ? 'nav-chevron-open' : ''}`} />
+                  )}
                 </Link>
 
-
-
                 <AnimatePresence>
-
-                  {item.children && item.children.length > 0 && activeDropdown === item.label && (
-
-                    <motion.div
-
-                      initial={{ opacity: 0, y: 8, scale: 0.97 }}
-
+                  {hasChildren && isOpen && (
+                    <>
+                      <div className="nav-dropdown-bridge absolute left-0 right-0 top-full h-3 z-50" aria-hidden="true" />
+                      <motion.div
+                      initial={{ opacity: 0, y: 12, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-
-                      exit={{ opacity: 0, y: 8, scale: 0.97 }}
-
-                      transition={{ duration: 0.15 }}
-
-                      className="absolute top-full left-0 mt-1 min-w-[240px] bg-white rounded-xl shadow-xl border border-border overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
-
+                      exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                      className="nav-dropdown-panel absolute top-full left-0 mt-2 min-w-[260px] bg-white rounded-lg overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+                      onMouseEnter={clearDropdownTimer}
+                      onMouseLeave={closeDropdown}
                     >
-
+                      <div className="nav-dropdown-header px-4 py-2.5">
+                        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                          {item.label}
+                        </span>
+                      </div>
                       {item.children.map((child) => (
-
                         <Link
-
                           key={child.path + child.label}
-
                           to={child.path}
-
-                          className="block px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors"
-
+                          className="nav-dropdown-item block px-4 py-2.5 text-sm text-foreground"
                         >
-
                           {child.label}
-
                         </Link>
-
                       ))}
-
                     </motion.div>
-
+                    </>
                   )}
-
                 </AnimatePresence>
-
               </div>
-
-            ))}
+            );})}
 
 
 
@@ -391,13 +379,12 @@ export default function Navbar() {
 
 
             <div
-
               className="relative ml-1"
-
-              onMouseEnter={() => setUserMenuOpen(true)}
-
-              onMouseLeave={() => setUserMenuOpen(false)}
-
+              onMouseEnter={() => { clearDropdownTimer(); setUserMenuOpen(true); }}
+              onMouseLeave={() => {
+                clearDropdownTimer();
+                dropdownTimer.current = setTimeout(() => setUserMenuOpen(false), 180);
+              }}
             >
 
               {user ? (
@@ -410,7 +397,7 @@ export default function Navbar() {
 
                   </div>
 
-                  <ChevronDown className="w-3 h-3 opacity-60" />
+                  <ChevronDown className={`nav-chevron w-3 h-3 opacity-70 ${userMenuOpen ? 'nav-chevron-open' : ''}`} />
 
                 </button>
 
@@ -439,17 +426,16 @@ export default function Navbar() {
                 {user && userMenuOpen && (
 
                   <motion.div
-
-                    initial={{ opacity: 0, y: 8 }}
-
-                    animate={{ opacity: 1, y: 0 }}
-
-                    exit={{ opacity: 0, y: 8 }}
-
-                    transition={{ duration: 0.15 }}
-
-                    className="absolute right-0 top-full mt-1 w-52 bg-white rounded-xl shadow-xl border border-border overflow-hidden z-50"
-
+                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                    className="nav-dropdown-panel absolute right-0 top-full mt-2 w-52 bg-white rounded-lg overflow-hidden z-50"
+                    onMouseEnter={clearDropdownTimer}
+                    onMouseLeave={() => {
+                      clearDropdownTimer();
+                      dropdownTimer.current = setTimeout(() => setUserMenuOpen(false), 180);
+                    }}
                   >
 
                     <div className="px-4 py-3 border-b border-border">
@@ -460,37 +446,37 @@ export default function Navbar() {
 
                     </div>
 
-                    <Link to="/profile" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors">
+                    <Link to="/profile" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
 
                       <User className="w-4 h-4" /> {t('nav.myProfile')}
 
                     </Link>
 
-                    <Link to="/dashboard" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors">
+                    <Link to="/dashboard" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
 
                       <LayoutDashboard className="w-4 h-4" /> {t('nav.dashboard')}
 
                     </Link>
 
-                    <Link to="/my-donations" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors">
+                    <Link to="/my-donations" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
 
                       <Heart className="w-4 h-4" /> {t('nav.myDonations')}
 
                     </Link>
 
-                    <Link to="/my-villages" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors">
+                    <Link to="/my-villages" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
 
                       <MapPin className="w-4 h-4" /> {t('nav.myVillages')}
 
                     </Link>
 
-                    <Link to="/my-schools" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors">
+                    <Link to="/my-schools" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
 
                       <School className="w-4 h-4" /> {t('nav.mySchools')}
 
                     </Link>
 
-                    <Link to="/notifications" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors">
+                    <Link to="/notifications" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
 
                       <Heart className="w-4 h-4" /> {t('nav.notifications')}
 
@@ -498,7 +484,7 @@ export default function Navbar() {
 
                     {user.role === 'admin' && (
 
-                      <Link to="/administrator" className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground hover:bg-primary/5 hover:text-primary transition-colors border-t border-border">
+                      <Link to="/administrator" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground border-t border-border">
 
                         <LayoutDashboard className="w-4 h-4" /> {t('nav.adminPanel')}
 
@@ -568,55 +554,66 @@ export default function Navbar() {
 
             <div className="px-4 py-3 space-y-1 max-h-[80vh] overflow-y-auto">
 
-              {navItems.map((item) => (
+              {navItems.map((item) => {
+                const hasChildren = item.children && item.children.length > 0;
+                const isExpanded = mobileExpanded === item.label;
 
+                return (
                 <div key={item.label}>
-
-                  <Link
-
-                    to={item.path}
-
-                    className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-
-                      isActive(item.path) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
-
-                    }`}
-
-                  >
-
-                    {item.label}
-
-                  </Link>
-
-                  {item.children && item.children.length > 0 && (
-
-                    <div className="ml-4 mt-1 space-y-0.5">
-
-                      {item.children.map((child) => (
-
-                        <Link
-
-                          key={child.path + child.label}
-
-                          to={child.path}
-
-                          className="block px-3 py-2 text-xs text-muted-foreground hover:text-primary rounded-md hover:bg-muted transition-colors"
-
-                        >
-
-                          — {child.label}
-
-                        </Link>
-
-                      ))}
-
-                    </div>
-
+                  {hasChildren ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setMobileExpanded(isExpanded ? null : item.label)}
+                        className={`nav-mobile-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          isActive(item.path) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
+                        }`}
+                      >
+                        {item.label}
+                        <ChevronDown className={`nav-chevron w-4 h-4 opacity-70 ${isExpanded ? 'nav-chevron-open' : ''}`} />
+                      </button>
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                            className="overflow-hidden"
+                          >
+                            <div className="ml-3 mt-1 mb-1 space-y-0.5 border-l-2 border-primary/20 pl-3">
+                              <Link
+                                to={item.path}
+                                className="nav-dropdown-item block px-3 py-2 text-xs font-semibold text-primary rounded-md"
+                              >
+                                {t('home.viewAll')}
+                              </Link>
+                              {item.children.map((child) => (
+                                <Link
+                                  key={child.path + child.label}
+                                  to={child.path}
+                                  className="nav-dropdown-item block px-3 py-2 text-xs text-muted-foreground rounded-md"
+                                >
+                                  {child.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                        isActive(item.path) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
                   )}
-
                 </div>
-
-              ))}
+              );})}
 
               <Link to="/donate" className="block px-3 py-2.5 rounded-lg text-sm font-semibold text-center bg-service-agriculture text-white mt-2">
 

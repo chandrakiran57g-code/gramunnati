@@ -44,8 +44,15 @@ export default function HomeGalleryMarquee({ images = [], loading }) {
                 loading="lazy"
               />
               {img.title && (
-                <figcaption className="absolute bottom-0 inset-x-0 p-2 text-[10px] text-amber-50/90 bg-gradient-to-t from-[#3D2914]/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity font-body italic">
-                  {img.title}
+                <figcaption className="absolute bottom-0 inset-x-0 p-2.5 bg-gradient-to-t from-[#3D2914]/85 via-[#3D2914]/40 to-transparent pointer-events-none">
+                  {img.category && (
+                    <span className="inline-block text-[10px] text-white font-medium bg-black/45 px-2 py-0.5 rounded-full mb-1">
+                      {img.category}
+                    </span>
+                  )}
+                  <p className="text-[11px] text-amber-50 font-semibold leading-snug line-clamp-2 font-body">
+                    {img.title}
+                  </p>
                 </figcaption>
               )}
             </figure>

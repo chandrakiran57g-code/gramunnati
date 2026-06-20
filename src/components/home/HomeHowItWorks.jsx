@@ -1,8 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Heart, Users, ArrowRight } from 'lucide-react';
-import SafeImage from '@/components/shared/SafeImage';
-import { VILLAGE_HERO_PHOTOS } from '@/lib/villageImages';
+import VisionVideo from '@/components/home/VisionVideo';
 import { useLanguage } from '@/i18n/LanguageContext';
 
 export default function HomeHowItWorks() {
@@ -61,19 +60,12 @@ export default function HomeHowItWorks() {
             initial={{ opacity: 0, scale: 0.96 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative rounded-xl overflow-hidden aspect-[4/3] home-vision-image"
+            className="relative rounded-xl overflow-hidden aspect-[4/3] home-vision-image bg-[#2d4a3e]"
           >
-            <SafeImage
-              src={VILLAGE_HERO_PHOTOS[0].url}
-              alt="Village fields at golden hour"
-              fallbackIndex={0}
-              width={800}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/80 via-transparent to-transparent" />
-            <div className="absolute bottom-6 left-6 right-6">
-              <p className="text-amber-50 font-heading text-xl font-bold italic">
+            <VisionVideo className="absolute inset-0" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/80 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
+              <p className="text-amber-50 font-heading text-xl font-bold italic drop-shadow-md">
                 {t('home.visionQuote')}
               </p>
             </div>

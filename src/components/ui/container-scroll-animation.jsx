@@ -8,11 +8,7 @@ const SCROLL_HEIGHT = {
   compact: 'h-[22rem] md:h-[26rem]',
 };
 
-/**
- * Frameless container-scroll motion for entire hero blocks.
- * Used across public pages, admin headers, and the home hero.
- */
-export function HeroScrollSection({ children, size = 'page', className = '', disabled = false }) {
+function HeroScrollSectionAnimated({ children, size = 'page', className = '' }) {
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const reducedMotion = useReducedMotion();
@@ -40,8 +36,8 @@ export function HeroScrollSection({ children, size = 'page', className = '', dis
   );
   const translate = useTransform(scrollYProgress, [0, 1], isHome ? [0, -100] : [0, -60]);
 
-  if (disabled || reducedMotion) {
-    return <div className={className}>{children}</div>;
+  if (reducedMotion) {
+    return <div className={`page-hero-banner w-full ${className}`.trim()}>{children}</div>;
   }
 
   const panelClass = isHome
@@ -58,17 +54,39 @@ export function HeroScrollSection({ children, size = 'page', className = '', dis
         style={{ perspective: '1000px' }}
       >
         <motion.div
-          style={{
-            rotateX: rotate,
-            scale,
-            translateY: translate,
-          }}
+          style={{ rotateX: rotate, scale, translateY: translate }}
           className={panelClass}
         >
           {children}
         </motion.div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Flat full-width page hero wrapper (About-style banner).
+ * Pass `animated` only when 3D scroll motion is explicitly needed.
+ */
+export function HeroScrollSection({
+  children,
+  size = 'page',
+  className = '',
+  disabled = false,
+  animated = false,
+}) {
+  if (disabled || !animated) {
+    return (
+      <div className={`page-hero-banner w-full ${className}`.trim()}>
+        {children}
+      </div>
+    );
+  }
+
+  return (
+    <HeroScrollSectionAnimated size={size} className={className}>
+      {children}
+    </HeroScrollSectionAnimated>
   );
 }
 

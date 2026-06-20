@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Heart, Users, School, TreePine } from 'lucide-react';
 import { TextReveal } from '@/components/ui/cascade-text';
+import RotatingHeroWord from '@/components/ui/rotating-hero-word';
 import MountainVistaParallax from '@/components/ui/mountain-vista-bg';
 import HeroScrollHint from '@/components/home/HeroScrollHint';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -14,25 +15,19 @@ export default function HeroSection() {
       <div className="absolute inset-0 z-[1] hero-green-gradient pointer-events-none" />
 
       <div className="hero-section-inner relative z-10 flex w-full max-w-3xl flex-col items-center px-4 text-center sm:px-6">
-        <h1 className="hero-section-title font-heading font-bold leading-[1.12] text-white">
-          <span className="inline-flex flex-col items-center">
-            <TextReveal
-              text={t('home.heroEmpowering')}
-              className="font-heading font-bold text-[0.55em] sm:text-[0.6em] tracking-wide opacity-95"
-              fontSize="inherit"
+        <h1 className="hero-section-title font-heading font-bold text-white overflow-visible">
+          <span className="hero-section-title-stack">
+            <RotatingHeroWord
+              className="hero-section-title-line font-heading font-bold tracking-wide"
               color="#ffffff"
-              hoverColor="#ffffff"
-              hoverEffect={false}
-              animateOnMount
-              baseDelay={0}
-              staggerDelay={30}
             />
-            <span className="mt-0.5 flex flex-wrap items-center justify-center gap-x-2">
+            <span className="hero-section-title-main flex flex-wrap items-baseline justify-center gap-x-2 overflow-visible">
               <TextReveal
                 text={t('home.heroVillages')}
+                splitBy="word"
                 color="#f59e0b"
                 hoverColor="#fbbf24"
-                className="font-heading font-bold"
+                className="font-heading font-bold hero-title-accent"
                 fontSize="inherit"
                 animateOnMount
                 baseDelay={280}
@@ -40,6 +35,7 @@ export default function HeroSection() {
               />
               <TextReveal
                 text="&"
+                splitBy="word"
                 className="font-heading font-bold"
                 fontSize="inherit"
                 color="#ffffff"
@@ -51,28 +47,29 @@ export default function HeroSection() {
               />
               <TextReveal
                 text={t('home.heroSchools')}
-                color="#60a5fa"
-                hoverColor="#93c5fd"
-                className="font-heading font-bold"
+                splitBy="word"
+                color="#93c5fd"
+                hoverColor="#bfdbfe"
+                className="font-heading font-bold hero-title-schools"
                 fontSize="inherit"
                 animateOnMount
                 baseDelay={620}
                 staggerDelay={35}
               />
             </span>
-          </span>
-          <span className="mt-1 block">
-            <TextReveal
-              text={t('home.heroAcrossIndia')}
-              className="font-heading font-bold"
-              fontSize="inherit"
-              color="#ffffff"
-              hoverColor="#ffffff"
-              hoverEffect={false}
-              animateOnMount
-              baseDelay={900}
-              staggerDelay={35}
-            />
+            <span className="hero-section-title-line">
+              <TextReveal
+                text={t('home.heroAcrossIndia')}
+                className="font-heading font-bold"
+                fontSize="inherit"
+                color="#ffffff"
+                hoverColor="#ffffff"
+                hoverEffect={false}
+                animateOnMount
+                baseDelay={900}
+                staggerDelay={35}
+              />
+            </span>
           </span>
         </h1>
 

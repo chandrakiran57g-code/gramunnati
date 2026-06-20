@@ -159,6 +159,17 @@
     background: linear-gradient(135deg, #5C4033, #3D2914);
   }
 
+  /* Flat page heroes — full-width banner, no 3D scroll tilt */
+  .page-hero-banner {
+    width: 100%;
+    transform: none;
+    perspective: none;
+  }
+
+  .page-hero-banner > * {
+    width: 100%;
+  }
+
   /* Hero — green gradient + mountain parallax */
   .hero-green-gradient {
     background: linear-gradient(
@@ -181,12 +192,45 @@
   .hero-section-inner {
     padding-top: 1.5rem;
     padding-bottom: 1.5rem;
+    overflow: visible;
   }
 
   .hero-section-title {
     font-size: clamp(1.75rem, 3.2vw, 2.65rem);
     letter-spacing: -0.02em;
     margin-bottom: 0.875rem;
+    overflow: visible;
+  }
+
+  .hero-section-title-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    overflow: visible;
+  }
+
+  .hero-section-title-main {
+    line-height: 1.1;
+  }
+
+  .hero-section-title-line {
+    font-size: 0.72em;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+  }
+
+  .hero-rotating-word {
+    overflow: visible;
+  }
+
+  .hero-title-schools {
+    color: #93c5fd !important;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45), 0 0 40px rgba(147, 197, 253, 0.35);
+  }
+
+  .hero-title-accent {
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   }
 
   .hero-section-subtitle {
@@ -515,11 +559,103 @@
     border-radius: 0.75rem;
     min-height: 160px;
     border: 1px solid rgba(139, 105, 20, 0.2);
-    transition: box-shadow 0.3s ease;
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
   }
 
   .home-program-card:hover {
-    box-shadow: 0 12px 28px rgba(92, 64, 51, 0.15);
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(92, 64, 51, 0.15);
+  }
+
+  /* CSDEVELOPERS-style navbar hover & dropdown */
+  .nav-link-cs {
+    position: relative;
+    transition: color 0.25s ease;
+  }
+
+  .nav-link-cs::after {
+    content: '';
+    position: absolute;
+    bottom: 0.35rem;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: hsl(var(--primary));
+    border-radius: 1px;
+    transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1), left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-link-cs:hover::after,
+  .nav-link-cs.nav-link-active::after {
+    width: calc(100% - 1.5rem);
+    left: 0.75rem;
+  }
+
+  .nav-chevron {
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .nav-chevron-open {
+    transform: rotate(180deg);
+  }
+
+  .nav-dropdown-panel {
+    transform-origin: top center;
+    border-top: 3px solid hsl(var(--brown-600));
+    box-shadow:
+      0 16px 48px rgba(44, 36, 24, 0.12),
+      0 4px 12px rgba(44, 36, 24, 0.08);
+  }
+
+  .nav-dropdown-header {
+    background: hsl(var(--cream-100));
+    border-bottom: 1px solid hsl(var(--border));
+  }
+
+  .nav-dropdown-item {
+    position: relative;
+    transition: padding-left 0.25s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .nav-dropdown-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: hsl(var(--primary));
+    border-radius: 0 2px 2px 0;
+    transition: height 0.25s ease;
+  }
+
+  .nav-dropdown-item:hover {
+    padding-left: 1.35rem;
+    color: hsl(var(--primary));
+    background: hsl(var(--cream-100));
+  }
+
+  .nav-dropdown-item:hover::before {
+    height: 55%;
+  }
+
+  /* Card hover — product-style lift & image zoom */
+  .cs-hover-card {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  .cs-hover-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(92, 64, 51, 0.15);
+  }
+
+  .cs-hover-card .cs-hover-img {
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cs-hover-card:hover .cs-hover-img {
+    transform: scale(1.08);
   }
 
   .home-program-earth { background: linear-gradient(145deg, #E8D5B5, #DCC4A0); }
@@ -767,7 +903,8 @@
   @media (prefers-reduced-motion: reduce) {
     .home-hero-btn:hover,
     .home-program-card:hover,
-    .home-step-card:hover {
+    .home-step-card:hover,
+    .cs-hover-card:hover {
       transform: none;
     }
 
@@ -778,6 +915,10 @@
 
     .home-hero-kenburns {
       transform: none !important;
+    }
+
+    .nav-chevron-open {
+      transform: none;
     }
   }
 }
