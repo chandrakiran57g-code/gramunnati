@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/i18n/LanguageContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import SplashGate from '@/components/splash/SplashGate';
 
 // Layout
 import PublicLayout from '@/components/layout/PublicLayout';
@@ -262,7 +263,9 @@ function App() {
       <AuthProvider>
         <QueryClientProvider client={queryClientInstance}>
           <Router>
-            <AuthenticatedApp />
+            <SplashGate>
+              <AuthenticatedApp />
+            </SplashGate>
           </Router>
           <Toaster />
         </QueryClientProvider>

@@ -233,6 +233,54 @@
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
   }
 
+  /* Splash screen — brand reveal */
+  .splash-screen {
+    isolation: isolate;
+  }
+
+  .splash-bg-dark {
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 45%, rgba(45, 106, 79, 0.35) 0%, transparent 55%),
+      linear-gradient(165deg, #1b4332 0%, #0d2818 100%);
+  }
+
+  .splash-bg-light {
+    background-color: #f8f9f6;
+  }
+
+  .splash-logo-glow {
+    width: 130%;
+    height: 130%;
+    background: radial-gradient(circle, rgba(246, 216, 198, 0.55) 0%, rgba(45, 106, 79, 0.12) 45%, transparent 70%);
+    filter: blur(8px);
+  }
+
+  .splash-brand-name {
+    font-size: clamp(1.875rem, 5.5vw, 2.75rem);
+    letter-spacing: -0.02em;
+  }
+
+  .splash-tagline {
+    font-size: clamp(0.8125rem, 2.2vw, 1rem);
+    letter-spacing: 0.01em;
+    max-width: 26rem;
+    line-height: 1.55;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .splash-bg-light {
+      background-color: #121816;
+    }
+
+    .splash-brand-name {
+      color: #f8f9f6 !important;
+    }
+
+    .splash-tagline {
+      color: rgba(248, 249, 246, 0.88) !important;
+    }
+  }
+
   .hero-section-subtitle {
     font-size: 0.9375rem;
     line-height: 1.65;
