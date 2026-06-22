@@ -1,4 +1,6 @@
 import { supabase } from './supabaseClient';
+import { adminDbMutation } from '@/lib/adminDb';
+import { DEFAULT_NAV_CONFIG } from '@/lib/navConfig';
 
 /**
  * CMS Service — Pages, Programs, News, Events, Stories, FAQs, Testimonials
@@ -10,28 +12,195 @@ export const cmsService = {
       .from('cms_pages')
       .select('*')
       .eq('slug', slug)
-      .single();
+      .maybeSingle();
     if (error) throw error;
     return data;
   },
 
-  async listPages() {
-    const { data, error } = await supabase
-      .from('cms_pages')
-      .select('*')
-      .order('display_order', { ascending: true });
+  async listPages({ publishedOnly = false } = {}) {
+    let query = supabase.from('cms_pages').select('*').order('display_order', { ascending: true });
+    if (publishedOnly) query = query.eq('status', 'active');
+    const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return data || [];
   },
 
-  // ─── Programs ──────────────────────────
-  async listPrograms() {
-    const { data, error } = await supabase
-      .from('programs')
-      .select('*')
-      .order('sort_order', { ascending: true });
+  async listPublishedPages() {
+    return this.listPages({ publishedOnly: true });
+  },
+
+  async createPage(pageData) {
+    return adminDbMutation(async () => {
+      const { data, error } = await supabase.from('cms_pages').insert(pageData).select().single();
+      if (error) throw error;
+      return data;
+    });
+  },
+
+  async updatePage(id, updates) {
+    return adminDbMutation(async () => {
+      const { data, error } = await supabase.from('cms_pages').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    });
+  },
+
+  async deletePage(id) {
+    return adminDbMutation(async () => {
+      const { error } = await supabase.from('cms_pages').delete().eq('id', id);
+      if (error) throw error;
+    });
+  },
+
+  async getCmsNavGroups() {
+    const raw = await this.getSetting('cms_nav_groups');
+    if (!raw) return {};
+    try {
+      return typeof raw === 'string' ? JSON.parse(raw) : raw;
+    } catch {
+      return {};
+    }
+  },
+
+  async setPageNavGroup(pageId, navGroup) {
+    return adminDbMutation(async () => {
+      const groups = await this.getCmsNavGroups();
+      groups[pageId] = navGroup;
+      const { error } = await supabase.from('settings').upsert(
+        { key: 'cms_nav_groups', value: JSON.stringify(groups) },
+        { onConflict: 'key' }
+      );
+      if (error) throw error;
+    });
+  },
+
+  async removePageNavGroup(pageId) {
+    return adminDbMutation(async () => {
+      const groups = await this.getCmsNavGroups();
+      delete groups[pageId];
+      const { error } = await supabase.from('settings').upsert(
+        { key: 'cms_nav_groups', value: JSON.stringify(groups) },
+        { onConflict: 'key' }
+      );
+      if (error) throw error;
+    });
+  },
+
+  async getNavConfig() {
+    const raw = await this.getSetting('nav_config');
+    if (!raw) return DEFAULT_NAV_CONFIG;
+    try {
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+      return parsed?.items?.length ? parsed : DEFAULT_NAV_CONFIG;
+    } catch {
+      return DEFAULT_NAV_CONFIG;
+    }
+  },
+
+  async saveNavConfig(config) {
+    return adminDbMutation(async () => {
+      const { error } = await supabase.from('settings').upsert(
+        { key: 'nav_config', value: JSON.stringify(config) },
+        { onConflict: 'key' }
+      );
+      if (error) throw error;
+    });
+  },
+
+  async listPrograms({ activeOnly = false } = {}) {
+    let query = supabase.from('programs').select('*').order('sort_order', { ascending: true });
+    if (activeOnly) query = query.eq('status', 'active');
+    const { data, error } = await query;
     if (error) throw error;
-    return data;
+    return data || [];
+  },
+
+  async createProgram(data) {
+    return adminDbMutation(async () => {
+      const { data: row, error } = await supabase.from('programs').insert(data).select().single();
+      if (error) throw error;
+      return row;
+    });
+  },
+
+  async updateProgram(id, updates) {
+    return adminDbMutation(async () => {
+      const { data, error } = await supabase.from('programs').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    });
+  },
+
+  async deleteProgram(id) {
+    return adminDbMutation(async () => {
+      const { error } = await supabase.from('programs').delete().eq('id', id);
+      if (error) throw error;
+    });
+  },
+
+  async listTeamGroups({ activeOnly = false } = {}) {
+    let query = supabase.from('team_groups').select('*, team_members(*)').order('display_order', { ascending: true });
+    if (activeOnly) query = query.eq('status', 'active');
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async createTeamGroup(data) {
+    return adminDbMutation(async () => {
+      const { data: row, error } = await supabase.from('team_groups').insert(data).select().single();
+      if (error) throw error;
+      return row;
+    });
+  },
+
+  async updateTeamGroup(id, updates) {
+    return adminDbMutation(async () => {
+      const { data, error } = await supabase.from('team_groups').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    });
+  },
+
+  async deleteTeamGroup(id) {
+    return adminDbMutation(async () => {
+      const { error } = await supabase.from('team_groups').delete().eq('id', id);
+      if (error) throw error;
+    });
+  },
+
+  async createTeamMember(data) {
+    return adminDbMutation(async () => {
+      const { data: row, error } = await supabase.from('team_members').insert(data).select().single();
+      if (error) throw error;
+      return row;
+    });
+  },
+
+  async updateTeamMember(id, updates) {
+    return adminDbMutation(async () => {
+      const { data, error } = await supabase.from('team_members').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    });
+  },
+
+  async deleteTeamMember(id) {
+    return adminDbMutation(async () => {
+      const { error } = await supabase.from('team_members').delete().eq('id', id);
+      if (error) throw error;
+    });
+  },
+
+  async updateSettings(settingsObj) {
+    return adminDbMutation(async () => {
+      const rows = Object.entries(settingsObj).map(([key, value]) => ({
+        key,
+        value: typeof value === 'object' ? JSON.stringify(value) : String(value ?? ''),
+      }));
+      const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'key' });
+      if (error) throw error;
+    });
   },
 
   async getProgram(slug) {
@@ -144,13 +313,8 @@ export const cmsService = {
   },
 
   // ─── Teams ────────────────────────────
-  async listTeamGroups() {
-    const { data, error } = await supabase
-      .from('team_groups')
-      .select('*, team_members(*)') 
-      .order('display_order', { ascending: true });
-    if (error) throw error;
-    return data;
+  async listTeamGroupsPublic() {
+    return this.listTeamGroups({ activeOnly: true });
   },
 
   async getTeamGroup(slug) {
@@ -237,9 +401,9 @@ export const cmsService = {
       .from('settings')
       .select('value')
       .eq('key', key)
-      .single();
+      .maybeSingle();
     if (error) return null;
-    return data?.value;
+    return data?.value ?? null;
   },
 
   // ─── Impact Metrics ───────────────────

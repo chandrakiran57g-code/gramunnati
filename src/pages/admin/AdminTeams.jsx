@@ -15,7 +15,19 @@ export default function AdminTeams() {
   const [expandedGroup, setExpandedGroup] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: '', team_group_name: '', display_order: 0, status: 'active' });
+  const [form, setForm] = useState({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: '', display_order: 0, is_active: true });
+
+  const memberPayload = (f) => ({
+    full_name: f.full_name,
+    email: f.email || null,
+    mobile: f.mobile || null,
+    designation: f.designation || null,
+    description: f.description || null,
+    photo: f.photo || null,
+    team_group_id: f.team_group_id,
+    display_order: f.display_order || 0,
+    is_active: f.is_active !== false,
+  });
 
   const loadData = async () => {
     setLoading(true);
@@ -34,30 +46,36 @@ export default function AdminTeams() {
 
   const handleAddMember = (group) => {
     setEditingMember(null);
-    setForm({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: group.id, team_group_name: group.name, display_order: 0, status: 'active' });
+    setForm({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: group.id, display_order: 0, is_active: true });
     setExpandedGroup(group.id);
   };
 
   const handleEditMember = (member) => {
     setEditingMember(member);
-    setForm({ full_name: member.full_name, email: member.email || '', mobile: member.mobile || '', designation: member.designation || '', description: member.description || '', photo: member.photo || '', team_group_id: member.team_group_id, team_group_name: member.team_group_name || '', display_order: member.display_order || 0, status: member.status || 'active' });
+    setForm({ full_name: member.full_name, email: member.email || '', mobile: member.mobile || '', designation: member.designation || '', description: member.description || '', photo: member.photo || '', team_group_id: member.team_group_id, display_order: member.display_order || 0, is_active: member.is_active !== false });
     setExpandedGroup(member.team_group_id);
   };
 
   const handleSave = async () => {
     if (!form.full_name || !form.team_group_id) return toast.error('Name and team group required');
     setSaving(true);
-    if (editingMember) {
-      await base44.entities.TeamMember.update(editingMember.id, form);
-      toast.success('Member updated');
-    } else {
-      await base44.entities.TeamMember.create(form);
-      toast.success('Member added');
+    try {
+      const payload = memberPayload(form);
+      if (editingMember) {
+        await base44.entities.TeamMember.update(editingMember.id, payload);
+        toast.success('Member updated');
+      } else {
+        await base44.entities.TeamMember.create(payload);
+        toast.success('Member added');
+      }
+      setEditingMember(null);
+      setForm({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: '', display_order: 0, is_active: true });
+      loadData();
+    } catch (err) {
+      toast.error(err.message || 'Save failed');
+    } finally {
+      setSaving(false);
     }
-    setEditingMember(null);
-    setForm({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: '', team_group_name: '', display_order: 0, status: 'active' });
-    setSaving(false);
-    loadData();
   };
 
   const handleDelete = async (id) => {

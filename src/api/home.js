@@ -213,6 +213,19 @@ export const homeService = {
   },
 
   async getFeaturedTestimonials() {
+    const { data: setting } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'featured_testimonials')
+      .maybeSingle();
+    if (setting?.value) {
+      try {
+        const parsed = typeof setting.value === 'string' ? JSON.parse(setting.value) : setting.value;
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      } catch {
+        /* fall through */
+      }
+    }
     const { data } = await supabase
       .from('testimonials')
       .select('*')
@@ -225,7 +238,7 @@ export const homeService = {
   async getRecentNews() {
     const { data } = await supabase
       .from('news')
-      .select('id, title, slug, excerpt, featured_image, published_at')
+      .select('id, title, slug, content, featured_image, published_at')
       .is('deleted_at', null)
       .order('published_at', { ascending: false })
       .limit(4);
@@ -422,7 +435,7 @@ export const homeService = {
   async getPartners() {
     const { data } = await supabase
       .from('partners')
-      .select('id, name, logo_url, slug')
+      .select('id, name, logo, slug')
       .order('name', { ascending: true })
       .limit(12);
     return data || [];

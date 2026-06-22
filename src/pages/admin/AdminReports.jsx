@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { adminService } from '@/api/admin';
+import { supabase } from '@/api/supabaseClient';
 import { Download, TrendingUp, FileText, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
@@ -15,23 +16,29 @@ export default function AdminReports() {
 
   useEffect(() => {
     Promise.all([
-      base44.entities.Village.list('-created_date', 500).catch(() => []),
-      base44.entities.School.list('-created_date', 500).catch(() => []),
-      base44.entities.Project.list('-created_date', 500).catch(() => []),
-      base44.entities.Donation.list('-created_date', 500).catch(() => []),
-      base44.entities.Volunteer.list('-created_date', 500).catch(() => []),
-    ]).then(([v, s, p, d, vol]) => {
-      const successDonations = d.filter(x => x.payment_status === 'success');
-      const totalDonated = successDonations.reduce((sum, x) => sum + (x.amount || 0), 0);
-
+      adminService.getDashboardStats(),
+      supabase.from('villages').select('states(name)').is('deleted_at', null).limit(500),
+    ]).then(([stats, villagesRes]) => {
+      const v = villagesRes.data || [];
       const byState = {};
-      v.forEach(x => { const st = x.state || 'Unknown'; byState[st] = (byState[st] || 0) + 1; });
-      const stateChart = Object.entries(byState).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value).slice(0, 8);
+      v.forEach((x) => {
+        const st = x.states?.name || 'Unknown';
+        byState[st] = (byState[st] || 0) + 1;
+      });
+      const stateChart = Object.entries(byState).map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value).slice(0, 8);
 
-      setStats({ villages: v.length, schools: s.length, projects: p.length, donations: d.length, volunteers: vol.length, totalDonated });
+      setStats({
+        villages: stats.totalVillages,
+        schools: stats.totalSchools,
+        projects: stats.totalProjects,
+        donations: stats.totalDonations,
+        volunteers: stats.totalVolunteers,
+        totalDonated: stats.totalDonationAmount,
+      });
       setChartData(stateChart);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
   return (

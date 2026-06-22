@@ -35,7 +35,7 @@ export default function AdminVillages() {
               <p className="text-white/70 text-sm mt-1">{villages.length} villages registered</p>
             </div>
             <div className="flex gap-3">
-              <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
+              <Link to="/admin"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
               <Button size="sm" className="donation-gradient text-white border-0"><Plus className="w-4 h-4 mr-1" />Add Village</Button>
             </div>
           </div>

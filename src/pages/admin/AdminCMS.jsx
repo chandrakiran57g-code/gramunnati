@@ -30,7 +30,7 @@ export default function AdminCMS() {
               <h1 className="font-heading text-3xl font-bold text-white">CMS & Content</h1>
               <p className="text-white/70 text-sm mt-1">Manage stories, programs, and content</p>
             </div>
-            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
+            <Link to="/admin"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
           </div>
         </div>
       </HeroScrollSection>

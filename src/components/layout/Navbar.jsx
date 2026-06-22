@@ -1,60 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-
 import { Link, useLocation } from 'react-router-dom';
-
 import { motion, AnimatePresence } from 'framer-motion';
-
 import { Menu, X, ChevronDown, Search, Heart, User, LayoutDashboard, LogOut, MapPin, School } from 'lucide-react';
-
 import { Button } from '@/components/ui/button';
-
 import { base44 } from '@/api/base44Client';
-
 import { useLanguage } from '@/i18n/LanguageContext';
-
 import LanguageToggle from '@/components/layout/LanguageToggle';
-
-import { PROGRAMS } from '@/lib/programs';
-
-
-
-const LOGO_URL = "https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png";
-
-
-
-const FALLBACK_ABOUT_KEYS = [
-
-  { key: 'aboutGramUnnati', path: '/about' },
-
-  { key: 'visionMission', path: '/vision' },
-
-  { key: 'beneficiaries', path: '/beneficiaries' },
-
-  { key: 'aboutVillages', path: '/villages' },
-
-  { key: 'aboutSchools', path: '/schools' },
-
-  { key: 'aboutVolunteers', path: '/volunteer' },
-
-  { key: 'aboutDonations', path: '/donate' },
-
-  { key: 'impactDashboard', path: '/impact' },
-
-  { key: 'successStories', path: '/stories' },
-
-  { key: 'faqs', path: '/faqs' },
-
-];
-
-
-
-const FALLBACK_PROGRAM_ITEMS = PROGRAMS.map((p) => ({
-
-  label: p.title,
-
-  path: `/programs/${p.slug}`,
-
-}));
+import { usePlatformNavData } from '@/hooks/usePlatformNavData';
+import { FALLBACK_ABOUT_KEYS, FALLBACK_PROGRAM_ITEMS, LOGO_URL } from '@/lib/navFallbacks';
 
 
 
@@ -78,24 +31,10 @@ export default function Navbar() {
 
 
 
-  const [cmsPages, setCmsPages] = useState([]);
-
-  const [teamGroups, setTeamGroups] = useState([]);
-
-  const [programs, setPrograms] = useState([]);
-
-  const [programsLoading, setProgramsLoading] = useState(false);
-
-
+  const { navConfig, aboutPages, teamGroups, programs } = usePlatformNavData();
 
   useEffect(() => {
-
     base44.auth.me().then(setUser).catch(() => setUser(null));
-
-    base44.entities.CmsPage.filter({ status: 'published' }, 'display_order', 50).then(setCmsPages).catch(() => {});
-
-    base44.entities.TeamGroup.filter({ status: 'active' }, 'display_order', 50).then(setTeamGroups).catch(() => {});
-
   }, []);
 
 
@@ -110,11 +49,6 @@ export default function Navbar() {
   const openDropdown = (label) => {
     clearDropdownTimer();
     setActiveDropdown(label);
-    if (label === t('nav.whatWeDo') && programs.length === 0 && !programsLoading) {
-      setProgramsLoading(true);
-      base44.entities.Program.filter({ status: 'active' }, 'sort_order', 50)
-        .then(setPrograms).catch(() => {}).finally(() => setProgramsLoading(false));
-    }
   };
 
   const closeDropdown = () => {
@@ -155,86 +89,47 @@ export default function Navbar() {
 
 
   const aboutChildren = useMemo(() => {
-
-    const cms = cmsPages.length > 0
-
-      ? cmsPages.map((p) => ({ label: p.title, path: `/page/${p.slug}` }))
-
-      : FALLBACK_ABOUT_KEYS.map((item) => ({ label: t(`nav.${item.key}`), path: item.path }));
-
-    return cms;
-
-  }, [cmsPages, t]);
-
-
+    if (aboutPages.length > 0) {
+      return aboutPages.map((p) => ({ label: p.title, path: `/page/${p.slug}` }));
+    }
+    return FALLBACK_ABOUT_KEYS.map((item) => ({ label: t(`nav.${item.key}`), path: item.path }));
+  }, [aboutPages, t]);
 
   const programChildren = useMemo(() => {
-
     if (programs.length > 0) {
-
       return programs.map((p) => ({ label: p.title, path: `/programs/${p.slug}` }));
-
     }
-
     return FALLBACK_PROGRAM_ITEMS;
-
   }, [programs]);
 
-
-
   const teamChildren = useMemo(() => (
-
     teamGroups.length > 0
-
       ? teamGroups.map((g) => ({ label: g.name, path: `/teams/${g.slug}` }))
-
       : [{ label: t('nav.ourTeam'), path: '/our-team' }]
-
   ), [teamGroups, t]);
 
+  const navItems = useMemo(() => {
+    const enabled = [...(navConfig.items || [])]
+      .filter((item) => item.enabled !== false)
+      .sort((a, b) => a.order - b.order);
 
-
-  const navItems = useMemo(() => [
-
-    {
-
-      label: t('nav.aboutUs'),
-
-      path: cmsPages.length > 0 ? `/page/${cmsPages[0].slug}` : '/about',
-
-      children: aboutChildren,
-
-    },
-
-    {
-
-      label: t('nav.teams'),
-
-      path: '/teams',
-
-      children: teamChildren,
-
-    },
-
-    {
-
-      label: t('nav.whatWeDo'),
-
-      path: '/programs',
-
-      children: programChildren,
-
-    },
-
-    { label: t('nav.memberList'), path: '/members' },
-
-    { label: t('nav.partnerOrganization'), path: '/partners' },
-
-    { label: t('nav.gallery'), path: '/gallery' },
-
-    { label: t('nav.contactUs'), path: '/contact' },
-
-  ], [t, cmsPages, aboutChildren, teamChildren, programChildren]);
+    return enabled.map((item) => {
+      if (item.source === 'cms') {
+        return {
+          label: item.label,
+          path: aboutPages.length > 0 ? `/page/${aboutPages[0].slug}` : '/about',
+          children: aboutChildren,
+        };
+      }
+      if (item.source === 'team_groups') {
+        return { label: item.label, path: '/teams', children: teamChildren };
+      }
+      if (item.source === 'programs') {
+        return { label: item.label, path: '/programs', children: programChildren };
+      }
+      return { label: item.label, path: item.path || '/' };
+    });
+  }, [navConfig, aboutPages, aboutChildren, teamChildren, programChildren]);
 
 
 
@@ -484,7 +379,7 @@ export default function Navbar() {
 
                     {user.role === 'admin' && (
 
-                      <Link to="/administrator" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground border-t border-border">
+                      <Link to="/admin" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground border-t border-border">
 
                         <LayoutDashboard className="w-4 h-4" /> {t('nav.adminPanel')}
 

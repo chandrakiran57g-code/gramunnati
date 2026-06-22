@@ -29,8 +29,8 @@ export default function HomePartners({ partners = [], loading }) {
                   to={p.slug ? `/partners/${p.slug}` : '/partners'}
                   className="home-partner-logo flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity"
                 >
-                  {p.logo_url ? (
-                    <img src={p.logo_url} alt={p.name} className="h-10 sm:h-12 w-auto max-w-[120px] object-contain grayscale hover:grayscale-0 transition-all" />
+                  {(p.logo || p.logo_url) ? (
+                    <img src={p.logo || p.logo_url} alt={p.name} className="h-10 sm:h-12 w-auto max-w-[120px] object-contain grayscale hover:grayscale-0 transition-all" />
                   ) : (
                     <span className="font-heading font-semibold text-[#5C4033]/80 text-sm">{p.name}</span>
                   )}

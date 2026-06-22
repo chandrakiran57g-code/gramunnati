@@ -3,8 +3,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import GramUnnatiLeaf from '@/components/splash/GramUnnatiLeaf';
 import { BRAND_COLORS, BRAND_LOGO_URL, BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand';
 
-export const HOLD_AFTER_REVEAL_MS = 2000;
-export const SPLASH_DURATION_MS = 5400;
+export const HOLD_AFTER_REVEAL_MS = 800;
+export const SPLASH_DURATION_MS = 4200;
 const EASE = [0.645, 0.045, 0.355, 1]; // easeInOutCubic
 const TAGLINE_AT = 2500;
 const TAGLINE_FADE_MS = 450;

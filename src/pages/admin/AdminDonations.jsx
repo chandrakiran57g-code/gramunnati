@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { adminService } from '@/api/admin';
 import { Heart, Search, Download, TrendingUp, Filter } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -29,8 +29,10 @@ export default function AdminDonations() {
   const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
-    base44.entities.Donation.list('-created_date', 100)
-      .then(setDonations).catch(() => {}).finally(() => setLoading(false));
+    adminService.listAllDonations({ limit: 200 })
+      .then(({ data }) => setDonations(data || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = donations.filter(d => {
@@ -51,7 +53,7 @@ export default function AdminDonations() {
               <p className="text-white/80 text-sm mt-1">Total: ₹{totalSuccess.toLocaleString('en-IN')} received</p>
             </div>
             <div className="flex gap-3">
-              <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
+              <Link to="/admin"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
               <Button size="sm" className="bg-white text-donation font-semibold"><Download className="w-4 h-4 mr-1" />Export CSV</Button>
             </div>
           </div>

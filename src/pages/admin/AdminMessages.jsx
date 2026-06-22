@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { adminService } from '@/api/admin';
 import { MessageSquare, Mail, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -15,17 +15,19 @@ export default function AdminMessages() {
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    base44.entities.ContactMessage.list('-created_date', 100)
-      .then(setMessages).catch(() => {}).finally(() => setLoading(false));
+    adminService.listMessages({ limit: 100 })
+      .then(({ data }) => setMessages(data || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const markRead = async (msg) => {
-    await base44.entities.ContactMessage.update(msg.id, { status: 'read' });
+    await adminService.updateMessageStatus(msg.id, 'read');
     setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'read' } : m));
   };
 
   const markResolved = async (msg) => {
-    await base44.entities.ContactMessage.update(msg.id, { status: 'resolved' });
+    await adminService.updateMessageStatus(msg.id, 'resolved');
     setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'resolved' } : m));
   };
 
@@ -40,7 +42,7 @@ export default function AdminMessages() {
               <h1 className="font-heading text-3xl font-bold text-white">Contact Messages</h1>
               <p className="text-white/70 text-sm mt-1">{messages.filter(m => m.status === 'new').length} new messages</p>
             </div>
-            <Link to="/administrator"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
+            <Link to="/admin"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
           </div>
         </div>
       </HeroScrollSection>
@@ -69,7 +71,7 @@ export default function AdminMessages() {
                 </div>
                 <div className="text-xs font-medium text-foreground line-clamp-1 mb-1">{msg.subject}</div>
                 <div className="text-xs text-muted-foreground line-clamp-2">{msg.message}</div>
-                <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(msg.created_date).toLocaleDateString('en-IN')}</div>
+                <div className="text-xs text-muted-foreground mt-2 flex items-center gap-1"><Clock className="w-3 h-3" />{new Date(msg.created_at || msg.created_date).toLocaleDateString('en-IN')}</div>
               </motion.div>
             ))}
             {!loading && filtered.length === 0 && <div className="text-center py-10 text-muted-foreground">No messages found</div>}

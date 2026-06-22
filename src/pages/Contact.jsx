@@ -16,9 +16,14 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await base44.entities.ContactMessage.create(form);
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      await base44.entities.ContactMessage.create(form);
+      setSubmitted(true);
+    } catch (err) {
+      alert(err.message || 'Failed to send message. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

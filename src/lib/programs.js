@@ -25,9 +25,9 @@ export const PROGRAMS = [
     ],
   },
   {
-    id: 'school-development',
-    slug: 'school-development',
-    title: 'School Development',
+    id: 'school-empowerment',
+    slug: 'school-empowerment',
+    title: 'School Empowerment',
     icon: '🏫',
     serviceKey: 'school',
     color: 'bg-service-school',
@@ -91,8 +91,8 @@ export const PROGRAMS = [
     ],
   },
   {
-    id: 'agriculture',
-    slug: 'agriculture',
+    id: 'agriculture-development',
+    slug: 'agriculture-development',
     title: 'Agriculture Development',
     icon: '🌾',
     serviceKey: 'agriculture',
@@ -113,9 +113,9 @@ export const PROGRAMS = [
     ],
   },
   {
-    id: 'women-shg',
-    slug: 'women-shg',
-    title: 'Women Self-Help Groups',
+    id: 'women-shgs',
+    slug: 'women-shgs',
+    title: 'Women SHGs',
     icon: '👩‍👩‍👧',
     serviceKey: 'women',
     color: 'bg-service-women',
@@ -180,8 +180,16 @@ export const PROGRAMS = [
   },
 ];
 
+/** Legacy slugs from older static data or bookmarks */
+const SLUG_ALIASES = {
+  'school-development': 'school-empowerment',
+  agriculture: 'agriculture-development',
+  'women-shg': 'women-shgs',
+};
+
 export function getProgramBySlug(slug) {
-  return PROGRAMS.find((p) => p.slug === slug);
+  const resolved = SLUG_ALIASES[slug] || slug;
+  return PROGRAMS.find((p) => p.slug === resolved || p.id === resolved);
 }
 
 export const HERO_SLIDES = PROGRAMS.map((p) => ({

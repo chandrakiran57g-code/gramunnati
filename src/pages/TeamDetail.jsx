@@ -16,7 +16,7 @@ export default function TeamDetail() {
     if (!slug) return;
     Promise.all([
       base44.entities.TeamGroup.filter({ slug, status: 'active' }, undefined, 1),
-      base44.entities.TeamMember.filter({ status: 'active' }, 'display_order', 100)
+      base44.entities.TeamMember.filter({ is_active: true }, 'display_order', 100)
     ]).then(([groups, allMembers]) => {
       if (groups.length > 0) {
         const g = groups[0];

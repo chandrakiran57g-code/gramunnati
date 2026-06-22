@@ -95,11 +95,21 @@ export default function GalleryCollectionModal({ collection, onClose }) {
                         className="group text-left rounded-xl overflow-hidden border border-border bg-white"
                       >
                         <div className="aspect-video bg-brown-900 relative">
-                          <img
-                            src={`https://img.youtube.com/vi/${item.embedId}/hqdefault.jpg`}
-                            alt={item.caption}
-                            className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                          />
+                          {item.embedId ? (
+                            <img
+                              src={`https://img.youtube.com/vi/${item.embedId}/hqdefault.jpg`}
+                              alt={item.caption}
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                            />
+                          ) : (
+                            <video
+                              src={item.src}
+                              muted
+                              playsInline
+                              preload="metadata"
+                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                            />
+                          )}
                           <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
                             <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
                               <Play className="w-5 h-5 text-primary ml-0.5" />
@@ -149,7 +159,7 @@ export default function GalleryCollectionModal({ collection, onClose }) {
                       width={1200}
                       className="w-full max-h-[80vh] object-contain rounded-xl mx-auto bg-[#2d4a3e]"
                     />
-                  ) : (
+                  ) : activeMedia.embedId ? (
                     <div className="aspect-video w-full rounded-xl overflow-hidden bg-black">
                       <iframe
                         title={activeMedia.caption}
@@ -159,6 +169,14 @@ export default function GalleryCollectionModal({ collection, onClose }) {
                         allowFullScreen
                       />
                     </div>
+                  ) : (
+                    <video
+                      src={activeMedia.src}
+                      controls
+                      autoPlay
+                      playsInline
+                      className="w-full max-h-[80vh] rounded-xl mx-auto bg-black"
+                    />
                   )}
                   <p className="text-center text-white font-medium mt-3">{activeMedia.caption}</p>
                 </motion.div>

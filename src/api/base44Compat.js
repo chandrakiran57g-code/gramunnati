@@ -10,6 +10,8 @@
  */
 
 import { supabase } from './supabaseClient';
+import { ensureAdminDbAccess } from '@/lib/adminDb';
+import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 
 // Helper: build a query proxy for any table
 function createEntityProxy(tableName, { slugField = 'slug', nameField = 'name', defaultSelect = '*', softDelete = false } = {}) {
@@ -93,8 +95,10 @@ function createEntityProxy(tableName, { slugField = 'slug', nameField = 'name', 
      * Create record — mirrors base44.entities.X.create(data)
      */
     async create(recordData) {
+      await ensureAdminDbAccess();
       const { data, error } = await supabase.from(tableName).insert(recordData).select().single();
       if (error) throw error;
+      notifyPlatformDataChanged({ table: tableName, action: 'create' });
       return data;
     },
 
@@ -102,8 +106,10 @@ function createEntityProxy(tableName, { slugField = 'slug', nameField = 'name', 
      * Update record — mirrors base44.entities.X.update(id, data)
      */
     async update(id, updates) {
+      await ensureAdminDbAccess();
       const { data, error } = await supabase.from(tableName).update(updates).eq('id', id).select().single();
       if (error) throw error;
+      notifyPlatformDataChanged({ table: tableName, action: 'update' });
       return data;
     },
 
@@ -111,6 +117,7 @@ function createEntityProxy(tableName, { slugField = 'slug', nameField = 'name', 
      * Delete record — mirrors base44.entities.X.delete(id)
      */
     async delete(id) {
+      await ensureAdminDbAccess();
       if (softDelete) {
         const { error } = await supabase.from(tableName).update({ deleted_at: new Date().toISOString() }).eq('id', id);
         if (error) throw error;
@@ -118,6 +125,7 @@ function createEntityProxy(tableName, { slugField = 'slug', nameField = 'name', 
         const { error } = await supabase.from(tableName).delete().eq('id', id);
         if (error) throw error;
       }
+      notifyPlatformDataChanged({ table: tableName, action: 'delete' });
     },
   };
 }
@@ -204,7 +212,27 @@ const entities = {
     defaultSelect: '*, villages(village_name), schools(school_name)',
   }),
 
-  ContactMessage: createEntityProxy('contact_messages'),
+  ContactMessage: {
+    async create(recordData) {
+      const payload = {
+        name: recordData.name,
+        email: recordData.email,
+        mobile: recordData.mobile || null,
+        subject: recordData.subject,
+        message: recordData.message,
+        status: 'new',
+      };
+      const { data, error } = await supabase.from('contact_messages').insert(payload).select().single();
+      if (error) throw error;
+      notifyPlatformDataChanged({ table: 'contact_messages', action: 'create' });
+      return data;
+    },
+    list: (...args) => createEntityProxy('contact_messages').list(...args),
+    filter: (...args) => createEntityProxy('contact_messages').filter(...args),
+    get: (...args) => createEntityProxy('contact_messages').get(...args),
+    update: (...args) => createEntityProxy('contact_messages').update(...args),
+    delete: (...args) => createEntityProxy('contact_messages').delete(...args),
+  },
 
   Follow: {
     async list() { return []; },

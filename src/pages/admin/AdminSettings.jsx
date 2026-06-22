@@ -1,15 +1,83 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Settings, Save, Globe, CreditCard, Search, Bell } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Settings, Save, Globe, CreditCard, Search, Bell, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { cmsService } from '@/api/cms';
+import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+
+const GENERAL_KEYS = ['site_name', 'contact_email', 'contact_phone', 'address', 'logo_url', 'favicon_url'];
+const PAYMENT_KEYS = ['rzp_key', 'rzp_secret', 'upi_id', 'bank_name', 'bank_account', 'ifsc'];
+const SEO_KEYS = ['meta_title', 'meta_desc', 'meta_keywords', 'ga_id'];
+const NOTIFICATION_KEYS = ['notify_donation', 'notify_volunteer', 'notify_contact', 'notify_weekly', 'notify_monthly'];
+
+function SettingsFields({ fields, values, onChange }) {
+  return fields.map((field) => (
+    <div key={field.id}>
+      <Label htmlFor={field.id}>{field.label}</Label>
+      <Input
+        id={field.id}
+        type={field.type || 'text'}
+        placeholder={field.placeholder}
+        value={values[field.id] ?? ''}
+        onChange={(e) => onChange(field.id, e.target.value)}
+        className="mt-1 rounded-xl"
+      />
+    </div>
+  ));
+}
 
 export default function AdminSettings() {
+  const [values, setValues] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2500); };
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    cmsService.getSettings()
+      .then(setValues)
+      .catch((err) => setError(err.message || 'Failed to load settings'))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleChange = (key, value) => {
+    setValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const saveKeys = async (keys) => {
+    setSaving(true);
+    setError(null);
+    try {
+      const payload = keys.reduce((acc, key) => {
+        if (values[key] !== undefined) acc[key] = values[key];
+        return acc;
+      }, {});
+      await cmsService.updateSettings(payload);
+      notifyPlatformDataChanged({ type: 'settings' });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch (err) {
+      setError(err.message || 'Failed to save settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const toggleNotification = (key) => {
+    const current = values[key] === 'true' || values[key] === true;
+    handleChange(key, current ? 'false' : 'true');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -17,12 +85,16 @@ export default function AdminSettings() {
         <div className="brand-gradient py-8 px-6">
           <div className="max-w-4xl mx-auto">
             <h1 className="font-heading text-3xl font-bold text-white">Settings</h1>
-            <p className="text-white/70 text-sm mt-1">Platform configuration and preferences</p>
+            <p className="text-white/70 text-sm mt-1">Loaded from and saved to the `settings` table</p>
           </div>
         </div>
       </HeroScrollSection>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        {error && (
+          <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>
+        )}
+
         <Tabs defaultValue="general">
           <TabsList className="mb-6 bg-muted rounded-xl p-1">
             <TabsTrigger value="general" className="rounded-lg"><Globe className="w-3.5 h-3.5 mr-1.5" />General</TabsTrigger>
@@ -34,19 +106,21 @@ export default function AdminSettings() {
           <TabsContent value="general">
             <div className="bg-white rounded-2xl border border-border p-6 space-y-5">
               <h3 className="font-heading font-bold text-lg mb-4">General Settings</h3>
-              {[
-                { label: 'Site Name', placeholder: 'Village Development & School Empowerment Platform', id: 'site_name' },
-                { label: 'Contact Email', placeholder: 'contact@GramUnnati.in', id: 'contact_email' },
-                { label: 'Contact Phone', placeholder: '+91 9XXXXXXXXX', id: 'contact_phone' },
-                { label: 'Address', placeholder: 'GramUnnati Office, Hyderabad, Telangana', id: 'address' },
-              ].map(field => (
-                <div key={field.id}>
-                  <Label htmlFor={field.id}>{field.label}</Label>
-                  <Input id={field.id} placeholder={field.placeholder} className="mt-1 rounded-xl" />
-                </div>
-              ))}
-              <Button onClick={handleSave} className="brand-gradient text-white border-0 rounded-xl">
-                <Save className="w-4 h-4 mr-2" />{saved ? '✓ Saved!' : 'Save General Settings'}
+              <SettingsFields
+                fields={[
+                  { label: 'Site Name', placeholder: 'GramUnnati', id: 'site_name' },
+                  { label: 'Logo URL', placeholder: 'https://…', id: 'logo_url' },
+                  { label: 'Favicon URL', placeholder: 'https://…', id: 'favicon_url' },
+                  { label: 'Contact Email', placeholder: 'contact@gramunnati.in', id: 'contact_email' },
+                  { label: 'Contact Phone', placeholder: '+91 9XXXXXXXXX', id: 'contact_phone' },
+                  { label: 'Address', placeholder: 'GramUnnati Office, Hyderabad', id: 'address' },
+                ]}
+                values={values}
+                onChange={handleChange}
+              />
+              <Button onClick={() => saveKeys(GENERAL_KEYS)} disabled={saving} className="brand-gradient text-white border-0 rounded-xl">
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving…' : saved ? '✓ Saved!' : 'Save General Settings'}
               </Button>
             </div>
           </TabsContent>
@@ -55,23 +129,23 @@ export default function AdminSettings() {
             <div className="bg-white rounded-2xl border border-border p-6 space-y-5">
               <h3 className="font-heading font-bold text-lg mb-4">Payment Settings</h3>
               <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
-                ⚠️ Payment gateway integration requires backend configuration. These settings are stored for reference.
+                Payment gateway keys are stored in the database for reference. Live payments require server-side configuration.
               </div>
-              {[
-                { label: 'Razorpay Key ID', placeholder: 'rzp_live_XXXXXXXXXX', id: 'rzp_key' },
-                { label: 'Razorpay Key Secret', placeholder: '••••••••••••••••', id: 'rzp_secret', type: 'password' },
-                { label: 'UPI ID', placeholder: 'GramUnnati@upi', id: 'upi_id' },
-                { label: 'Bank Account Name', placeholder: 'GramUnnati Foundation', id: 'bank_name' },
-                { label: 'Bank Account Number', placeholder: 'XXXXXXXXXXXX', id: 'bank_account' },
-                { label: 'IFSC Code', placeholder: 'SBIN0XXXXXX', id: 'ifsc' },
-              ].map(field => (
-                <div key={field.id}>
-                  <Label htmlFor={field.id}>{field.label}</Label>
-                  <Input id={field.id} type={field.type || 'text'} placeholder={field.placeholder} className="mt-1 rounded-xl" />
-                </div>
-              ))}
-              <Button onClick={handleSave} className="donation-gradient text-white border-0 rounded-xl">
-                <Save className="w-4 h-4 mr-2" />{saved ? '✓ Saved!' : 'Save Payment Settings'}
+              <SettingsFields
+                fields={[
+                  { label: 'Razorpay Key ID', placeholder: 'rzp_live_XXXXXXXXXX', id: 'rzp_key' },
+                  { label: 'Razorpay Key Secret', placeholder: '••••••••••••••••', id: 'rzp_secret', type: 'password' },
+                  { label: 'UPI ID', placeholder: 'gramunnati@upi', id: 'upi_id' },
+                  { label: 'Bank Account Name', placeholder: 'GramUnnati Foundation', id: 'bank_name' },
+                  { label: 'Bank Account Number', placeholder: 'XXXXXXXXXXXX', id: 'bank_account' },
+                  { label: 'IFSC Code', placeholder: 'SBIN0XXXXXX', id: 'ifsc' },
+                ]}
+                values={values}
+                onChange={handleChange}
+              />
+              <Button onClick={() => saveKeys(PAYMENT_KEYS)} disabled={saving} className="donation-gradient text-white border-0 rounded-xl">
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving…' : saved ? '✓ Saved!' : 'Save Payment Settings'}
               </Button>
             </div>
           </TabsContent>
@@ -79,19 +153,19 @@ export default function AdminSettings() {
           <TabsContent value="seo">
             <div className="bg-white rounded-2xl border border-border p-6 space-y-5">
               <h3 className="font-heading font-bold text-lg mb-4">SEO Settings</h3>
-              {[
-                { label: 'Default Meta Title', placeholder: 'GramUnnati — Village Development & School Empowerment Platform', id: 'meta_title' },
-                { label: 'Default Meta Description', placeholder: 'Join the movement to transform rural India...', id: 'meta_desc' },
-                { label: 'Default Keywords', placeholder: 'village development, school empowerment, rural India, GramUnnati...', id: 'meta_keywords' },
-                { label: 'Google Analytics ID', placeholder: 'G-XXXXXXXXXX', id: 'ga_id' },
-              ].map(field => (
-                <div key={field.id}>
-                  <Label htmlFor={field.id}>{field.label}</Label>
-                  <Input id={field.id} placeholder={field.placeholder} className="mt-1 rounded-xl" />
-                </div>
-              ))}
-              <Button onClick={handleSave} className="school-gradient text-white border-0 rounded-xl">
-                <Save className="w-4 h-4 mr-2" />{saved ? '✓ Saved!' : 'Save SEO Settings'}
+              <SettingsFields
+                fields={[
+                  { label: 'Default Meta Title', placeholder: 'GramUnnati — Village Development', id: 'meta_title' },
+                  { label: 'Default Meta Description', placeholder: 'Join the movement…', id: 'meta_desc' },
+                  { label: 'Default Keywords', placeholder: 'village development, rural India…', id: 'meta_keywords' },
+                  { label: 'Google Analytics ID', placeholder: 'G-XXXXXXXXXX', id: 'ga_id' },
+                ]}
+                values={values}
+                onChange={handleChange}
+              />
+              <Button onClick={() => saveKeys(SEO_KEYS)} disabled={saving} className="school-gradient text-white border-0 rounded-xl">
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving…' : saved ? '✓ Saved!' : 'Save SEO Settings'}
               </Button>
             </div>
           </TabsContent>
@@ -100,21 +174,29 @@ export default function AdminSettings() {
             <div className="bg-white rounded-2xl border border-border p-6">
               <h3 className="font-heading font-bold text-lg mb-4">Notification Preferences</h3>
               {[
-                { label: 'Email on new donation', checked: true },
-                { label: 'Email on new volunteer registration', checked: true },
-                { label: 'Email on new contact message', checked: true },
-                { label: 'Weekly summary report', checked: false },
-                { label: 'Monthly impact report', checked: true },
-              ].map((item, i) => (
-                <div key={i} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                  <span className="text-sm">{item.label}</span>
-                  <div className={`w-11 h-6 rounded-full transition-colors cursor-pointer ${item.checked ? 'bg-primary' : 'bg-gray-200'} relative`}>
-                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${item.checked ? 'translate-x-6' : 'translate-x-1'}`} />
+                { label: 'Email on new donation', key: 'notify_donation' },
+                { label: 'Email on new volunteer registration', key: 'notify_volunteer' },
+                { label: 'Email on new contact message', key: 'notify_contact' },
+                { label: 'Weekly summary report', key: 'notify_weekly' },
+                { label: 'Monthly impact report', key: 'notify_monthly' },
+              ].map((item) => {
+                const checked = values[item.key] === 'true' || values[item.key] === true;
+                return (
+                  <div key={item.key} className="flex items-center justify-between py-3 border-b border-border last:border-0">
+                    <span className="text-sm">{item.label}</span>
+                    <button
+                      type="button"
+                      onClick={() => toggleNotification(item.key)}
+                      className={`w-11 h-6 rounded-full transition-colors ${checked ? 'bg-primary' : 'bg-gray-200'} relative`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${checked ? 'translate-x-6' : 'translate-x-1'}`} />
+                    </button>
                   </div>
-                </div>
-              ))}
-              <Button onClick={handleSave} className="mt-5 brand-gradient text-white border-0 rounded-xl">
-                <Save className="w-4 h-4 mr-2" />{saved ? '✓ Saved!' : 'Save Notifications'}
+                );
+              })}
+              <Button onClick={() => saveKeys(NOTIFICATION_KEYS)} disabled={saving} className="mt-5 brand-gradient text-white border-0 rounded-xl">
+                <Save className="w-4 h-4 mr-2" />
+                {saving ? 'Saving…' : saved ? '✓ Saved!' : 'Save Notifications'}
               </Button>
             </div>
           </TabsContent>

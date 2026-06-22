@@ -7,10 +7,12 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { LanguageProvider } from '@/i18n/LanguageContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import SplashGate from '@/components/splash/SplashGate';
 
 // Layout
 import PublicLayout from '@/components/layout/PublicLayout';
+import AdminLogin from '@/pages/admin/AdminLogin';
 import AdminLayout from '@/pages/admin/AdminLayout';
 
 // Auth Pages
@@ -92,7 +94,18 @@ import AdminEvents from '@/pages/admin/AdminEvents';
 import AdminNews from '@/pages/admin/AdminNews';
 import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminUsers from '@/pages/admin/AdminUsers';
-import AdminPlaceholder from '@/pages/admin/AdminPlaceholder';
+import AdminMemberDirectory from '@/pages/admin/AdminMemberDirectory';
+import AdminNotifications from '@/pages/admin/AdminNotifications';
+import AdminRoles from '@/pages/admin/AdminRoles';
+import AdminAuditLogs from '@/pages/admin/AdminAuditLogs';
+import AdminProjectCategories from '@/pages/admin/AdminProjectCategories';
+import AdminImpactMetrics from '@/pages/admin/AdminImpactMetrics';
+import AdminReceipts from '@/pages/admin/AdminReceipts';
+import AdminVillageActivities from '@/pages/admin/AdminVillageActivities';
+import AdminSchoolActivities from '@/pages/admin/AdminSchoolActivities';
+import AdminVillageDonations from '@/pages/admin/AdminVillageDonations';
+import AdminSchoolDonations from '@/pages/admin/AdminSchoolDonations';
+import AdminBackup from '@/pages/admin/AdminBackup';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -195,9 +208,12 @@ const AuthenticatedApp = () => {
         </Route>
       </Route>
 
-      {/* Protected Admin Panel */}
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
-        <Route path="/administrator" element={<AdminLayout />}>
+      {/* Admin login — credentials only */}
+      <Route path="/admin/login" element={<AdminLogin />} />
+
+      {/* Admin panel at /admin */}
+      <Route element={<AdminProtectedRoute />}>
+        <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
 
           {/* Website Management */}
@@ -209,46 +225,47 @@ const AuthenticatedApp = () => {
           <Route path="beneficiaries" element={<AdminBeneficiaries />} />
           <Route path="gallery" element={<AdminGallery />} />
 
-          {/* Community Management */}
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="member-directory" element={<AdminPlaceholder />} />
-          <Route path="volunteers" element={<AdminVolunteers />} />
-
-          {/* Village Management */}
-          <Route path="villages" element={<AdminVillages />} />
-          <Route path="village-activities" element={<AdminPlaceholder />} />
-          <Route path="village-donations" element={<AdminPlaceholder />} />
-
-          {/* School Management */}
-          <Route path="schools" element={<AdminSchools />} />
-          <Route path="school-activities" element={<AdminPlaceholder />} />
-          <Route path="school-donations" element={<AdminPlaceholder />} />
-
-          {/* Project Management */}
-          <Route path="projects" element={<AdminProjects />} />
-          <Route path="project-categories" element={<AdminPlaceholder />} />
-          <Route path="impact-metrics" element={<AdminPlaceholder />} />
-
-          {/* Donation Management */}
-          <Route path="donations" element={<AdminDonations />} />
-          <Route path="receipts" element={<AdminPlaceholder />} />
-
-          {/* Programs & Activities */}
+          {/* Programs & Content */}
           <Route path="programs" element={<AdminPrograms />} />
           <Route path="stories" element={<AdminStories />} />
           <Route path="events" element={<AdminEvents />} />
           <Route path="news" element={<AdminNews />} />
 
+          {/* Community */}
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="member-directory" element={<AdminMemberDirectory />} />
+          <Route path="volunteers" element={<AdminVolunteers />} />
+
+          {/* Villages & Schools */}
+          <Route path="villages" element={<AdminVillages />} />
+          <Route path="village-activities" element={<AdminVillageActivities />} />
+          <Route path="village-donations" element={<AdminVillageDonations />} />
+          <Route path="schools" element={<AdminSchools />} />
+          <Route path="school-activities" element={<AdminSchoolActivities />} />
+          <Route path="school-donations" element={<AdminSchoolDonations />} />
+
+          {/* Projects */}
+          <Route path="projects" element={<AdminProjects />} />
+          <Route path="project-categories" element={<AdminProjectCategories />} />
+          <Route path="impact-metrics" element={<AdminImpactMetrics />} />
+
+          {/* Donations */}
+          <Route path="donations" element={<AdminDonations />} />
+          <Route path="receipts" element={<AdminReceipts />} />
+
           {/* Communication */}
           <Route path="messages" element={<AdminMessages />} />
-          <Route path="notifications" element={<AdminPlaceholder />} />
+          <Route path="notifications" element={<AdminNotifications />} />
 
           {/* CMS Legacy */}
           <Route path="cms" element={<AdminCMS />} />
 
-          {/* Reports & Settings */}
+          {/* Reports & System */}
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<AdminSettings />} />
+          <Route path="roles" element={<AdminRoles />} />
+          <Route path="audit-logs" element={<AdminAuditLogs />} />
+          <Route path="backup" element={<AdminBackup />} />
         </Route>
       </Route>
 

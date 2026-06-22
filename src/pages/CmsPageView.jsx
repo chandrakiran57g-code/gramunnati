@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { cmsService } from '@/api/cms';
+import { CMS_STATUS, isCmsPagePublic } from '@/lib/cmsStatus';
+import { PLATFORM_DATA_CHANGED } from '@/lib/platformRefresh';
 import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,11 +14,20 @@ export default function CmsPageView() {
   const [page, setPage] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadPage = () => {
     if (!slug) return;
-    base44.entities.CmsPage.filter({ slug, status: 'published' }, undefined, 1)
-      .then(r => setPage(r[0] || null))
-      .catch(() => {}).finally(() => setLoading(false));
+    setLoading(true);
+    cmsService.getPage(slug)
+      .then((row) => setPage(row && isCmsPagePublic(row.status) ? row : null))
+      .catch(() => setPage(null))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadPage();
+    const onChange = () => loadPage();
+    window.addEventListener(PLATFORM_DATA_CHANGED, onChange);
+    return () => window.removeEventListener(PLATFORM_DATA_CHANGED, onChange);
   }, [slug]);
 
   if (loading) return (

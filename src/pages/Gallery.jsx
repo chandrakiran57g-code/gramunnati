@@ -4,21 +4,18 @@ import { Camera, Image, Video } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import GalleryCard from '@/components/gallery/GalleryCard';
 import GalleryCollectionModal from '@/components/gallery/GalleryCollectionModal';
-import {
-  GALLERY_CATEGORIES,
-  galleryCollections,
-  filterCollections,
-  hasVideos,
-} from '@/lib/galleryData';
+import { GALLERY_CATEGORIES, filterCollections, hasVideos } from '@/lib/galleryData';
+import { useGalleryCollections } from '@/hooks/useGalleryCollections';
 
 const TABS = ['Photos', 'Videos'];
 
 export default function Gallery() {
+  const { collections, loading } = useGalleryCollections();
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeTab, setActiveTab] = useState('Photos');
   const [selectedCollection, setSelectedCollection] = useState(null);
 
-  const filtered = filterCollections(galleryCollections, activeCategory);
+  const filtered = filterCollections(collections, activeCategory);
   const videoCollections = filtered.filter(hasVideos);
 
   return (
@@ -76,7 +73,9 @@ export default function Gallery() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        {activeTab === 'Videos' ? (
+        {loading ? (
+          <div className="text-center py-16 text-muted-foreground">Loading gallery…</div>
+        ) : activeTab === 'Videos' ? (
           videoCollections.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground">
               No videos found for this category.
