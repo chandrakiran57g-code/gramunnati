@@ -214,11 +214,15 @@ export const cmsService = {
   },
 
   // ─── News ──────────────────────────────
-  async listNews({ limit = 20, offset = 0 } = {}) {
-    const { data, error, count } = await supabase
+  async listNews({ limit = 20, offset = 0, publishedOnly = false } = {}) {
+    let query = supabase
       .from('news')
       .select('*', { count: 'exact' })
-      .is('deleted_at', null)
+      .is('deleted_at', null);
+
+    if (publishedOnly) query = query.eq('is_published', true);
+
+    const { data, error, count } = await query
       .order('published_at', { ascending: false })
       .range(offset, offset + limit - 1);
     if (error) throw error;
@@ -237,15 +241,14 @@ export const cmsService = {
   },
 
   // ─── Events ────────────────────────────
-  async listEvents({ limit = 20, offset = 0, upcoming = false } = {}) {
+  async listEvents({ limit = 20, offset = 0, upcoming = false, publishedOnly = false } = {}) {
     let query = supabase
       .from('events')
       .select('*', { count: 'exact' })
       .is('deleted_at', null);
 
-    if (upcoming) {
-      query = query.gte('start_date', new Date().toISOString());
-    }
+    if (publishedOnly) query = query.eq('is_published', true);
+    if (upcoming) query = query.gte('start_date', new Date().toISOString());
 
     query = query.order('start_date', { ascending: upcoming }).range(offset, offset + limit - 1);
 

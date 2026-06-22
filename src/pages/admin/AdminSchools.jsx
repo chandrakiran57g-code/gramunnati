@@ -9,10 +9,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useVillageOptions, slugifyName } from '@/hooks/useGeoPickers';
 
 const EMPTY_FORM = {
-  school_name: '', slug: '', village_name: '', village_id: '', state: '', district: '',
-  school_type: 'government', udise_code: '', principal_name: '', contact_number: '',
+  school_name: '', slug: '', village_id: '', school_type: 'government', udise_code: '', principal_name: '', contact_number: '',
   email: '', website: '', student_count: 0, teacher_count: 0, classroom_count: 0,
   library_available: false, computer_lab_available: false, playground_available: false,
   drinking_water_available: false, toilet_available: false, electricity_available: false,
@@ -27,6 +27,7 @@ export default function AdminSchools() {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const { villages } = useVillageOptions();
 
   useEffect(() => { loadData(); }, []);
 
@@ -43,17 +44,51 @@ export default function AdminSchools() {
 
   const handleSave = async (e) => {
     e.preventDefault();
-    const data = { ...form, slug: form.slug || form.school_name.toLowerCase().replace(/\s+/g, '-') };
+    if (!form.village_id) return toast.error('Select a village');
+    const payload = {
+      school_name: form.school_name,
+      slug: form.slug || slugifyName(form.school_name),
+      village_id: Number(form.village_id),
+      school_type: form.school_type,
+      udise_code: form.udise_code || null,
+      principal_name: form.principal_name || null,
+      contact_number: form.contact_number || null,
+      email: form.email || null,
+      website: form.website || null,
+      student_count: Number(form.student_count) || 0,
+      teacher_count: Number(form.teacher_count) || 0,
+      classroom_count: Number(form.classroom_count) || 0,
+      library_available: form.library_available,
+      computer_lab_available: form.computer_lab_available,
+      playground_available: form.playground_available,
+      drinking_water_available: form.drinking_water_available,
+      toilet_available: form.toilet_available,
+      electricity_available: form.electricity_available,
+      digital_classroom_available: form.digital_classroom_available,
+      boundary_wall_available: form.boundary_wall_available,
+      cover_image: form.cover_image || null,
+      logo: form.logo || null,
+      is_featured: form.is_featured,
+      is_active: form.is_active,
+    };
     try {
-      if (editing) { await base44.entities.School.update(editing.id, data); toast.success('Updated'); }
-      else { await base44.entities.School.create(data); toast.success('Created'); }
+      if (editing) { await base44.entities.School.update(editing.id, payload); toast.success('Updated'); }
+      else { await base44.entities.School.create(payload); toast.success('Created'); }
       setShowForm(false); setEditing(null); setForm(EMPTY_FORM); loadData();
-    } catch { toast.error('Failed to save'); }
+    } catch (err) { toast.error(err.message || 'Failed to save'); }
   };
 
-  const openEdit = (item) => { setEditing(item); setForm(item); setShowForm(true); };
+  const openEdit = (item) => {
+    setEditing(item);
+    setForm({
+      ...EMPTY_FORM,
+      ...item,
+      village_id: item.village_id ? String(item.village_id) : item.villages?.id ? String(item.villages.id) : '',
+    });
+    setShowForm(true);
+  };
   const openCreate = () => { setEditing(null); setForm(EMPTY_FORM); setShowForm(true); };
-  const filtered = items.filter(i => !search || i.school_name?.toLowerCase().includes(search.toLowerCase()) || i.village_name?.toLowerCase().includes(search.toLowerCase()));
+  const filtered = items.filter(i => !search || i.school_name?.toLowerCase().includes(search.toLowerCase()) || i.villages?.village_name?.toLowerCase().includes(search.toLowerCase()));
 
   const INFRA_FIELDS = [
     { key: 'library_available', label: 'Library' },
@@ -107,8 +142,8 @@ export default function AdminSchools() {
                 <tbody className="divide-y divide-border">
                   {filtered.map((item, i) => (
                     <motion.tr key={item.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} className="hover:bg-muted/20">
-                      <td className="px-4 py-3"><div className="font-medium">{item.school_name}</div><div className="text-xs text-muted-foreground">{item.district}, {item.state}</div></td>
-                      <td className="px-4 py-3 text-muted-foreground">{item.village_name || '—'}</td>
+                      <td className="px-4 py-3"><div className="font-medium">{item.school_name}</div><div className="text-xs text-muted-foreground">{item.villages?.districts?.name || '—'}, {item.villages?.states?.name || '—'}</div></td>
+                      <td className="px-4 py-3 text-muted-foreground">{item.villages?.village_name || '—'}</td>
                       <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full bg-school/10 text-school text-xs font-medium capitalize">{item.school_type}</span></td>
                       <td className="px-4 py-3">{item.student_count || 0}</td>
                       <td className="px-4 py-3">{item.is_active ? <span className="text-green-600 text-xs font-medium">Active</span> : <span className="text-red-500 text-xs font-medium">Inactive</span>}</td>
@@ -140,16 +175,18 @@ export default function AdminSchools() {
                 <div><Label>Slug</Label><Input value={form.slug} onChange={e => setForm(f => ({...f, slug: e.target.value}))} placeholder="auto-generated" className="mt-1" /></div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div><Label>Village Name *</Label><Input value={form.village_name} onChange={e => setForm(f => ({...f, village_name: e.target.value}))} required className="mt-1" /></div>
+                <div>
+                  <Label>Village *</Label>
+                  <select value={form.village_id} onChange={e => setForm(f => ({...f, village_id: e.target.value}))} required className="mt-1 w-full border border-border rounded-lg px-3 py-2 text-sm">
+                    <option value="">Select village</option>
+                    {villages.map(v => <option key={v.id} value={String(v.id)}>{v.village_name}</option>)}
+                  </select>
+                </div>
                 <div><Label>School Type *</Label>
                   <select value={form.school_type} onChange={e => setForm(f => ({...f, school_type: e.target.value}))} className="mt-1 w-full border border-border rounded-lg px-3 py-2 text-sm">
                     <option value="government">Government</option><option value="private">Private</option><option value="aided">Aided</option><option value="model">Model</option>
                   </select>
                 </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>State *</Label><Input value={form.state} onChange={e => setForm(f => ({...f, state: e.target.value}))} required className="mt-1" /></div>
-                <div><Label>District *</Label><Input value={form.district} onChange={e => setForm(f => ({...f, district: e.target.value}))} required className="mt-1" /></div>
               </div>
               <div className="grid grid-cols-3 gap-4">
                 <div><Label>Students</Label><Input type="number" value={form.student_count} onChange={e => setForm(f => ({...f, student_count: Number(e.target.value)}))} className="mt-1" /></div>

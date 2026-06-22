@@ -1,19 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { adminService } from '@/api/admin';
-import { Heart, Search, Download, TrendingUp, Filter } from 'lucide-react';
+import { Heart, Search, Download } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
-
-const byType = [
-  { type: 'General', amount: 85000, count: 34 },
-  { type: 'Village', amount: 230000, count: 89 },
-  { type: 'School', amount: 175000, count: 62 },
-  { type: 'Project', amount: 148000, count: 45 },
-];
+import { aggregateDonationsByType } from '@/hooks/useGeoPickers';
 
 const statusColor = {
   success: 'bg-green-100 text-green-700',
@@ -42,6 +36,27 @@ export default function AdminDonations() {
   });
 
   const totalSuccess = donations.filter(d => d.payment_status === 'success').reduce((sum, d) => sum + (d.amount || 0), 0);
+  const byType = useMemo(() => aggregateDonationsByType(donations), [donations]);
+
+  const exportCsv = () => {
+    const headers = ['Donor', 'Email', 'Target', 'Amount', 'Status', 'Date'];
+    const rows = filtered.map((d) => [
+      d.is_anonymous ? 'Anonymous' : d.donor_name,
+      d.email || '',
+      d.target_type,
+      d.amount,
+      d.payment_status,
+      d.created_at || d.created_date || '',
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'donations.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -54,7 +69,7 @@ export default function AdminDonations() {
             </div>
             <div className="flex gap-3">
               <Link to="/admin"><Button variant="outline" size="sm" className="bg-white/10 border-white/30 text-white hover:bg-white/20">← Dashboard</Button></Link>
-              <Button size="sm" className="bg-white text-donation font-semibold"><Download className="w-4 h-4 mr-1" />Export CSV</Button>
+              <Button size="sm" className="bg-white text-donation font-semibold" onClick={exportCsv}><Download className="w-4 h-4 mr-1" />Export CSV</Button>
             </div>
           </div>
         </div>
@@ -66,7 +81,7 @@ export default function AdminDonations() {
           {byType.map(t => (
             <div key={t.type} className="bg-white rounded-2xl border border-border p-5">
               <div className="text-xs text-muted-foreground mb-1">{t.type} Fund</div>
-              <div className="text-xl font-bold text-donation">₹{(t.amount / 100).toFixed(0)}k</div>
+              <div className="text-xl font-bold text-donation">₹{t.amount >= 100000 ? `${(t.amount / 100000).toFixed(1)}L` : t.amount >= 1000 ? `${(t.amount / 1000).toFixed(1)}k` : t.amount.toLocaleString('en-IN')}</div>
               <div className="text-xs text-muted-foreground mt-1">{t.count} donations</div>
             </div>
           ))}
@@ -133,7 +148,7 @@ export default function AdminDonations() {
                       <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusColor[d.payment_status] || ''}`}>{d.payment_status}</span>
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground hidden lg:table-cell">
-                      {new Date(d.created_date).toLocaleDateString('en-IN')}
+                      {new Date(d.created_at || d.created_date).toLocaleDateString('en-IN')}
                     </td>
                   </motion.tr>
                 ))}

@@ -1,21 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Clock, ArrowRight, Filter } from 'lucide-react';
+import { cmsService } from '@/api/cms';
+import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { Button } from '@/components/ui/button';
-
-const upcomingEvents = [
-  { id: '1', title: 'Mass Tree Plantation Drive — Nalgonda', description: 'Join thousands of volunteers for the largest tree plantation drive of the year across all Nalgonda mandals.', location: 'Nalgonda District, Telangana', start_date: '2026-07-15', category: 'Environment', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=80', type: 'upcoming' },
-  { id: '2', title: 'Digital Classroom Inauguration — Kondapur School', description: 'Grand inauguration of the new digital classroom funded by GramUnnati donors. All stakeholders are invited.', location: 'Kondapur Village, Medak District', start_date: '2026-07-20', category: 'Education', image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80', type: 'upcoming' },
-  { id: '3', title: 'Volunteer Orientation Camp — Hyderabad', description: 'Two-day orientation camp for new volunteers. Learn about the GramUnnati platform, project management, and community engagement.', location: 'Hyderabad, Telangana', start_date: '2026-07-28', category: 'Volunteer', image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&q=80', type: 'upcoming' },
-  { id: '4', title: 'Farmers Producer Organization Launch', description: 'Launch ceremony for the Kurnool FPO bringing 200+ farmers together for collective marketing and support.', location: 'Kurnool, Andhra Pradesh', start_date: '2026-08-05', category: 'Agriculture', image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=600&q=80', type: 'upcoming' },
-  { id: '5', title: 'Annual GramUnnati Impact Summit 2026', description: 'Annual gathering of all stakeholders — donors, volunteers, village reps, and partners. Celebrating achievements and planning the year ahead.', location: 'Hyderabad Convention Center', start_date: '2026-09-01', category: 'Conference', image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80', type: 'upcoming' },
-];
-
-const pastEvents = [
-  { id: '6', title: 'Health Camp — Warangal Villages', description: 'Free medical checkups for 2,000+ villagers in 15 remote villages.', location: 'Warangal, Telangana', start_date: '2026-05-10', category: 'Healthcare', image: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=600&q=80', type: 'past' },
-  { id: '7', title: 'School Furniture Distribution Drive', description: 'Distribution of desks, chairs, and blackboards to 8 government schools in Nalgonda.', location: 'Nalgonda, Telangana', start_date: '2026-04-20', category: 'Education', image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80', type: 'past' },
-];
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700',
@@ -24,12 +12,46 @@ const categoryColors = {
   Agriculture: 'bg-yellow-100 text-yellow-700',
   Conference: 'bg-projects/10 text-projects',
   Healthcare: 'bg-red-100 text-red-700',
+  general: 'bg-muted text-muted-foreground',
 };
+
+function formatEvent(item) {
+  return {
+    ...item,
+    image: item.featured_image || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',
+    start_date: item.start_date ? new Date(item.start_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'TBD',
+    category: item.category || 'general',
+  };
+}
 
 export default function Events() {
   const [tab, setTab] = useState('upcoming');
+  const [upcoming, setUpcoming] = useState([]);
+  const [past, setPast] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const events = tab === 'upcoming' ? upcomingEvents : pastEvents;
+  useEffect(() => {
+    Promise.all([
+      cmsService.listEvents({ limit: 50, upcoming: true, publishedOnly: true }),
+      cmsService.listEvents({ limit: 50, upcoming: false, publishedOnly: true }),
+    ])
+      .then(([upRes, allRes]) => {
+        const now = Date.now();
+        const upcomingItems = (upRes.data || []).map(formatEvent);
+        const pastItems = (allRes.data || [])
+          .filter((e) => e.start_date && new Date(e.start_date).getTime() < now)
+          .map(formatEvent);
+        setUpcoming(upcomingItems);
+        setPast(pastItems);
+      })
+      .catch(() => {
+        setUpcoming([]);
+        setPast([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const events = tab === 'upcoming' ? upcoming : past;
 
   return (
     <div className="min-h-screen bg-background">
@@ -46,47 +68,50 @@ export default function Events() {
       </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        {/* Tabs */}
         <div className="flex gap-2 mb-8">
-          {['upcoming', 'past'].map(t => (
-            <button key={t} onClick={() => setTab(t)}
+          {['upcoming', 'past'].map((t) => (
+            <button key={t} type="button" onClick={() => setTab(t)}
               className={`px-6 py-2 rounded-full font-medium text-sm transition-all ${tab === t ? 'bg-projects text-white' : 'bg-white border border-border text-muted-foreground hover:border-projects'}`}>
-              {t === 'upcoming' ? '🗓️ Upcoming Events' : '📋 Past Events'}
+              {t === 'upcoming' ? 'Upcoming Events' : 'Past Events'}
             </button>
           ))}
         </div>
 
-        {/* Events List */}
-        <div className="space-y-6">
-          {events.map((event, i) => (
-            <motion.div key={event.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-              className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row">
-              <div className="relative sm:w-72 h-48 sm:h-auto overflow-hidden flex-shrink-0">
-                <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/20 to-transparent" />
-                {tab === 'past' && <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><span className="text-white font-semibold text-sm bg-black/50 px-3 py-1 rounded-full">Completed</span></div>}
-              </div>
-              <div className="p-6 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-start justify-between mb-3">
-                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${categoryColors[event.category] || 'bg-muted text-muted-foreground'}`}>{event.category}</span>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground"><Calendar className="w-3 h-3" />{event.start_date}</div>
-                  </div>
-                  <h3 className="font-heading font-bold text-lg mb-2">{event.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{event.description}</p>
-                  <div className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="w-3.5 h-3.5" />{event.location}</div>
+        {loading ? (
+          <div className="space-y-4">{[...Array(3)].map((_, i) => <div key={i} className="h-40 bg-white rounded-2xl border animate-pulse" />)}</div>
+        ) : events.length === 0 ? (
+          <div className="text-center py-20 text-muted-foreground">No {tab} events yet. Add events in the admin panel.</div>
+        ) : (
+          <div className="space-y-6">
+            {events.map((event, i) => (
+              <motion.div key={event.id} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col sm:flex-row">
+                <div className="relative sm:w-72 h-48 sm:h-auto overflow-hidden flex-shrink-0">
+                  <img src={event.image} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  {tab === 'past' && <div className="absolute inset-0 bg-black/30 flex items-center justify-center"><span className="text-white font-semibold text-sm bg-black/50 px-3 py-1 rounded-full">Completed</span></div>}
                 </div>
-                {tab === 'upcoming' && (
-                  <div className="mt-4">
-                    <Button className="bg-projects text-white border-0 rounded-xl">
-                      Register to Attend <ArrowRight className="w-4 h-4 ml-1" />
-                    </Button>
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-start justify-between mb-3 gap-2">
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${categoryColors[event.category] || categoryColors.general}`}>{event.category}</span>
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0"><Calendar className="w-3 h-3" />{event.start_date}</div>
+                    </div>
+                    <h3 className="font-heading font-bold text-lg mb-2">{event.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{event.description}</p>
+                    {event.location && <div className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="w-3.5 h-3.5" />{event.location}</div>}
                   </div>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  {tab === 'upcoming' && event.registration_link && (
+                    <div className="mt-4">
+                      <a href={event.registration_link} target="_blank" rel="noreferrer">
+                        <Button className="bg-projects text-white border-0 rounded-xl">Register to Attend <ArrowRight className="w-4 h-4 ml-1" /></Button>
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

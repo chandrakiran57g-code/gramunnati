@@ -12,13 +12,15 @@ const COLORS = ['#2D6A4F', '#2563EB', '#7C3AED', '#F59E0B', '#22C55E', '#EF4444'
 export default function AdminReports() {
   const [stats, setStats] = useState({ villages: 0, schools: 0, projects: 0, donations: 0, volunteers: 0, totalDonated: 0 });
   const [chartData, setChartData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
       adminService.getDashboardStats(),
       supabase.from('villages').select('states(name)').is('deleted_at', null).limit(500),
-    ]).then(([stats, villagesRes]) => {
+      supabase.from('projects').select('project_categories(name)').is('deleted_at', null).limit(500),
+    ]).then(([stats, villagesRes, projectsRes]) => {
       const v = villagesRes.data || [];
       const byState = {};
       v.forEach((x) => {
@@ -27,6 +29,15 @@ export default function AdminReports() {
       });
       const stateChart = Object.entries(byState).map(([name, value]) => ({ name, value }))
         .sort((a, b) => b.value - a.value).slice(0, 8);
+
+      const projects = projectsRes.data || [];
+      const byCategory = {};
+      projects.forEach((p) => {
+        const cat = p.project_categories?.name || 'Uncategorized';
+        byCategory[cat] = (byCategory[cat] || 0) + 1;
+      });
+      const catChart = Object.entries(byCategory).map(([name, value]) => ({ name, value }))
+        .sort((a, b) => b.value - a.value);
 
       setStats({
         villages: stats.totalVillages,
@@ -37,6 +48,7 @@ export default function AdminReports() {
         totalDonated: stats.totalDonationAmount,
       });
       setChartData(stateChart);
+      setCategoryData(catChart);
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
@@ -89,22 +101,19 @@ export default function AdminReports() {
           </div>
 
           <div className="bg-white rounded-2xl border border-border p-6">
-            <h3 className="font-heading font-bold text-lg mb-4">Category Distribution</h3>
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie data={[
-                  { name: 'Village Dev', value: 35 },
-                  { name: 'School Dev', value: 25 },
-                  { name: 'Tree Plantation', value: 15 },
-                  { name: 'Water', value: 12 },
-                  { name: 'Healthcare', value: 8 },
-                  { name: 'Others', value: 5 },
-                ]} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value">
-                  {COLORS.map((c, i) => <Cell key={i} fill={c} />)}
-                </Pie>
-                <Tooltip formatter={v => [v + '%']} />
-              </PieChart>
-            </ResponsiveContainer>
+            <h3 className="font-heading font-bold text-lg mb-4">Projects by Category</h3>
+            {categoryData.length === 0 ? (
+              <div className="text-center py-16 text-muted-foreground text-sm">No project data yet</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie data={categoryData} cx="50%" cy="50%" innerRadius={50} outerRadius={90} dataKey="value" nameKey="name">
+                    {categoryData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip formatter={(v, name) => [v, name]} />
+                </PieChart>
+              </ResponsiveContainer>
+            )}
           </div>
         </div>
 

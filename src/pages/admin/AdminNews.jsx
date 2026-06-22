@@ -22,7 +22,11 @@ export default function AdminNews() {
   useEffect(() => { load(); }, []);
   const load = () => { setLoading(true); base44.entities.NewsItem.list('-created_date',100).then(setItems).catch(()=>[]).finally(()=>setLoading(false)); };
   const del = async(id) => { if(!confirm('Delete?'))return; try{await base44.entities.NewsItem.delete(id);toast.success('Deleted');load();}catch{toast.error('Error');} };
-  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-')}; try{ if(editing){await base44.entities.NewsItem.update(editing.id,d);toast.success('Updated');}else{await base44.entities.NewsItem.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
+  const save = async(e) => { e.preventDefault(); const d={
+    ...form,
+    slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),
+    published_at: form.is_published ? (form.published_at || new Date().toISOString()) : null,
+  }; try{ if(editing){await base44.entities.NewsItem.update(editing.id,d);toast.success('Updated');}else{await base44.entities.NewsItem.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch(err){toast.error(err.message||'Error');} };
 
   return (
     <div className="min-h-screen bg-background">
@@ -44,7 +48,7 @@ export default function AdminNews() {
                 {item.category&&<span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground capitalize">{item.category}</span>}
               </div>
               <p className="text-sm text-muted-foreground line-clamp-2">{item.summary||item.content?.substring(0,150)||'No content'}</p>
-              <p className="text-xs text-muted-foreground mt-2">{item.created_date?new Date(item.created_date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):''}</p>
+              <p className="text-xs text-muted-foreground mt-2">{item.created_at ? new Date(item.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : ''}</p>
             </div>
             <div className="flex gap-1 flex-shrink-0">
               <button onClick={()=>{setEditing(item);setForm(item);setShowForm(true);}} className="p-2 rounded-xl hover:bg-rose-50 text-rose-600"><Pencil className="w-4 h-4"/></button>
