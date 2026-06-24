@@ -7,6 +7,7 @@ export const adminRoutes = {
   navigation: `${ADMIN_BASE}/navigation`,
   pages: `${ADMIN_BASE}/pages`,
   homepage: `${ADMIN_BASE}/homepage`,
+  activeWorks: `${ADMIN_BASE}/active-works`,
   teams: `${ADMIN_BASE}/teams`,
   partners: `${ADMIN_BASE}/partners`,
   beneficiaries: `${ADMIN_BASE}/beneficiaries`,

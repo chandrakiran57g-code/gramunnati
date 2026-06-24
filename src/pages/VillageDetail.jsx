@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function VillageDetail() {
@@ -119,7 +120,7 @@ export default function VillageDetail() {
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="bg-muted w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6">
-            {['overview','statistics','development','timeline','gallery','donations'].map(tab => (
+            {['overview','statistics','development','timeline','gallery','donations','insights'].map(tab => (
               <TabsTrigger key={tab} value={tab} className="capitalize rounded-lg text-sm py-2 px-4 whitespace-nowrap">{tab}</TabsTrigger>
             ))}
           </TabsList>
@@ -309,6 +310,14 @@ export default function VillageDetail() {
                   </Button>
                 </Link>
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="insights">
+            <div className="bg-white rounded-xl border border-border p-6">
+              <h3 className="font-heading font-bold text-lg mb-2">Village Insights — Progress Statistics</h3>
+              <p className="text-sm text-muted-foreground mb-4">Auto-generated from village population, farmer, and volunteer data.</p>
+              <VillageInsightsCharts village={village} />
             </div>
           </TabsContent>
         </Tabs>

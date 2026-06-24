@@ -4,20 +4,23 @@ import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { UserPlus, Mail, Lock, Loader2, User, CheckCircle } from "lucide-react";
+import { UserPlus, Mail, Lock, Loader2, User, Phone, CheckCircle } from "lucide-react";
 import AuthLayout from "@/components/AuthLayout";
-import GoogleIcon from "@/components/GoogleIcon";
+import MathCaptcha, { validateCaptchaOrThrow } from "@/components/shared/MathCaptcha";
 
 export default function Register() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [captchaToken, setCaptchaToken] = useState("");
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  const [captchaValid, setCaptchaValid] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { register, loginWithGoogle } = useAuth();
+  const { register } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -32,16 +35,19 @@ export default function Register() {
       setError("Password must be at least 6 characters");
       return;
     }
+    if (!captchaValid) {
+      setError("Please solve the captcha correctly");
+      return;
+    }
 
     setLoading(true);
     try {
-      const data = await register({ email, password, firstName, lastName });
+      validateCaptchaOrThrow(captchaToken, captchaAnswer);
+      const data = await register({ email: email || undefined, password, fullName, mobile });
 
-      // If email confirmation is required, show success message
       if (data?.user && !data?.session) {
         setSuccess(true);
       } else {
-        // Auto-logged in — redirect to home
         navigate("/dashboard");
       }
     } catch (err) {
@@ -51,25 +57,16 @@ export default function Register() {
     }
   };
 
-  const handleGoogle = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (err) {
-      setError(err.message || "Google sign-in failed");
-    }
-  };
-
-  // Success state — email confirmation sent
   if (success) {
     return (
       <AuthLayout
         icon={CheckCircle}
         title="Check your email"
-        subtitle={`We sent a confirmation link to ${email}`}
+        subtitle={email ? `We sent a confirmation link to ${email}` : "Account created successfully"}
       >
         <div className="text-center space-y-4">
           <p className="text-sm text-muted-foreground">
-            Click the link in the email to verify your account and get started.
+            {email ? "Click the link in the email to verify your account." : "You can now log in with your mobile number."}
           </p>
           <Button variant="outline" onClick={() => navigate("/login")} className="w-full">
             Back to Login
@@ -93,24 +90,6 @@ export default function Register() {
         </>
       }
     >
-      <Button
-        variant="outline"
-        className="w-full h-12 text-sm font-medium mb-6"
-        onClick={handleGoogle}
-      >
-        <GoogleIcon className="w-5 h-5 mr-2" />
-        Continue with Google
-      </Button>
-
-      <div className="relative mb-6">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-3 text-muted-foreground">or</span>
-        </div>
-      </div>
-
       {error && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
           {error}
@@ -118,39 +97,42 @@ export default function Register() {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label htmlFor="firstName">First Name</Label>
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
-              <Input
-                id="firstName"
-                type="text"
-                autoFocus
-                placeholder="First name"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="pl-10 h-12"
-                required
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lastName">Last Name</Label>
+        <div className="space-y-2">
+          <Label htmlFor="fullName">Full Name *</Label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
-              id="lastName"
+              id="fullName"
               type="text"
-              placeholder="Last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              className="h-12"
+              autoFocus
+              placeholder="Your full name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="pl-10 h-12"
               required
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="mobile">Mobile Number *</Label>
+          <div className="relative">
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <Input
+              id="mobile"
+              type="tel"
+              autoComplete="tel"
+              placeholder="9876543210"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              className="pl-10 h-12"
+              required
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="email">Email (optional)</Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -161,13 +143,12 @@ export default function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="pl-10 h-12"
-              required
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password">Password *</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -184,7 +165,7 @@ export default function Register() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirm">Confirm Password</Label>
+          <Label htmlFor="confirm">Confirm Password *</Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -200,7 +181,15 @@ export default function Register() {
           </div>
         </div>
 
-        <Button type="submit" className="w-full h-12 font-medium" disabled={loading}>
+        <MathCaptcha
+          onValidChange={(ok, token, answer) => {
+            setCaptchaValid(ok);
+            setCaptchaToken(token);
+            setCaptchaAnswer(answer);
+          }}
+        />
+
+        <Button type="submit" className="w-full h-12 font-medium" disabled={loading || !captchaValid}>
           {loading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />

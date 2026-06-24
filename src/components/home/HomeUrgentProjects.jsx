@@ -18,7 +18,7 @@ function ProjectCard({ project }) {
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="home-urgent-card shrink-0 w-[300px] sm:w-[340px]"
+      className="home-urgent-card home-feature-card flex flex-col h-full min-h-[380px]"
     >
       <div className="relative h-44 overflow-hidden rounded-t-xl">
         <SafeImage src={image} alt={name} fallbackIndex={0} width={600} className="w-full h-full object-cover" loading="lazy" />
@@ -31,7 +31,7 @@ function ProjectCard({ project }) {
           {village && <p className="text-amber-100/60 text-xs mt-1">{village}</p>}
         </div>
       </div>
-      <div className="p-4 bg-[#FFF8E7] border border-t-0 border-[#D4B896] rounded-b-xl">
+      <div className="p-4 bg-[#FFF8E7] border border-t-0 border-[#D4B896] rounded-b-xl flex flex-col flex-1">
         <div className="flex justify-between text-xs text-[#5C4033]/70 mb-2 font-body">
           <span>{t('home.raised')} {homeService.formatINR(project.raised || 0)}</span>
           {project.target > 0 && <span>{t('home.goal')} {homeService.formatINR(project.target)}</span>}
@@ -79,13 +79,13 @@ export default function HomeUrgentProjects({ projects = [], loading }) {
         </Link>
       </div>
 
-      <div className="relative overflow-x-auto pb-4 home-scroll-hide">
-        <div className="flex gap-5 px-4 sm:px-6 max-w-7xl mx-auto w-max min-w-full sm:min-w-0">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {loading
             ? [...Array(3)].map((_, i) => (
-                <div key={i} className="shrink-0 w-[300px] h-72 bg-[#3D2914] rounded-xl animate-pulse" />
+                <div key={i} className="home-feature-card min-h-[380px] bg-[#3D2914] rounded-xl animate-pulse" />
               ))
-            : projects.map((p) => <ProjectCard key={p.id} project={p} />)}
+            : projects.slice(0, 3).map((p) => <ProjectCard key={p.id} project={p} />)}
         </div>
       </div>
     </section>

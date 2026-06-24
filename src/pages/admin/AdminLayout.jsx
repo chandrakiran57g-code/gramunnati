@@ -5,7 +5,7 @@ import {
   LayoutDashboard, Globe, Navigation, FileText, Layout, Users, Building2, Heart, Image,
   UserCheck, UserPlus, MapPin, School, Briefcase, FolderOpen, BarChart3, DollarSign,
   Receipt, BookOpen, Newspaper, Calendar, Quote, MessageSquare, Bell, Settings, Menu,
-  ChevronDown, PieChart, Shield, LogOut, ScrollText, Database,
+  ChevronDown, PieChart, Shield, LogOut, ScrollText, Database, Layers,
 } from 'lucide-react';
 import { clearAdminSession } from '@/lib/adminAuth';
 import { adminRoutes } from '@/lib/adminRoutes';
@@ -22,6 +22,7 @@ const sidebarSections = [
       { label: 'About Us Pages', icon: FileText, path: adminRoutes.pages },
       { label: 'Member List', icon: Users, path: adminRoutes.memberDirectory },
       { label: 'Homepage', icon: Layout, path: adminRoutes.homepage },
+      { label: 'Active Works', icon: Layers, path: adminRoutes.activeWorks },
       { label: 'Teams', icon: Users, path: adminRoutes.teams },
       { label: 'Partners', icon: Building2, path: adminRoutes.partners },
       { label: 'Gallery', icon: Image, path: adminRoutes.gallery },

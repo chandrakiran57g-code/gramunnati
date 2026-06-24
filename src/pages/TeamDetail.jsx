@@ -83,29 +83,28 @@ export default function TeamDetail() {
                   viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                   className="bg-white rounded-2xl border border-border p-6 text-center hover:shadow-lg transition-all duration-300"
                 >
-                  <div className="w-20 h-20 rounded-full bg-primary/10 mx-auto mb-4 overflow-hidden flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-2 border-border bg-primary/5 flex items-center justify-center">
                     {member.photo ? (
-                      <img src={member.photo} alt={member.full_name} className="w-full h-full object-cover" />
-                    ) : (
-                      <span className="text-2xl font-bold text-primary">{member.full_name?.charAt(0)}</span>
-                    )}
+                      <img src={member.photo} alt={member.full_name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling?.classList.remove('hidden'); }} />
+                    ) : null}
+                    <span className={`text-3xl font-bold text-primary ${member.photo ? 'hidden' : ''}`}>{member.full_name?.charAt(0)}</span>
                   </div>
-                  <h3 className="font-semibold text-foreground">{member.full_name}</h3>
+                  <h3 className="font-heading font-semibold text-foreground text-lg">{member.full_name}</h3>
                   {member.designation && (
                     <p className="text-primary text-sm font-medium mt-1">{member.designation}</p>
                   )}
                   {member.description && (
                     <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{member.description}</p>
                   )}
-                  <div className="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-border">
+                  <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border text-sm">
                     {member.email && (
-                      <a href={`mailto:${member.email}`} className="text-muted-foreground hover:text-primary transition-colors" title={member.email}>
-                        <Mail className="w-4 h-4" />
+                      <a href={`mailto:${member.email}`} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+                        <Mail className="w-4 h-4" /> {member.email}
                       </a>
                     )}
                     {member.mobile && (
-                      <a href={`tel:${member.mobile}`} className="text-muted-foreground hover:text-primary transition-colors" title={member.mobile}>
-                        <Phone className="w-4 h-4" />
+                      <a href={`tel:${member.mobile}`} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+                        <Phone className="w-4 h-4" /> {member.mobile}
                       </a>
                     )}
                   </div>

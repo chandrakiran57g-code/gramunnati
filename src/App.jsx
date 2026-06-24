@@ -106,6 +106,8 @@ import AdminSchoolActivities from '@/pages/admin/AdminSchoolActivities';
 import AdminVillageDonations from '@/pages/admin/AdminVillageDonations';
 import AdminSchoolDonations from '@/pages/admin/AdminSchoolDonations';
 import AdminBackup from '@/pages/admin/AdminBackup';
+import AdminActiveWorks from '@/pages/admin/AdminActiveWorks';
+import ActiveWorkDetail from '@/pages/ActiveWorkDetail';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -174,6 +176,7 @@ const AuthenticatedApp = () => {
 
         {/* CMS Dynamic Pages */}
         <Route path="/page/:slug" element={<CmsPageView />} />
+        <Route path="/active-work/:slug" element={<ActiveWorkDetail />} />
 
         {/* Teams */}
         <Route path="/teams" element={<Teams />} />
@@ -220,6 +223,7 @@ const AuthenticatedApp = () => {
           <Route path="navigation" element={<AdminNavigation />} />
           <Route path="pages" element={<AdminCmsPages />} />
           <Route path="homepage" element={<AdminHomepage />} />
+          <Route path="active-works" element={<AdminActiveWorks />} />
           <Route path="teams" element={<AdminTeams />} />
           <Route path="partners" element={<AdminPartners />} />
           <Route path="beneficiaries" element={<AdminBeneficiaries />} />

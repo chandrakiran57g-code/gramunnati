@@ -8,16 +8,49 @@ export const authService = {
    * Sign up with email + password
    * @param {{ email: string, password: string, firstName?: string, lastName?: string }} data
    */
-  async signUp({ email, password, firstName, lastName }) {
+  async signUp({ email, password, fullName, mobile, firstName, lastName }) {
+    const cleanMobile = String(mobile || '').replace(/\D/g, '');
+    if (!cleanMobile || cleanMobile.length < 10) throw new Error('Valid mobile number is required');
+    const authEmail = email?.trim() || `${cleanMobile}@gramunnati.local`;
+    const names = (fullName || `${firstName || ''} ${lastName || ''}`).trim().split(/\s+/);
+    const first = names[0] || '';
+    const last = names.slice(1).join(' ') || '';
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: authEmail,
       password,
       options: {
-        data: { first_name: firstName || '', last_name: lastName || '' },
+        data: {
+          first_name: first,
+          last_name: last,
+          full_name: fullName || `${first} ${last}`.trim(),
+          mobile: cleanMobile,
+          display_email: email?.trim() || null,
+        },
       },
     });
     if (error) throw error;
+    if (data.user?.id) {
+      await supabase.from('profiles').upsert({
+        id: data.user.id,
+        full_name: fullName || `${first} ${last}`.trim(),
+        mobile: cleanMobile,
+        email: email?.trim() || null,
+      }).catch(() => {});
+    }
     return data;
+  },
+
+  async signInWithMobile(mobile, password) {
+    const cleanMobile = String(mobile || '').replace(/\D/g, '');
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .select('id, email, mobile')
+      .or(`mobile.eq.${cleanMobile},mobile.eq.+91${cleanMobile}`)
+      .maybeSingle();
+    if (error) throw error;
+    if (!profile) throw new Error('Mobile number not registered');
+    const authEmail = profile.email || `${cleanMobile}@gramunnati.local`;
+    return this.signInWithPassword(authEmail, password);
   },
 
   /**

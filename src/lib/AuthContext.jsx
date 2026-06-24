@@ -82,14 +82,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (email, password) => {
-    const data = await authService.signInWithPassword(email, password);
-    return data;
+  const login = async (identifier, password) => {
+    const isMobile = /^[\d+\s-]{10,}$/.test(String(identifier).trim());
+    if (isMobile) {
+      return authService.signInWithMobile(identifier, password);
+    }
+    return authService.signInWithPassword(identifier, password);
   };
 
-  const register = async ({ email, password, firstName, lastName }) => {
-    const data = await authService.signUp({ email, password, firstName, lastName });
-    return data;
+  const register = async ({ email, password, fullName, mobile, firstName, lastName }) => {
+    return authService.signUp({ email, password, fullName, mobile, firstName, lastName });
   };
 
   const loginWithGoogle = async () => {
