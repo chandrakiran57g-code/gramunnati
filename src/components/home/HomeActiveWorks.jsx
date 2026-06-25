@@ -41,7 +41,7 @@ export function ActiveWorkCard({ item, index = 0 }) {
             </Link>
           )}
           {(item.card?.enable_donate !== false) && (
-            <Link to={item.donate_link || `/donate?village_id=${item.id}`}>
+            <Link to={item.donate_link || (item.link?.includes('/schools/') ? `/donate?type=school&school_id=${item.id}` : `/donate?type=village&village_id=${item.id}`)}>
               <Button size="sm" className="donation-gradient text-white border-0 text-xs px-3">
                 <Heart className="w-3 h-3 mr-1" /> Donate
               </Button>

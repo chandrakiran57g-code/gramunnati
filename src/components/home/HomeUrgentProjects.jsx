@@ -18,32 +18,32 @@ function ProjectCard({ project }) {
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="home-urgent-card home-feature-card flex flex-col h-full min-h-[380px]"
+      className="home-urgent-card home-feature-card flex flex-col h-full min-h-[320px] lg:min-h-[340px]"
     >
-      <div className="relative h-44 overflow-hidden rounded-t-xl">
-        <SafeImage src={image} alt={name} fallbackIndex={0} width={600} className="w-full h-full object-cover" loading="lazy" />
+      <div className="relative h-36 lg:h-32 overflow-hidden rounded-t-xl">
+        <SafeImage src={image} alt={name} fallbackIndex={0} width={480} className="w-full h-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/90 to-transparent" />
         {progress < 100 && (
-          <span className="absolute top-3 left-3 home-urgent-badge">{t('home.needsSupport')}</span>
+          <span className="absolute top-2 left-2 home-urgent-badge text-[10px] px-2 py-0.5">{t('home.needsSupport')}</span>
         )}
-        <div className="absolute bottom-3 left-3 right-3">
-          <h3 className="font-heading font-bold text-amber-50 text-lg leading-tight line-clamp-2">{name}</h3>
-          {village && <p className="text-amber-100/60 text-xs mt-1">{village}</p>}
+        <div className="absolute bottom-2 left-2 right-2">
+          <h3 className="font-heading font-bold text-amber-50 text-sm lg:text-[15px] leading-tight line-clamp-2">{name}</h3>
+          {village && <p className="text-amber-100/60 text-[10px] mt-0.5 truncate">{village}</p>}
         </div>
       </div>
-      <div className="p-4 bg-[#FFF8E7] border border-t-0 border-[#D4B896] rounded-b-xl flex flex-col flex-1">
-        <div className="flex justify-between text-xs text-[#5C4033]/70 mb-2 font-body">
-          <span>{t('home.raised')} {homeService.formatINR(project.raised || 0)}</span>
-          {project.target > 0 && <span>{t('home.goal')} {homeService.formatINR(project.target)}</span>}
+      <div className="p-3 bg-[#FFF8E7] border border-t-0 border-[#D4B896] rounded-b-xl flex flex-col flex-1">
+        <div className="flex justify-between text-[10px] lg:text-xs text-[#5C4033]/70 mb-1.5 font-body gap-1">
+          <span className="truncate">{t('home.raised')} {homeService.formatINR(project.raised || 0)}</span>
+          {project.target > 0 && <span className="truncate shrink-0">{t('home.goal')} {homeService.formatINR(project.target)}</span>}
         </div>
-        <div className="home-progress-bar mb-4">
+        <div className="home-progress-bar mb-3">
           <div className="home-progress-fill" style={{ width: `${progress}%` }} />
         </div>
         <Link
           to={`/donate?project_id=${project.id}`}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-[#8B6914] text-amber-50 text-sm font-semibold hover:bg-[#6B5344] transition-colors"
+          className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-[#8B6914] text-amber-50 text-xs font-semibold hover:bg-[#6B5344] transition-colors mt-auto"
         >
-          <Heart className="w-4 h-4" />
+          <Heart className="w-3.5 h-3.5" />
           {t('home.supportNow')}
         </Link>
       </div>
@@ -80,12 +80,12 @@ export default function HomeUrgentProjects({ projects = [], loading }) {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-3">
           {loading
-            ? [...Array(3)].map((_, i) => (
-                <div key={i} className="home-feature-card min-h-[380px] bg-[#3D2914] rounded-xl animate-pulse" />
+            ? [...Array(4)].map((_, i) => (
+                <div key={i} className="home-feature-card min-h-[320px] bg-[#3D2914] rounded-xl animate-pulse" />
               ))
-            : projects.slice(0, 3).map((p) => <ProjectCard key={p.id} project={p} />)}
+            : projects.slice(0, 4).map((p) => <ProjectCard key={p.id} project={p} />)}
         </div>
       </div>
     </section>

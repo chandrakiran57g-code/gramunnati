@@ -119,39 +119,99 @@ export const activeWorkService = {
     await writeStore(store);
   },
 
-  /** Merge featured villages/schools/projects when no custom items exist */
+  /** First 3 active items per category on home; View All shows the full list */
   async getHomeSections() {
     const categories = await this.listCategories({ activeOnly: true });
-    const allItems = await this.listItems({ activeOnly: true, featuredOnly: true });
-
     const sections = [];
+
     for (const cat of categories) {
-      let items = allItems.filter((i) => i.category_id === cat.id).slice(0, 3);
-      if (items.length === 0 && cat.entity_type) {
-        items = await this._fallbackEntityCards(cat);
+      let items = [];
+
+      const cmsItems = await this.listItems({ categoryId: cat.id, activeOnly: true });
+
+      if (cat.entity_type) {
+        const entityItems = await this._entityCards(cat, 3);
+        if (cmsItems.length > 0) {
+          const seen = new Set(cmsItems.map((i) => String(i.id)));
+          items = [...cmsItems];
+          for (const row of entityItems) {
+            if (items.length >= 3) break;
+            if (!seen.has(String(row.id))) items.push(row);
+          }
+        } else {
+          items = entityItems;
+        }
+      } else {
+        items = cmsItems;
       }
-      if (items.length > 0) {
-        sections.push({ category: cat, items });
-      }
+
+      items = items.slice(0, 3);
+      if (items.length > 0) sections.push({ category: cat, items });
     }
+
     return sections;
   },
 
-  async _fallbackEntityCards(cat) {
+  async _entityCards(cat, limit = 3) {
     if (cat.entity_type === 'village') {
-      const { data } = await supabase.from('villages').select('*').eq('is_featured', true).is('deleted_at', null).limit(3);
+      const { data } = await supabase
+        .from('villages')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(limit);
       return (data || []).map((v) => ({
-        id: v.id, slug: v.slug, name: v.village_name, cover_image: v.cover_image,
-        description: v.short_description, badge: 'Featured', category_id: cat.id,
-        link: `/villages/${v.slug}`, card: { enable_donate: true, enable_details: true },
+        id: v.id,
+        slug: v.slug,
+        name: v.village_name,
+        cover_image: v.cover_image,
+        description: v.short_description,
+        badge: v.is_featured ? 'Featured' : 'Active',
+        category_id: cat.id,
+        link: `/villages/${v.slug}`,
+        donate_link: `/donate?type=village&village_id=${v.id}`,
+        card: { enable_donate: true, enable_details: true },
       }));
     }
     if (cat.entity_type === 'school') {
-      const { data } = await supabase.from('schools').select('*').eq('is_featured', true).is('deleted_at', null).limit(3);
+      const { data } = await supabase
+        .from('schools')
+        .select('*')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(limit);
       return (data || []).map((s) => ({
-        id: s.id, slug: s.slug, name: s.school_name, cover_image: s.cover_image,
-        description: s.short_description, badge: 'Featured', category_id: cat.id,
-        link: `/schools/${s.slug}`, card: { enable_donate: true, enable_details: true },
+        id: s.id,
+        slug: s.slug,
+        name: s.school_name,
+        cover_image: s.cover_image,
+        description: s.short_description,
+        badge: s.is_featured ? 'Featured' : 'Active',
+        category_id: cat.id,
+        link: `/schools/${s.slug}`,
+        donate_link: `/donate?type=school&school_id=${s.id}`,
+        card: { enable_donate: true, enable_details: true },
+      }));
+    }
+    if (cat.entity_type === 'project') {
+      const { data } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true })
+        .limit(limit);
+      return (data || []).map((p) => ({
+        id: p.id,
+        slug: p.slug,
+        name: p.project_name,
+        cover_image: p.cover_image,
+        description: p.short_description,
+        badge: p.is_featured ? 'Featured' : 'Active',
+        category_id: cat.id,
+        link: `/projects/${p.slug}`,
+        donate_link: `/donate?project_id=${p.id}`,
+        card: { enable_donate: true, enable_details: true },
       }));
     }
     return [];
