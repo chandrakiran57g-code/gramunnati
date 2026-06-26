@@ -84,7 +84,18 @@ export default function Navbar() {
 
 
 
-  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/');
+  const isActive = (path) => {
+    if (!path) return false;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
+  };
+
+  const isNavItemActive = (item) => {
+    const path = item.path;
+    if (path.startsWith('/page/') || path === '/about') {
+      return location.pathname === '/about' || location.pathname.startsWith('/page/');
+    }
+    return isActive(path);
+  };
 
 
 
@@ -152,7 +163,7 @@ export default function Navbar() {
     navItems.map((item) => {
       const hasChildren = item.children && item.children.length > 0;
       const isOpen = activeDropdown === item.label;
-      const pathActive = isActive(item.path.replace(/\/page\/.*/, ''));
+      const pathActive = isNavItemActive(item);
 
       return (
         <div
@@ -163,7 +174,7 @@ export default function Navbar() {
         >
           <Link
             to={item.path}
-            className={linkClass(item.path.replace(/\/page\/.*/, ''), pathActive)}
+            className={linkClass(item.path, pathActive)}
           >
             {item.label}
             {hasChildren && (
@@ -407,7 +418,7 @@ export default function Navbar() {
                         type="button"
                         onClick={() => setMobileExpanded(isExpanded ? null : item.label)}
                         className={`nav-mobile-toggle w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                          isActive(item.path) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
+                          isNavItemActive(item) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
                         }`}
                       >
                         {item.label}
@@ -447,7 +458,7 @@ export default function Navbar() {
                     <Link
                       to={item.path}
                       className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                        isActive(item.path) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
+                        isNavItemActive(item) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
                       }`}
                     >
                       {item.label}
