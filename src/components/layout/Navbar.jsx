@@ -134,7 +134,7 @@ export default function Navbar() {
 
 
   const linkClass = (path, active) =>
-    `nav-link-cs nav-link-desktop flex items-center gap-0.5 px-1.5 xl:px-2 2xl:px-2.5 py-2 text-[11px] xl:text-xs 2xl:text-[13px] font-semibold whitespace-nowrap shrink-0 ${
+    `nav-link-cs flex items-center gap-1 px-2 xl:px-2.5 2xl:px-3 py-2 text-xs xl:text-[13px] font-semibold whitespace-nowrap shrink-0 ${
       active ? 'nav-link-active text-primary' : 'text-foreground hover:text-primary'
     }`;
 
@@ -142,26 +142,25 @@ export default function Navbar() {
 
   return (
 
-    <nav className={`fixed top-0 left-0 right-0 z-50 overflow-x-hidden transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
 
       scrolled ? 'bg-cream-50/95 backdrop-blur-md shadow-md border-b border-brown-300' : 'bg-cream-50/90 backdrop-blur-sm'
 
     }`}>
 
-      <div className="w-full mx-auto px-2 sm:px-3 lg:px-4">
+      <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-5">
 
-        <div className="flex items-center h-16 w-full min-w-0 gap-1">
+        <div className="flex items-center h-16 w-full flex-nowrap">
 
-          {/* Logo — icon only until wide screens */}
-          <Link to="/" className="flex items-center gap-1.5 flex-shrink-0">
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-1 2xl:mr-2">
 
-            <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 2xl:h-10 2xl:w-10 object-contain rounded-full shrink-0" />
+            <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
 
-            <div className="hidden min-[1600px]:block leading-tight whitespace-nowrap">
+            <div className="hidden 2xl:block leading-tight whitespace-nowrap">
 
-              <div className="font-heading font-bold text-base 2xl:text-lg text-foreground">GramUnnati</div>
+              <div className="font-heading font-bold text-lg text-foreground">GramUnnati</div>
 
-              <div className="text-[11px] text-muted-foreground">{t('brand.tagline')}</div>
+              <div className="text-xs text-muted-foreground">{t('brand.tagline')}</div>
 
             </div>
 
@@ -169,10 +168,8 @@ export default function Navbar() {
 
 
 
-          {/* Nav + Donate — scrolls on laptop if needed; utilities stay visible */}
-          <div className="hidden xl:flex flex-1 min-w-0 items-center overflow-x-auto home-scroll-hide">
-
-            <div className="flex items-center flex-nowrap min-w-max pr-1">
+          {/* Nav links + Donate flow directly after logo (no center gap) */}
+          <div className="hidden xl:contents">
 
             {navItems.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
@@ -234,36 +231,32 @@ export default function Navbar() {
 
             {/* Donate Us — agriculture gold */}
 
-            <Link to="/donate" className="shrink-0 ml-0.5">
+            <Link to="/donate" className="shrink-0 ml-1">
 
-              <Button size="sm" className="bg-service-agriculture hover:bg-service-agriculture/90 text-white border-0 font-semibold px-2 xl:px-2.5 2xl:px-4 text-[11px] xl:text-xs h-7 xl:h-8 hover:opacity-95">
+              <Button size="sm" className="bg-service-agriculture hover:bg-service-agriculture/90 text-white border-0 font-semibold px-3 xl:px-4 text-xs h-8 hover:opacity-95">
 
-                <Heart className="w-3 h-3 xl:w-3.5 xl:h-3.5 mr-1 shrink-0" />
+                <Heart className="w-3.5 h-3.5 mr-1.5" />
 
-                <span className="hidden min-[1400px]:inline">{t('nav.donateUs')}</span>
-
-                <span className="min-[1400px]:hidden">Donate</span>
+                {t('nav.donateUs')}
 
               </Button>
 
             </Link>
 
-            </div>
-
           </div>
 
 
 
-          {/* Utilities — always pinned right, never clipped */}
-          <div className="hidden lg:flex items-center gap-0.5 shrink-0 ml-auto">
+          {/* Utilities sit right after Donate on xl; pushed right when nav is hidden */}
+          <div className="hidden lg:flex items-center gap-0.5 shrink-0 lg:ml-auto xl:ml-0">
 
-            <LanguageToggle className="shrink-0 [&_button]:px-1.5 [&_button]:py-0.5 [&_button]:text-[10px] 2xl:[&_button]:px-2.5 2xl:[&_button]:text-xs" />
+            <LanguageToggle className="shrink-0" />
 
             <Link
 
               to="/search"
 
-              className="p-1.5 xl:p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors shrink-0"
+              className="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
 
               title={t('nav.search')}
 
@@ -300,17 +293,17 @@ export default function Navbar() {
 
               ) : (
 
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center gap-1">
 
                   <Link to="/login">
 
-                    <Button size="sm" variant="ghost" className="text-[11px] xl:text-xs h-7 xl:h-8 px-1.5 xl:px-2">{t('nav.login')}</Button>
+                    <Button size="sm" variant="ghost" className="text-xs h-8 px-2.5">{t('nav.login')}</Button>
 
                   </Link>
 
                   <Link to="/register">
 
-                    <Button size="sm" className="brand-gradient text-white border-0 text-[11px] xl:text-xs h-7 xl:h-8 px-2 xl:px-2.5">{t('nav.register')}</Button>
+                    <Button size="sm" className="brand-gradient text-white border-0 text-xs h-8 px-2.5">{t('nav.register')}</Button>
 
                   </Link>
 
