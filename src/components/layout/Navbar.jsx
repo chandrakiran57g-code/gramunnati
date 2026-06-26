@@ -134,11 +134,174 @@ export default function Navbar() {
 
 
   const linkClass = (path, active) =>
-    `nav-link-cs flex items-center gap-1 px-2 xl:px-2.5 2xl:px-3 py-2 text-xs xl:text-[13px] font-semibold whitespace-nowrap shrink-0 ${
+    `nav-link-cs flex items-center gap-1 px-1.5 xl:px-2 2xl:px-2.5 py-2 text-[11px] xl:text-xs 2xl:text-[13px] font-semibold whitespace-nowrap shrink-0 ${
       active ? 'nav-link-active text-primary' : 'text-foreground hover:text-primary'
     }`;
 
+  const brandBlock = (
+    <>
+      <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
+      <div className="hidden lg:block leading-tight whitespace-nowrap min-w-0">
+        <div className="font-heading font-bold text-sm xl:text-base text-foreground truncate">GramUnnati</div>
+        <div className="text-[10px] xl:text-xs text-muted-foreground truncate">{t('brand.tagline')}</div>
+      </div>
+    </>
+  );
 
+  const renderNavLinks = () =>
+    navItems.map((item) => {
+      const hasChildren = item.children && item.children.length > 0;
+      const isOpen = activeDropdown === item.label;
+      const pathActive = isActive(item.path.replace(/\/page\/.*/, ''));
+
+      return (
+        <div
+          key={item.label}
+          className="relative shrink-0"
+          onMouseEnter={() => hasChildren && openDropdown(item.label)}
+          onMouseLeave={closeDropdown}
+        >
+          <Link
+            to={item.path}
+            className={linkClass(item.path.replace(/\/page\/.*/, ''), pathActive)}
+          >
+            {item.label}
+            {hasChildren && (
+              <ChevronDown className={`nav-chevron w-3.5 h-3.5 opacity-70 ${isOpen ? 'nav-chevron-open' : ''}`} />
+            )}
+          </Link>
+
+          <AnimatePresence>
+            {hasChildren && isOpen && (
+              <>
+                <div className="nav-dropdown-bridge absolute left-0 right-0 top-full h-3 z-50" aria-hidden="true" />
+                <motion.div
+                  initial={{ opacity: 0, y: 12, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                  className="nav-dropdown-panel absolute top-full left-0 mt-2 min-w-[260px] bg-white rounded-lg overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+                  onMouseEnter={clearDropdownTimer}
+                  onMouseLeave={closeDropdown}
+                >
+                  <div className="nav-dropdown-header px-4 py-2.5">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                      {item.label}
+                    </span>
+                  </div>
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.path + child.label}
+                      to={child.path}
+                      className="nav-dropdown-item block px-4 py-2.5 text-sm text-foreground"
+                    >
+                      {child.label}
+                    </Link>
+                  ))}
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    });
+
+  const renderUtilities = () => (
+    <>
+      <LanguageToggle className="shrink-0" />
+
+      <Link
+        to="/search"
+        className="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
+        title={t('nav.search')}
+      >
+        <Search className="w-4 h-4" />
+      </Link>
+
+      <div
+        className="relative ml-1"
+        onMouseEnter={() => { clearDropdownTimer(); setUserMenuOpen(true); }}
+        onMouseLeave={() => {
+          clearDropdownTimer();
+          dropdownTimer.current = setTimeout(() => setUserMenuOpen(false), 180);
+        }}
+      >
+        {user ? (
+          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/15 transition-colors text-sm font-medium">
+            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">
+              {user.full_name?.charAt(0) || '?'}
+            </div>
+            <ChevronDown className={`nav-chevron w-3 h-3 opacity-70 ${userMenuOpen ? 'nav-chevron-open' : ''}`} />
+          </button>
+        ) : (
+          <div className="flex items-center gap-1">
+            <Link to="/login">
+              <Button size="sm" variant="ghost" className="text-xs h-8 px-2.5">{t('nav.login')}</Button>
+            </Link>
+            <Link to="/register">
+              <Button size="sm" className="brand-gradient text-white border-0 text-xs h-8 px-2.5">{t('nav.register')}</Button>
+            </Link>
+          </div>
+        )}
+
+        <AnimatePresence>
+          {user && userMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+              className="nav-dropdown-panel absolute right-0 top-full mt-2 w-52 bg-white rounded-lg overflow-hidden z-50"
+              onMouseEnter={clearDropdownTimer}
+              onMouseLeave={() => {
+                clearDropdownTimer();
+                dropdownTimer.current = setTimeout(() => setUserMenuOpen(false), 180);
+              }}
+            >
+              <div className="px-4 py-3 border-b border-border">
+                <div className="font-semibold text-sm">{user.full_name}</div>
+                <div className="text-xs text-muted-foreground truncate">{user.email}</div>
+              </div>
+
+              <Link to="/profile" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                <User className="w-4 h-4" /> {t('nav.myProfile')}
+              </Link>
+
+              <Link to="/dashboard" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                <LayoutDashboard className="w-4 h-4" /> {t('nav.dashboard')}
+              </Link>
+
+              <Link to="/my-donations" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                <Heart className="w-4 h-4" /> {t('nav.myDonations')}
+              </Link>
+
+              <Link to="/my-villages" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                <MapPin className="w-4 h-4" /> {t('nav.myVillages')}
+              </Link>
+
+              <Link to="/my-schools" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                <School className="w-4 h-4" /> {t('nav.mySchools')}
+              </Link>
+
+              <Link to="/notifications" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                <Heart className="w-4 h-4" /> {t('nav.notifications')}
+              </Link>
+
+              {user.role === 'admin' && (
+                <Link to="/admin" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground border-t border-border">
+                  <LayoutDashboard className="w-4 h-4" /> {t('nav.adminPanel')}
+                </Link>
+              )}
+
+              <button type="button" onClick={() => base44.auth.logout('/')} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors border-t border-border">
+                <LogOut className="w-4 h-4" /> {t('nav.logout')}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </>
+  );
 
   return (
 
@@ -152,253 +315,41 @@ export default function Navbar() {
 
         <div className="flex items-center h-16 w-full flex-nowrap">
 
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-1 2xl:mr-2">
-
-            <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
-
-            <div className="hidden 2xl:block leading-tight whitespace-nowrap">
-
-              <div className="font-heading font-bold text-lg text-foreground">GramUnnati</div>
-
-              <div className="text-xs text-muted-foreground">{t('brand.tagline')}</div>
-
-            </div>
-
+          {/* Logo — tablet / mobile and lg-only bar (hidden on xl+ where grid owns branding) */}
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 xl:hidden">
+            {brandBlock}
           </Link>
 
+          {/* Desktop xl+: flex keeps center nav bounded so it never overlaps utilities */}
+          <div className="hidden xl:flex w-full items-center min-w-0 gap-2">
+            <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0 max-w-[11rem] 2xl:max-w-[13rem]">
+              {brandBlock}
+            </Link>
 
-
-          {/* Nav links + Donate flow directly after logo (no center gap) */}
-          <div className="hidden xl:contents">
-
-            {navItems.map((item) => {
-              const hasChildren = item.children && item.children.length > 0;
-              const isOpen = activeDropdown === item.label;
-              const pathActive = isActive(item.path.replace(/\/page\/.*/, ''));
-
-              return (
-              <div
-                key={item.label}
-                className="relative shrink-0"
-                onMouseEnter={() => hasChildren && openDropdown(item.label)}
-                onMouseLeave={closeDropdown}
-              >
-                <Link
-                  to={item.path}
-                  className={linkClass(item.path.replace(/\/page\/.*/, ''), pathActive)}
-                >
-                  {item.label}
-                  {hasChildren && (
-                    <ChevronDown className={`nav-chevron w-3.5 h-3.5 opacity-70 ${isOpen ? 'nav-chevron-open' : ''}`} />
-                  )}
-                </Link>
-
-                <AnimatePresence>
-                  {hasChildren && isOpen && (
-                    <>
-                      <div className="nav-dropdown-bridge absolute left-0 right-0 top-full h-3 z-50" aria-hidden="true" />
-                      <motion.div
-                      initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                      className="nav-dropdown-panel absolute top-full left-0 mt-2 min-w-[260px] bg-white rounded-lg overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
-                      onMouseEnter={clearDropdownTimer}
-                      onMouseLeave={closeDropdown}
-                    >
-                      <div className="nav-dropdown-header px-4 py-2.5">
-                        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                          {item.label}
-                        </span>
-                      </div>
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.path + child.label}
-                          to={child.path}
-                          className="nav-dropdown-item block px-4 py-2.5 text-sm text-foreground"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
-                    </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
+            <nav
+              className="flex-1 min-w-0 flex items-center justify-center px-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              aria-label="Main navigation"
+            >
+              <div className="flex items-center shrink-0">
+                {renderNavLinks()}
               </div>
-            );})}
-
-
-
-            {/* Donate Us — agriculture gold */}
-
-            <Link to="/donate" className="shrink-0 ml-1">
-
-              <Button size="sm" className="bg-service-agriculture hover:bg-service-agriculture/90 text-white border-0 font-semibold px-3 xl:px-4 text-xs h-8 hover:opacity-95">
-
-                <Heart className="w-3.5 h-3.5 mr-1.5" />
-
-                {t('nav.donateUs')}
-
-              </Button>
-
-            </Link>
-
-          </div>
-
-
-
-          {/* Utilities sit right after Donate on xl; pushed right when nav is hidden */}
-          <div className="hidden lg:flex items-center gap-0.5 shrink-0 lg:ml-auto xl:ml-0">
-
-            <LanguageToggle className="shrink-0" />
-
-            <Link
-
-              to="/search"
-
-              className="p-2 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors"
-
-              title={t('nav.search')}
-
-            >
-
-              <Search className="w-4 h-4" />
-
-            </Link>
-
-
-
-            <div
-              className="relative ml-1"
-              onMouseEnter={() => { clearDropdownTimer(); setUserMenuOpen(true); }}
-              onMouseLeave={() => {
-                clearDropdownTimer();
-                dropdownTimer.current = setTimeout(() => setUserMenuOpen(false), 180);
-              }}
-            >
-
-              {user ? (
-
-                <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary/10 text-primary hover:bg-primary/15 transition-colors text-sm font-medium">
-
-                  <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-bold">
-
-                    {user.full_name?.charAt(0) || '?'}
-
-                  </div>
-
-                  <ChevronDown className={`nav-chevron w-3 h-3 opacity-70 ${userMenuOpen ? 'nav-chevron-open' : ''}`} />
-
-                </button>
-
-              ) : (
-
-                <div className="flex items-center gap-1">
-
-                  <Link to="/login">
-
-                    <Button size="sm" variant="ghost" className="text-xs h-8 px-2.5">{t('nav.login')}</Button>
-
-                  </Link>
-
-                  <Link to="/register">
-
-                    <Button size="sm" className="brand-gradient text-white border-0 text-xs h-8 px-2.5">{t('nav.register')}</Button>
-
-                  </Link>
-
-                </div>
-
-              )}
-
-              <AnimatePresence>
-
-                {user && userMenuOpen && (
-
-                  <motion.div
-                    initial={{ opacity: 0, y: 12, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                    className="nav-dropdown-panel absolute right-0 top-full mt-2 w-52 bg-white rounded-lg overflow-hidden z-50"
-                    onMouseEnter={clearDropdownTimer}
-                    onMouseLeave={() => {
-                      clearDropdownTimer();
-                      dropdownTimer.current = setTimeout(() => setUserMenuOpen(false), 180);
-                    }}
-                  >
-
-                    <div className="px-4 py-3 border-b border-border">
-
-                      <div className="font-semibold text-sm">{user.full_name}</div>
-
-                      <div className="text-xs text-muted-foreground truncate">{user.email}</div>
-
-                    </div>
-
-                    <Link to="/profile" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-
-                      <User className="w-4 h-4" /> {t('nav.myProfile')}
-
-                    </Link>
-
-                    <Link to="/dashboard" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-
-                      <LayoutDashboard className="w-4 h-4" /> {t('nav.dashboard')}
-
-                    </Link>
-
-                    <Link to="/my-donations" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-
-                      <Heart className="w-4 h-4" /> {t('nav.myDonations')}
-
-                    </Link>
-
-                    <Link to="/my-villages" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-
-                      <MapPin className="w-4 h-4" /> {t('nav.myVillages')}
-
-                    </Link>
-
-                    <Link to="/my-schools" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-
-                      <School className="w-4 h-4" /> {t('nav.mySchools')}
-
-                    </Link>
-
-                    <Link to="/notifications" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-
-                      <Heart className="w-4 h-4" /> {t('nav.notifications')}
-
-                    </Link>
-
-                    {user.role === 'admin' && (
-
-                      <Link to="/admin" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground border-t border-border">
-
-                        <LayoutDashboard className="w-4 h-4" /> {t('nav.adminPanel')}
-
-                      </Link>
-
-                    )}
-
-                    <button type="button" onClick={() => base44.auth.logout('/')} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors border-t border-border">
-
-                      <LogOut className="w-4 h-4" /> {t('nav.logout')}
-
-                    </button>
-
-                  </motion.div>
-
-                )}
-
-              </AnimatePresence>
-
+            </nav>
+
+            <div className="flex items-center justify-end gap-0.5 shrink-0 pl-1 relative z-10">
+              <Link to="/donate" className="shrink-0">
+                <Button size="sm" className="bg-service-agriculture hover:bg-service-agriculture/90 text-white border-0 font-semibold px-3 2xl:px-4 text-xs h-8 hover:opacity-95 whitespace-nowrap">
+                  <Heart className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                  {t('nav.donateUs')}
+                </Button>
+              </Link>
+              {renderUtilities()}
             </div>
-
           </div>
 
-
+          {/* Utilities — lg only (nav links in hamburger until xl) */}
+          <div className="hidden lg:flex xl:hidden items-center gap-0.5 shrink-0 ml-auto">
+            {renderUtilities()}
+          </div>
 
           <div className="flex lg:hidden items-center gap-2 ml-auto shrink-0">
 
