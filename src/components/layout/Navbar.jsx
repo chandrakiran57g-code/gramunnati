@@ -134,11 +134,8 @@ export default function Navbar() {
 
 
   const linkClass = (path, active) =>
-
-    `nav-link-cs flex items-center gap-1.5 px-3 py-2.5 text-[13px] font-semibold whitespace-nowrap ${
-
+    `nav-link-cs flex items-center gap-1 px-2 xl:px-2.5 2xl:px-3 py-2 text-xs xl:text-[13px] font-semibold whitespace-nowrap shrink-0 ${
       active ? 'nav-link-active text-primary' : 'text-foreground hover:text-primary'
-
     }`;
 
 
@@ -151,21 +148,19 @@ export default function Navbar() {
 
     }`}>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-5">
 
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center h-16 w-full flex-nowrap">
 
-          {/* Branding */}
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0 mr-1 2xl:mr-2">
 
-          <Link to="/" className="flex items-center gap-3 flex-shrink-0 mr-2">
+            <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
 
-            <img src={LOGO_URL} alt="GramUnnati Logo" className="h-10 w-10 object-contain rounded-full" />
+            <div className="hidden 2xl:block leading-tight whitespace-nowrap">
 
-            <div className="hidden sm:block">
+              <div className="font-heading font-bold text-lg text-foreground">GramUnnati</div>
 
-              <div className="font-heading font-bold text-lg leading-tight text-foreground">GramUnnati</div>
-
-              <div className="text-xs text-muted-foreground leading-tight">{t('brand.tagline')}</div>
+              <div className="text-xs text-muted-foreground">{t('brand.tagline')}</div>
 
             </div>
 
@@ -173,7 +168,8 @@ export default function Navbar() {
 
 
 
-          <div className="hidden xl:flex items-center gap-0 flex-1 justify-center">
+          {/* Nav links + Donate flow directly after logo (no center gap) */}
+          <div className="hidden xl:contents">
 
             {navItems.map((item) => {
               const hasChildren = item.children && item.children.length > 0;
@@ -183,7 +179,7 @@ export default function Navbar() {
               return (
               <div
                 key={item.label}
-                className="relative"
+                className="relative shrink-0"
                 onMouseEnter={() => hasChildren && openDropdown(item.label)}
                 onMouseLeave={closeDropdown}
               >
@@ -235,9 +231,9 @@ export default function Navbar() {
 
             {/* Donate Us — agriculture gold */}
 
-            <Link to="/donate" className="ml-1">
+            <Link to="/donate" className="shrink-0 ml-1">
 
-              <Button size="sm" className="bg-service-agriculture hover:bg-service-agriculture/90 text-white border-0 font-semibold px-4 hover:opacity-95">
+              <Button size="sm" className="bg-service-agriculture hover:bg-service-agriculture/90 text-white border-0 font-semibold px-3 xl:px-4 text-xs h-8 hover:opacity-95">
 
                 <Heart className="w-3.5 h-3.5 mr-1.5" />
 
@@ -251,9 +247,8 @@ export default function Navbar() {
 
 
 
-          {/* Utilities: language, search, auth */}
-
-          <div className="hidden lg:flex items-center gap-1 shrink-0">
+          {/* Utilities sit right after Donate on xl; pushed right when nav is hidden */}
+          <div className="hidden lg:flex items-center gap-0.5 shrink-0 lg:ml-auto xl:ml-0">
 
             <LanguageToggle className="shrink-0" />
 
@@ -298,17 +293,17 @@ export default function Navbar() {
 
               ) : (
 
-                <div className="flex items-center gap-1 ml-1">
+                <div className="flex items-center gap-1">
 
                   <Link to="/login">
 
-                    <Button size="sm" variant="ghost" className="text-sm">{t('nav.login')}</Button>
+                    <Button size="sm" variant="ghost" className="text-xs h-8 px-2.5">{t('nav.login')}</Button>
 
                   </Link>
 
                   <Link to="/register">
 
-                    <Button size="sm" className="brand-gradient text-white border-0 text-sm">{t('nav.register')}</Button>
+                    <Button size="sm" className="brand-gradient text-white border-0 text-xs h-8 px-2.5">{t('nav.register')}</Button>
 
                   </Link>
 
@@ -405,7 +400,7 @@ export default function Navbar() {
 
 
 
-          <div className="flex lg:hidden items-center gap-2">
+          <div className="flex lg:hidden items-center gap-2 ml-auto shrink-0">
 
             <LanguageToggle />
 
