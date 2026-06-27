@@ -191,7 +191,7 @@ export default function Navbar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.98 }}
                   transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-                  className="nav-dropdown-panel absolute top-full left-0 mt-2 min-w-[260px] bg-white rounded-lg overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+                  className="nav-dropdown-panel absolute top-full left-0 mt-2 min-w-[260px] bg-white rounded-lg overflow-hidden z-[60] max-h-[70vh] overflow-y-auto"
                   onMouseEnter={clearDropdownTimer}
                   onMouseLeave={closeDropdown}
                 >
@@ -316,15 +316,15 @@ export default function Navbar() {
 
   return (
 
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <nav className={`fixed top-0 left-0 right-0 z-50 overflow-visible transition-all duration-300 ${
 
       scrolled ? 'bg-cream-50/95 backdrop-blur-md shadow-md border-b border-brown-300' : 'bg-cream-50/90 backdrop-blur-sm'
 
     }`}>
 
-      <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-5">
+      <div className="w-full max-w-[1440px] mx-auto px-3 sm:px-4 lg:px-5 overflow-visible">
 
-        <div className="flex items-center h-16 w-full flex-nowrap">
+        <div className="flex items-center h-16 w-full flex-nowrap overflow-visible">
 
           {/* Logo — tablet / mobile and lg-only bar (hidden on xl+ where grid owns branding) */}
           <Link to="/" className="flex items-center gap-2 flex-shrink-0 xl:hidden">
@@ -332,13 +332,13 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop xl+: flex keeps center nav bounded so it never overlaps utilities */}
-          <div className="hidden xl:flex w-full items-center min-w-0 gap-2">
+          <div className="hidden xl:flex w-full items-center min-w-0 gap-2 overflow-visible">
             <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0 max-w-[11rem] 2xl:max-w-[13rem]">
               {brandBlock}
             </Link>
 
             <nav
-              className="flex-1 min-w-0 flex items-center justify-center px-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              className="flex-1 min-w-0 flex items-center justify-center px-1 overflow-visible"
               aria-label="Main navigation"
             >
               <div className="flex items-center shrink-0">
