@@ -1,6 +1,9 @@
 import { supabase } from '@/api/supabaseClient';
 import { ADMIN_CREDENTIALS } from '@/lib/adminAuth';
 
+export const ADMIN_DB_SETUP_HINT =
+  `Create Supabase Auth user "${ADMIN_CREDENTIALS.email}" and run supabase/admin-policies.sql.`;
+
 /** Sign in to Supabase so RLS allows admin writes. Called before mutations. */
 export async function ensureAdminDbAccess() {
   const { data: { session } } = await supabase.auth.getSession();
@@ -12,9 +15,7 @@ export async function ensureAdminDbAccess() {
   });
 
   if (error) {
-    throw new Error(
-      `Database access denied: ${error.message}. Create admin user "${ADMIN_CREDENTIALS.email}" in Supabase Auth and run supabase/admin-policies.sql.`
-    );
+    throw new Error(`Database access denied: ${error.message}. ${ADMIN_DB_SETUP_HINT}`);
   }
   return { ok: true };
 }

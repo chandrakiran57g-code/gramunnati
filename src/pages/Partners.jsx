@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Building2, Globe, ArrowRight } from 'lucide-react';
+import { LogoCloud } from '@/components/partners/LogoCloud';
 import { Badge } from '@/components/ui/badge';
+import { Building2, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
@@ -36,6 +37,20 @@ export default function Partners() {
           </div>
         </section>
       </HeroScrollSection>
+
+      <section className="py-12 border-b border-border">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <LogoCloud
+            logos={filtered.map((p) => ({
+              id: p.id,
+              name: p.name,
+              src: p.logo,
+              alt: p.name,
+              website: p.website,
+            }))}
+          />
+        </div>
+      </section>
 
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">

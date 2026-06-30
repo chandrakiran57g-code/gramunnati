@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
 const EMPTY = { title:'',slug:'',content:'',summary:'',featured_image:'',category:'general',is_published:false };
 
@@ -63,7 +64,7 @@ export default function AdminNews() {
           <div><Label>Title *</Label><Input value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} required className="mt-1"/></div>
           <div><Label>Summary</Label><Textarea value={form.summary} onChange={e=>setForm(f=>({...f,summary:e.target.value}))} className="mt-1 h-20"/></div>
           <div><Label>Content *</Label><Textarea value={form.content} onChange={e=>setForm(f=>({...f,content:e.target.value}))} required className="mt-1 h-32"/></div>
-          <div><Label>Featured Image URL</Label><Input value={form.featured_image} onChange={e=>setForm(f=>({...f,featured_image:e.target.value}))} className="mt-1"/></div>
+          <AdminImageUpload label="Featured image" value={form.featured_image} onChange={(url) => setForm(f => ({...f, featured_image: url}))} subPath="news" />
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Category</Label><select value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="general">General</option><option value="village">Village</option><option value="school">School</option><option value="project">Project</option><option value="event">Event</option></select></div>
             <div className="flex items-center gap-2 pt-6"><Switch checked={form.is_published} onCheckedChange={v=>setForm(f=>({...f,is_published:v}))}/><span className="text-sm">Published</span></div>

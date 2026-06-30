@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { cmsService } from '@/api/cms';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
 const GENERAL_KEYS = ['site_name', 'contact_email', 'contact_phone', 'address', 'logo_url', 'favicon_url'];
 const PAYMENT_KEYS = ['rzp_key', 'rzp_secret', 'upi_id', 'bank_name', 'bank_account', 'ifsc'];
@@ -109,8 +110,6 @@ export default function AdminSettings() {
               <SettingsFields
                 fields={[
                   { label: 'Site Name', placeholder: 'GramUnnati', id: 'site_name' },
-                  { label: 'Logo URL', placeholder: 'https://…', id: 'logo_url' },
-                  { label: 'Favicon URL', placeholder: 'https://…', id: 'favicon_url' },
                   { label: 'Contact Email', placeholder: 'contact@gramunnati.in', id: 'contact_email' },
                   { label: 'Contact Phone', placeholder: '+91 9XXXXXXXXX', id: 'contact_phone' },
                   { label: 'Address', placeholder: 'GramUnnati Office, Hyderabad', id: 'address' },
@@ -118,6 +117,10 @@ export default function AdminSettings() {
                 values={values}
                 onChange={handleChange}
               />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <AdminImageUpload label="Site logo" value={values.logo_url || ''} onChange={(url) => handleChange('logo_url', url)} subPath="settings" />
+                <AdminImageUpload label="Favicon" value={values.favicon_url || ''} onChange={(url) => handleChange('favicon_url', url)} subPath="settings" />
+              </div>
               <Button onClick={() => saveKeys(GENERAL_KEYS)} disabled={saving} className="brand-gradient text-white border-0 rounded-xl">
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? 'Saving…' : saved ? '✓ Saved!' : 'Save General Settings'}

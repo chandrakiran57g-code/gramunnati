@@ -5,9 +5,11 @@ import RotatingHeroWord from '@/components/ui/rotating-hero-word';
 import MountainVistaParallax from '@/components/ui/mountain-vista-bg';
 import HeroScrollHint from '@/components/home/HeroScrollHint';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { translations } from '@/i18n/translations';
 
 export default function HeroSection() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const { heroRotatingWords, heroRotatingWidthAnchor } = translations[lang].home;
 
   return (
     <section className="hero-section-viewport relative flex items-center justify-center overflow-hidden bg-[#1b4332]">
@@ -20,6 +22,8 @@ export default function HeroSection() {
             <RotatingHeroWord
               className="hero-section-title-line font-heading font-bold tracking-wide"
               color="#ffffff"
+              words={heroRotatingWords}
+              widthAnchor={heroRotatingWidthAnchor}
             />
             <span className="hero-section-title-main flex flex-wrap items-baseline justify-center gap-x-2 overflow-visible">
               <TextReveal
@@ -34,7 +38,7 @@ export default function HeroSection() {
                 staggerDelay={35}
               />
               <TextReveal
-                text="&"
+                text={t('home.heroAnd')}
                 splitBy="word"
                 className="font-heading font-bold"
                 fontSize="inherit"

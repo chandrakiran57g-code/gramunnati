@@ -6,12 +6,12 @@
 
 @layer base {
   :root {
-    /* ── Cream scale (platform surfaces) ── */
-    --cream-50: 60 14% 97%;         /* #f9f9f7 */
-    --cream-100: 50 13% 95%;        /* #f4f3ef */
-    --cream-200: 50 13% 93%;        /* #efeee8 */
-    --cream-300: 48 13% 90%;        /* #eae8e0 */
-    --cream-400: 45 12% 87%;        /* #e5e3d9 */
+    /* ── Surface scale (white — token names kept as cream-* for compatibility) ── */
+    --cream-50: 0 0% 100%;          /* #FFFFFF */
+    --cream-100: 0 0% 100%;         /* #FFFFFF */
+    --cream-200: 0 0% 98%;          /* #FAFAFA */
+    --cream-300: 0 0% 96%;          /* #F5F5F5 */
+    --cream-400: 0 0% 94%;          /* #F0F0F0 */
 
     /* ── Brown scale (platform text & chrome) ── */
     --brown-900: 35 29% 13%;        /* #2C2418 Deep Brown */
@@ -40,7 +40,7 @@
     --service-healthcare: 0 72% 51%;      /* #DC2626 */
     --service-healthcare-tint: 0 86% 97%; /* #FEF2F2 */
 
-    /* ── shadcn / platform UI tokens (cream + brown) ── */
+    /* ── shadcn / platform UI tokens (white + brown) ── */
     --background: var(--cream-50);
     --foreground: var(--brown-900);
     --card: 0 0% 100%;
@@ -245,13 +245,13 @@
   }
 
   .splash-bg-light {
-    background-color: #f8f9f6;
+    background-color: #ffffff;
   }
 
   .splash-logo-glow {
     width: 130%;
     height: 130%;
-    background: radial-gradient(circle, rgba(246, 216, 198, 0.55) 0%, rgba(45, 106, 79, 0.12) 45%, transparent 70%);
+    background: radial-gradient(circle, rgba(246, 216, 198, 0.55) 0%, rgba(245, 158, 11, 0.14) 45%, transparent 70%);
     filter: blur(8px);
   }
 
@@ -273,7 +273,7 @@
     }
 
     .splash-brand-name {
-      color: #f8f9f6 !important;
+      color: #ffffff !important;
     }
 
     .splash-tagline {
@@ -562,20 +562,20 @@
 
   .home-hero-btn-village {
     background: linear-gradient(135deg, #5C7A3A, #6B8E23);
-    color: #f9f9f7;
+    color: #ffffff;
     box-shadow: 0 6px 20px rgba(92, 122, 58, 0.35);
   }
 
   .home-hero-btn-school {
     background: linear-gradient(135deg, #8B6914, #A0785A);
-    color: #f9f9f7;
+    color: #ffffff;
     box-shadow: 0 6px 20px rgba(139, 105, 20, 0.35);
   }
 
   .home-hero-btn-ghost {
     background: rgba(255, 248, 231, 0.1);
     border: 1px solid rgba(255, 248, 231, 0.28);
-    color: #f9f9f7;
+    color: #ffffff;
     backdrop-filter: blur(6px);
   }
 
@@ -584,14 +584,14 @@
   }
 
   .home-search-panel {
-    background: #f9f9f7;
+    background: #ffffff;
     border: 1px solid #D4B896;
     border-radius: 0.75rem;
     box-shadow: 0 12px 32px rgba(92, 64, 51, 0.12);
   }
 
   .home-programs-section {
-    background: linear-gradient(180deg, #f4f3ef 0%, #EDD9B8 50%, #e5e3d9 100%);
+    background: linear-gradient(180deg, #ffffff 0%, #EDD9B8 50%, #f0f0f0 100%);
   }
 
   .home-programs-texture {
@@ -729,7 +729,7 @@
   }
 
   .home-skeleton-card {
-    background: #f9f9f7;
+    background: #ffffff;
     border-radius: 0.75rem;
     border: 1px solid #D4B896;
     overflow: hidden;
@@ -739,13 +739,13 @@
     padding: 1.25rem 1.5rem;
     border-radius: 0.625rem;
     border: 1px solid #D4B896;
-    background: #f9f9f7;
+    background: #ffffff;
   }
 
-  .home-metric-donation { background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), #f9f9f7 55%); }
-  .home-metric-volunteer { background: linear-gradient(135deg, rgba(107, 142, 35, 0.12), #f9f9f7 55%); }
-  .home-metric-green { background: linear-gradient(135deg, rgba(92, 122, 58, 0.12), #f9f9f7 55%); }
-  .home-metric-project { background: linear-gradient(135deg, rgba(139, 105, 20, 0.12), #f9f9f7 55%); }
+  .home-metric-donation { background: linear-gradient(135deg, rgba(212, 160, 23, 0.12), #ffffff 55%); }
+  .home-metric-volunteer { background: linear-gradient(135deg, rgba(107, 142, 35, 0.12), #ffffff 55%); }
+  .home-metric-green { background: linear-gradient(135deg, rgba(92, 122, 58, 0.12), #ffffff 55%); }
+  .home-metric-project { background: linear-gradient(135deg, rgba(139, 105, 20, 0.12), #ffffff 55%); }
 
   .home-testimonials {
     background: linear-gradient(145deg, #8B6914 0%, #6B5344 50%, #5C4033 100%);
@@ -799,12 +799,12 @@
     width: 3rem;
     height: 3rem;
     border-radius: 0.5rem;
-    background: #f9f9f7;
+    background: #ffffff;
     border: 1px solid #D4B896;
   }
 
   .home-activity-feed {
-    background: #f9f9f7;
+    background: #ffffff;
     border: 1px solid #D4B896;
     border-radius: 0.75rem;
     padding: 1.25rem;
@@ -812,7 +812,7 @@
   }
 
   .home-chart-card {
-    background: #f9f9f7;
+    background: #ffffff;
     border: 1px solid #D4B896;
     border-radius: 0.75rem;
   }
@@ -859,7 +859,7 @@
     flex-direction: column;
     padding: 1.75rem;
     border-radius: 0.875rem;
-    background: #f9f9f7;
+    background: #ffffff;
     border: 1px solid #D4B896;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
   }
@@ -876,7 +876,7 @@
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 0.625rem;
-    background: linear-gradient(145deg, #f4f3ef, #EDD9B8);
+    background: linear-gradient(145deg, #ffffff, #EDD9B8);
     border: 1px solid rgba(139, 105, 20, 0.2);
   }
 
