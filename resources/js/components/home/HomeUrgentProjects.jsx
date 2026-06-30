@@ -71,7 +71,7 @@ export default function HomeUrgentProjects({ projects = [], loading }) {
           </p>
         </div>
         <Link
-          to="/projects"
+          to="/need-support"
           className="inline-flex items-center gap-2 text-amber-200 hover:text-amber-100 font-semibold text-sm transition-colors group shrink-0"
         >
           {t('home.allProjects')}

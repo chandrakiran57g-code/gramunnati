@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { cmsService } from '@/api/cms';
-import { PLATFORM_DATA_CHANGED } from '@/lib/platformRefresh';
+import { PLATFORM_DATA_CHANGED, PLATFORM_STORAGE_KEY } from '@/lib/platformRefresh';
 import { DEFAULT_NAV_CONFIG } from '@/lib/navConfig';
 
 /** Shared navbar data — used by public Navbar and admin preview */
@@ -35,8 +35,15 @@ export function usePlatformNavData() {
   useEffect(() => {
     refresh();
     const onChange = () => refresh();
+    const onStorage = (event) => {
+      if (event.key === PLATFORM_STORAGE_KEY) onChange();
+    };
     window.addEventListener(PLATFORM_DATA_CHANGED, onChange);
-    return () => window.removeEventListener(PLATFORM_DATA_CHANGED, onChange);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener(PLATFORM_DATA_CHANGED, onChange);
+      window.removeEventListener('storage', onStorage);
+    };
   }, [refresh]);
 
   const aboutPages = cmsPages.filter((p) => {

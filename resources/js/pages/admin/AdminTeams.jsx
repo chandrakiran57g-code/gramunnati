@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
 const emptyGroup = () => ({ name: '', slug: '', description: '', display_order: 0, status: 'active', banner_image: '' });
 const emptyMember = () => ({ full_name: '', email: '', mobile: '', designation: '', description: '', photo: '', team_group_id: '', display_order: 0, is_active: true });
@@ -113,7 +114,7 @@ export default function AdminTeams() {
             <div><Label>Team Name *</Label><Input value={groupForm.name} onChange={(e) => setGroupForm({ ...groupForm, name: e.target.value })} className="mt-1" /></div>
             <div><Label>Slug</Label><Input value={groupForm.slug} onChange={(e) => setGroupForm({ ...groupForm, slug: e.target.value })} placeholder="auto-generated" className="mt-1" /></div>
             <div className="sm:col-span-2"><Label>Description</Label><Textarea value={groupForm.description} onChange={(e) => setGroupForm({ ...groupForm, description: e.target.value })} className="mt-1" rows={2} /></div>
-            <div><Label>Banner Image URL</Label><Input value={groupForm.banner_image} onChange={(e) => setGroupForm({ ...groupForm, banner_image: e.target.value })} className="mt-1" /></div>
+            <AdminImageUpload label="Banner image" value={groupForm.banner_image} onChange={(url) => setGroupForm({ ...groupForm, banner_image: url })} subPath="teams" />
             <div><Label>Display Order</Label><Input type="number" value={groupForm.display_order} onChange={(e) => setGroupForm({ ...groupForm, display_order: Number(e.target.value) })} className="mt-1" /></div>
             <div><Label>Status</Label>
               <select value={groupForm.status} onChange={(e) => setGroupForm({ ...groupForm, status: e.target.value })} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
@@ -140,7 +141,9 @@ export default function AdminTeams() {
                 <div><Label>Designation</Label><Input value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })} /></div>
                 <div><Label>Email</Label><Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" /></div>
                 <div><Label>Mobile</Label><Input value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} /></div>
-                <div className="sm:col-span-2"><Label>Photo URL</Label><Input value={form.photo} onChange={(e) => setForm({ ...form, photo: e.target.value })} placeholder="https://..." /></div>
+                <div className="sm:col-span-2">
+                  <AdminImageUpload label="Member photo" value={form.photo} onChange={(url) => setForm({ ...form, photo: url })} subPath="teams/members" />
+                </div>
                 <div className="sm:col-span-2"><Label>Bio</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
               </div>
               <div className="flex gap-3">

@@ -452,6 +452,10 @@ export const homeService = {
   },
 
   async getUrgentProjects() {
+    const { needsSupportService } = await import('./needsSupport');
+    const curated = await needsSupportService.getHomepageItems(4);
+    if (curated.length) return curated;
+
     const { data } = await supabase
       .from('projects')
       .select('*, villages(village_name, slug), project_categories(name, icon)')
@@ -462,13 +466,13 @@ export const homeService = {
 
     return (data || [])
       .map((p) => {
-        const target = parseFloat(p.funding_goal || p.target_amount || 0);
+        const target = parseFloat(p.funding_goal || p.target_amount || p.budget_amount || 0);
         const raised = parseFloat(p.raised_amount || p.amount_raised || 0);
         const progress = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
         return { ...p, progress, target, raised };
       })
       .sort((a, b) => (a.progress < 100 ? 0 : 1) - (b.progress < 100 ? 0 : 1) || a.progress - b.progress)
-      .slice(0, 6);
+      .slice(0, 4);
   },
 
   formatINR,

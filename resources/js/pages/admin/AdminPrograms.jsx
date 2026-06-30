@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
 const EMPTY = { title:'',slug:'',description:'',icon:'',cover_image:'',status:'active',sort_order:0 };
 
@@ -52,7 +53,7 @@ export default function AdminPrograms() {
           <div><Label>Slug</Label><Input value={form.slug} onChange={e=>setForm(f=>({...f,slug:e.target.value}))} placeholder="auto" className="mt-1"/></div>
           <div><Label>Icon (emoji)</Label><Input value={form.icon} onChange={e=>setForm(f=>({...f,icon:e.target.value}))} placeholder="🏘️" className="mt-1"/></div>
           <div><Label>Description</Label><Textarea value={form.description} onChange={e=>setForm(f=>({...f,description:e.target.value}))} className="mt-1 h-24"/></div>
-          <div><Label>Cover Image URL</Label><Input value={form.cover_image} onChange={e=>setForm(f=>({...f,cover_image:e.target.value}))} className="mt-1"/></div>
+          <AdminImageUpload label="Cover image" value={form.cover_image} onChange={(url) => setForm(f => ({...f, cover_image: url}))} subPath="programs" />
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Sort Order</Label><Input type="number" value={form.sort_order} onChange={e=>setForm(f=>({...f,sort_order:+e.target.value}))} className="mt-1"/></div>
             <div><Label>Status</Label><select value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value}))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>

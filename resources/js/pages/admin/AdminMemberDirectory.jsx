@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { adminService } from '@/api/admin';
 import { Users, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import AdminShell from '@/components/admin/AdminShell';
+import { ADMIN_SECTIONS } from '@/lib/adminSections';
 
 function formatArea(user) {
   const parts = [user.village_name, user.districts?.name || user.district, user.states?.name || user.state].filter(Boolean);
@@ -61,21 +62,13 @@ export default function AdminMemberDirectory() {
   }, [search, members]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <HeroScrollSection size="compact">
-        <div className="bg-emerald-700 text-white py-8 px-6">
-          <div className="max-w-7xl mx-auto">
-            <h1 className="font-heading text-3xl font-bold flex items-center gap-3">
-              <Users className="w-8 h-8" />
-              Member Directory
-            </h1>
-            <p className="text-white/70 text-sm mt-1">{members.length} members from `profiles` table</p>
-          </div>
-        </div>
-      </HeroScrollSection>
-
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-6 relative max-w-md">
+    <AdminShell
+      title="Member List"
+      section={ADMIN_SECTIONS.members.label}
+      description="Registered platform members in join order. Shown publicly at /members."
+      breadcrumbs={[{ label: 'Navbar Manager' }, { label: 'Member List' }]}
+    >
+      <div className="mb-6 relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search members…" className="pl-10 rounded-xl" />
         </div>
@@ -115,7 +108,6 @@ export default function AdminMemberDirectory() {
             )}
           </div>
         )}
-      </div>
-    </div>
+    </AdminShell>
   );
 }

@@ -106,8 +106,15 @@ import AdminSchoolActivities from '@/pages/admin/AdminSchoolActivities';
 import AdminVillageDonations from '@/pages/admin/AdminVillageDonations';
 import AdminSchoolDonations from '@/pages/admin/AdminSchoolDonations';
 import AdminBackup from '@/pages/admin/AdminBackup';
-import AdminActiveWorks from '@/pages/admin/AdminActiveWorks';
 import ActiveWorkDetail from '@/pages/ActiveWorkDetail';
+import ActiveWorksCategory from '@/pages/ActiveWorksCategory';
+import NeedSupport from '@/pages/NeedSupport';
+import AdminActiveWorksCards from '@/pages/admin/AdminActiveWorksCards';
+import AdminActiveWorksPages from '@/pages/admin/AdminActiveWorksPages';
+import AdminActiveWorksTemplates from '@/pages/admin/AdminActiveWorksTemplates';
+import AdminNeedSupport from '@/pages/admin/AdminNeedSupport';
+import AdminLegacyRedirect, { adminLegacyRedirects } from '@/pages/admin/AdminLegacyRedirect';
+import { adminRoutes } from '@/lib/adminRoutes';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -176,6 +183,8 @@ const AuthenticatedApp = () => {
 
         {/* CMS Dynamic Pages */}
         <Route path="/page/:slug" element={<CmsPageView />} />
+        <Route path="/active-works/category/:slug" element={<ActiveWorksCategory />} />
+        <Route path="/need-support" element={<NeedSupport />} />
         <Route path="/active-work/:slug" element={<ActiveWorkDetail />} />
 
         {/* Teams */}
@@ -219,57 +228,41 @@ const AuthenticatedApp = () => {
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminDashboard />} />
 
-          {/* Website Management */}
-          <Route path="navigation" element={<AdminNavigation />} />
-          <Route path="pages" element={<AdminCmsPages />} />
-          <Route path="homepage" element={<AdminHomepage />} />
-          <Route path="active-works" element={<AdminActiveWorks />} />
-          <Route path="teams" element={<AdminTeams />} />
-          <Route path="partners" element={<AdminPartners />} />
-          <Route path="beneficiaries" element={<AdminBeneficiaries />} />
-          <Route path="gallery" element={<AdminGallery />} />
+          {/* Navbar Manager */}
+          <Route path="nav/about-us" element={<AdminCmsPages />} />
+          <Route path="nav/teams" element={<AdminTeams />} />
+          <Route path="nav/member-list" element={<AdminMemberDirectory />} />
+          <Route path="nav/programs" element={<AdminPrograms />} />
+          <Route path="nav/partners" element={<AdminPartners />} />
+          <Route path="nav/gallery" element={<AdminGallery />} />
 
-          {/* Programs & Content */}
-          <Route path="programs" element={<AdminPrograms />} />
-          <Route path="stories" element={<AdminStories />} />
-          <Route path="events" element={<AdminEvents />} />
-          <Route path="news" element={<AdminNews />} />
-
-          {/* Community */}
-          <Route path="users" element={<AdminUsers />} />
-          <Route path="member-directory" element={<AdminMemberDirectory />} />
-          <Route path="volunteers" element={<AdminVolunteers />} />
-
-          {/* Villages & Schools */}
-          <Route path="villages" element={<AdminVillages />} />
-          <Route path="village-activities" element={<AdminVillageActivities />} />
-          <Route path="village-donations" element={<AdminVillageDonations />} />
-          <Route path="schools" element={<AdminSchools />} />
-          <Route path="school-activities" element={<AdminSchoolActivities />} />
-          <Route path="school-donations" element={<AdminSchoolDonations />} />
-
-          {/* Projects */}
-          <Route path="projects" element={<AdminProjects />} />
-          <Route path="project-categories" element={<AdminProjectCategories />} />
-          <Route path="impact-metrics" element={<AdminImpactMetrics />} />
+          {/* Active Works */}
+          <Route path="active-works/templates" element={<AdminActiveWorksTemplates />} />
+          <Route path="active-works/cards" element={<AdminActiveWorksCards />} />
+          <Route path="active-works/pages" element={<AdminActiveWorksPages />} />
+          <Route path="need-support" element={<AdminNeedSupport />} />
 
           {/* Donations */}
           <Route path="donations" element={<AdminDonations />} />
           <Route path="receipts" element={<AdminReceipts />} />
 
-          {/* Communication */}
-          <Route path="messages" element={<AdminMessages />} />
-          <Route path="notifications" element={<AdminNotifications />} />
+          {/* Communication & Volunteers */}
+          <Route path="communication" element={<AdminMessages />} />
+          <Route path="volunteers" element={<AdminVolunteers />} />
 
-          {/* CMS Legacy */}
-          <Route path="cms" element={<AdminCMS />} />
+          {/* Stories & News */}
+          <Route path="stories" element={<AdminStories />} />
+          <Route path="news" element={<AdminNews />} />
 
-          {/* Reports & System */}
+          {/* Reports & Settings */}
           <Route path="reports" element={<AdminReports />} />
           <Route path="settings" element={<AdminSettings />} />
-          <Route path="roles" element={<AdminRoles />} />
-          <Route path="audit-logs" element={<AdminAuditLogs />} />
-          <Route path="backup" element={<AdminBackup />} />
+
+          {/* Legacy redirects */}
+          {Object.entries(adminLegacyRedirects).map(([from, to]) => (
+            <Route key={from} path={from.replace('/admin/', '')} element={<AdminLegacyRedirect to={to} />} />
+          ))}
+          <Route path="messages" element={<AdminLegacyRedirect to={adminRoutes.messages} />} />
         </Route>
       </Route>
 

@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
 const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
 
@@ -68,7 +69,7 @@ export default function AdminPartners() {
         <div className="grid sm:grid-cols-2 gap-4 mb-4">
           <div><Label>Name *</Label><Input value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); if (!editing) setForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-') })); }} /></div>
           <div><Label>Slug *</Label><Input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} /></div>
-          <div><Label>Logo URL</Label><Input value={form.logo} onChange={e => setForm({ ...form, logo: e.target.value })} /></div>
+          <AdminImageUpload label="Logo" value={form.logo} onChange={(url) => setForm({ ...form, logo: url })} subPath="partners" />
           <div>
             <Label>Partner Type</Label>
             <select value={form.partner_type} onChange={e => setForm({ ...form, partner_type: e.target.value })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">

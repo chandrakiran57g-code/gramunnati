@@ -257,7 +257,7 @@ export function mergeHomePageWithDemo(db) {
     stateStats: db.stateStats?.length ? db.stateStats : DEMO_PAGE_DATA.stateStats,
     partners: db.partners?.length ? db.partners : [],
     gallery: db.gallery?.length ? db.gallery : [],
-    urgentProjects: db.urgentProjects?.length ? db.urgentProjects : DEMO_URGENT_PROJECTS,
+    urgentProjects: db.urgentProjects?.length ? db.urgentProjects : [],
   };
 }
 

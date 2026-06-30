@@ -8,6 +8,6 @@ export const BRAND_TAGLINE = 'Our Village – Our Responsibility – Our Develop
 export const BRAND_COLORS = {
   green: '#2D6A4F',
   peach: '#F6D8C6',
-  background: '#F8F9F6',
+  background: '#FFFFFF',
   text: '#1D1D1D',
 };

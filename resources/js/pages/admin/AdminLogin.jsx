@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import AuthLayout from '@/components/AuthLayout';
 import { isAdminAuthenticated, authenticateAdmin } from '@/lib/adminAuth';
 import { adminRoutes } from '@/lib/adminRoutes';
-import { toast } from 'sonner';
 
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
@@ -31,10 +30,6 @@ export default function AdminLogin() {
       setError(result.error || 'Login failed');
       setLoading(false);
       return;
-    }
-
-    if (result.dbWarning) {
-      toast.warning(result.dbWarning, { duration: 8000 });
     }
 
     navigate(adminRoutes.dashboard, { replace: true });

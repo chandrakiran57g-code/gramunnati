@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const ROTATING_WORDS = [
+const DEFAULT_WORDS = [
   'Empowering',
   'Transforming',
   'Strengthening',
@@ -14,11 +14,16 @@ const ROTATING_WORDS = [
   'Developing',
 ];
 
-const WIDTH_ANCHOR = 'Strengthening';
+const DEFAULT_WIDTH_ANCHOR = 'Strengthening';
 const DISPLAY_MS = 2600;
 const TRANSITION = { duration: 0.65, ease: [0.22, 1, 0.36, 1] };
 
-export default function RotatingHeroWord({ className = '', color = '#ffffff' }) {
+export default function RotatingHeroWord({
+  className = '',
+  color = '#ffffff',
+  words = DEFAULT_WORDS,
+  widthAnchor = DEFAULT_WIDTH_ANCHOR,
+}) {
   const [index, setIndex] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
 
@@ -27,22 +32,28 @@ export default function RotatingHeroWord({ className = '', color = '#ffffff' }) 
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) return undefined;
+    setIndex(0);
+  }, [words]);
+
+  useEffect(() => {
+    if (reduceMotion || words.length === 0) return undefined;
     const id = window.setInterval(() => {
-      setIndex((i) => (i + 1) % ROTATING_WORDS.length);
+      setIndex((i) => (i + 1) % words.length);
     }, DISPLAY_MS);
     return () => window.clearInterval(id);
-  }, [reduceMotion]);
+  }, [reduceMotion, words]);
+
+  if (words.length === 0) return null;
 
   if (reduceMotion) {
     return (
       <span className={className} style={{ color }}>
-        {ROTATING_WORDS[0]}
+        {words[0]}
       </span>
     );
   }
 
-  const word = ROTATING_WORDS[index];
+  const word = words[index];
 
   return (
     <span
@@ -51,7 +62,7 @@ export default function RotatingHeroWord({ className = '', color = '#ffffff' }) 
       aria-atomic="true"
     >
       <span className="invisible [grid-area:1/1] whitespace-nowrap select-none leading-none" aria-hidden="true">
-        {WIDTH_ANCHOR}
+        {widthAnchor}
       </span>
       <AnimatePresence mode="wait" initial={false}>
         <motion.span

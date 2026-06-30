@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { adminDbMutation } from '@/lib/adminDb';
+import { adminDbMutation, ensureAdminDbAccess } from '@/lib/adminDb';
 
 const PROJECT_CHART_COLORS = ['#2D6A4F', '#2563EB', '#22C55E', '#06B6D4', '#EF4444', '#6B7280', '#F59E0B', '#8B5CF6'];
 
@@ -23,6 +23,7 @@ export const galleryService = {
    * @param {string} path - Optional subfolder path
    */
   async uploadFile(bucket, file, path = '') {
+    await ensureAdminDbAccess();
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = path ? `${path}/${fileName}` : fileName;

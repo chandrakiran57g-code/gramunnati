@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["./resources/views/**/*.blade.php", "./resources/js/**/*.{ts,tsx,js,jsx}"],
+  /* Laravel: scan resources/js — do NOT copy React SPA paths (./src/**) */
+  content: [
+    './resources/views/**/*.blade.php',
+    './resources/js/**/*.{js,jsx,ts,tsx}',
+  ],
   theme: {
     extend: {
       borderRadius: {
@@ -54,8 +58,8 @@ module.exports = {
         'village-light': '#40916C',
         school: 'hsl(var(--service-school))',
         'school-light': '#3B82F6',
-        donation: 'hsl(var(--brown-600))',
-        'donation-light': 'hsl(var(--brown-800))',
+        donation: '#5C4033',
+        'donation-light': '#3D2914',
         volunteer: 'hsl(var(--service-tree))',
         projects: 'hsl(var(--service-skill))',
         chart: {

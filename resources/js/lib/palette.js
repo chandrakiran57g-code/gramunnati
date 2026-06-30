@@ -1,14 +1,14 @@
 /**
  * GramUnnati — Finalized Color Palette
- * Base: cream + brown | Accents: 8 service pillars only
+ * Base: white + brown | Accents: 8 service pillars only
  */
 
 export const cream = {
-  50: '#f9f9f7',
-  100: '#f4f3ef',
-  200: '#efeee8',
-  300: '#eae8e0',
-  400: '#e5e3d9',
+  50: '#FFFFFF',
+  100: '#FFFFFF',
+  200: '#FAFAFA',
+  300: '#F5F5F5',
+  400: '#F0F0F0',
 };
 
 export const brown = {

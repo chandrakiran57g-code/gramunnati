@@ -52,14 +52,13 @@ export async function authenticateAdmin(email, password) {
     password: ADMIN_CREDENTIALS.password,
   });
 
-  setAdminSession();
-
   if (error) {
     return {
-      ok: true,
-      dbWarning: `Signed in to admin panel, but database writes may fail: ${error.message}. Create user ${ADMIN_CREDENTIALS.email} in Supabase Auth and run supabase/admin-policies.sql.`,
+      ok: false,
+      error: `Cannot sign in to database: ${error.message}. Create user ${ADMIN_CREDENTIALS.email} in Supabase Auth and run supabase/admin-policies.sql.`,
     };
   }
 
+  setAdminSession();
   return { ok: true };
 }

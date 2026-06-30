@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
 const EMPTY = { title:'',slug:'',summary:'',content:'',featured_image:'',village_name:'',school_name:'',is_featured:false,status:'draft' };
 
@@ -52,7 +53,7 @@ export default function AdminStories() {
           <div><Label>Title *</Label><Input value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} required className="mt-1"/></div>
           <div><Label>Summary</Label><Textarea value={form.summary} onChange={e=>setForm(f=>({...f,summary:e.target.value}))} className="mt-1 h-20"/></div>
           <div><Label>Content *</Label><Textarea value={form.content} onChange={e=>setForm(f=>({...f,content:e.target.value}))} required className="mt-1 h-32"/></div>
-          <div><Label>Featured Image URL</Label><Input value={form.featured_image} onChange={e=>setForm(f=>({...f,featured_image:e.target.value}))} className="mt-1"/></div>
+          <AdminImageUpload label="Featured image" value={form.featured_image} onChange={(url) => setForm(f => ({...f, featured_image: url}))} subPath="stories" />
           <div className="grid grid-cols-2 gap-4"><div><Label>Village</Label><Input value={form.village_name} onChange={e=>setForm(f=>({...f,village_name:e.target.value}))} className="mt-1"/></div><div><Label>School</Label><Input value={form.school_name} onChange={e=>setForm(f=>({...f,school_name:e.target.value}))} className="mt-1"/></div></div>
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Status</Label><select value={form.status} onChange={e=>setForm(f=>({...f,status:e.target.value}))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="draft">Draft</option><option value="published">Published</option></select></div>
