@@ -272,3 +272,36 @@ export function mergeHomePageWithDemo(db) {
 export function getDemoPageData() {
   return { ...DEMO_PAGE_DATA };
 }
+
+const EMPTY_STATS = {
+  villages: 0,
+  schools: 0,
+  projects: 0,
+  donations: 0,
+  totalAmount: 0,
+  volunteers: 0,
+  beneficiaries: 0,
+};
+
+/** Safe fallback when the API fails — never inject demo stats or projects. */
+export function emptyHomePageData() {
+  return mergeHomePageWithDemo({
+    stats: EMPTY_STATS,
+    villages: [],
+    schools: [],
+    projects: [],
+    programs: [],
+    stories: [],
+    testimonials: [],
+    news: [],
+    events: [],
+    activity: [],
+    heroPhotos: [],
+    monthlyDonations: 0,
+    donationBreakdown: [],
+    stateStats: [],
+    partners: [],
+    gallery: [],
+    urgentProjects: [],
+  });
+}

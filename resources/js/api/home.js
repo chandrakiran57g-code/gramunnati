@@ -5,7 +5,26 @@ import {
   buildHeroSlides,
   isApprovedVillageImage,
 } from '@/lib/villageImages';
-import { mergeHomePageWithDemo, getDemoPageData } from '@/data/demoData';
+import { mergeHomePageWithDemo, getDemoPageData, useDemoData } from '@/data/demoData';
+
+const EMPTY_STATS = {
+  villages: 0,
+  schools: 0,
+  projects: 0,
+  donations: 0,
+  totalAmount: 0,
+  volunteers: 0,
+  beneficiaries: 0,
+};
+
+async function fetchSection(fn, fallback) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error('Home page section failed', err);
+    return fallback;
+  }
+}
 
 const DEFAULT_HERO_PHOTOS = VILLAGE_HERO_PHOTOS;
 
@@ -60,67 +79,67 @@ function activityIcon(type) {
 
 export const homeService = {
   async getPageData() {
-    try {
-      const [
-        stats,
-        villages,
-        schools,
-        projects,
-        programs,
-        stories,
-        testimonials,
-        news,
-        events,
-        activity,
-        heroPhotos,
-        monthlyDonations,
-        donationBreakdown,
-        stateStats,
-        partners,
-        gallery,
-        urgentProjects,
-      ] = await Promise.all([
-        this.getStats(),
-        this.getFeaturedVillages(),
-        this.getFeaturedSchools(),
-        this.getActiveProjects(),
-        this.getPrograms(),
-        this.getFeaturedStories(),
-        this.getFeaturedTestimonials(),
-        this.getRecentNews(),
-        this.getUpcomingEvents(),
-        this.getLiveActivity(),
-        this.getHeroPhotos(),
-        this.getMonthlyDonationTotal(),
-        this.getDonationBreakdown(),
-        this.getStateWiseStats(),
-        this.getPartners(),
-        this.getGalleryImages(),
-        this.getUrgentProjects(),
-      ]);
-
-      return mergeHomePageWithDemo({
-        stats,
-        villages,
-        schools,
-        projects,
-        programs,
-        stories,
-        testimonials,
-        news,
-        events,
-        activity,
-        heroPhotos,
-        monthlyDonations,
-        donationBreakdown,
-        stateStats,
-        partners,
-        gallery,
-        urgentProjects,
-      });
-    } catch {
+    if (useDemoData()) {
       return getDemoPageData();
     }
+
+    const [
+      stats,
+      villages,
+      schools,
+      projects,
+      programs,
+      stories,
+      testimonials,
+      news,
+      events,
+      activity,
+      heroPhotos,
+      monthlyDonations,
+      donationBreakdown,
+      stateStats,
+      partners,
+      gallery,
+      urgentProjects,
+    ] = await Promise.all([
+      fetchSection(() => this.getStats(), EMPTY_STATS),
+      fetchSection(() => this.getFeaturedVillages(), []),
+      fetchSection(() => this.getFeaturedSchools(), []),
+      fetchSection(() => this.getActiveProjects(), []),
+      fetchSection(() => this.getPrograms(), []),
+      fetchSection(() => this.getFeaturedStories(), []),
+      fetchSection(() => this.getFeaturedTestimonials(), []),
+      fetchSection(() => this.getRecentNews(), []),
+      fetchSection(() => this.getUpcomingEvents(), []),
+      fetchSection(() => this.getLiveActivity(), []),
+      fetchSection(() => this.getHeroPhotos(), []),
+      fetchSection(() => this.getMonthlyDonationTotal(), 0),
+      fetchSection(() => this.getDonationBreakdown(), []),
+      fetchSection(() => this.getStateWiseStats(), []),
+      fetchSection(() => this.getPartners(), []),
+      fetchSection(() => this.getGalleryImages(), []),
+      fetchSection(() => this.getUrgentProjects(), []),
+    ]);
+
+    return mergeHomePageWithDemo({
+      stats,
+      villages,
+      schools,
+      projects,
+      programs,
+      stories,
+      testimonials,
+      news,
+      events,
+      activity,
+      heroPhotos,
+      monthlyDonations,
+      donationBreakdown,
+      stateStats,
+      partners,
+      gallery,
+      urgentProjects,
+    });
   },
 
   async getStats() {
@@ -351,7 +370,7 @@ export const homeService = {
       (volunteers.value.data || []).forEach((v) => {
         items.push({
           id: `vol-${v.created_at}`,
-          text: `${v.profiles?.full_name || 'Someone'} joined as volunteer`,
+          text: `${v.full_name || v.profiles?.full_name || 'Someone'} joined as volunteer`,
           time: timeAgo(v.created_at),
           icon: '🌱',
           date: v.created_at,
