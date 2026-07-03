@@ -1,15 +1,9 @@
 # cPanel Deploy — cmsr.in (terminal only)
 
-**Deploy only** (code already updated — no GitHub login):
+**One command** — paste in cPanel Terminal:
 
 ```bash
-cd ~/cmsr && DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
-```
-
-**Update code + deploy** (needs GitHub token once):
-
-```bash
-cd ~/cmsr && git fetch origin && git reset --hard origin/laravel && DEPLOY_GIT_PULL=0 DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+cd ~/cmsr && git pull origin laravel && DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
 ```
 
 That script automatically:

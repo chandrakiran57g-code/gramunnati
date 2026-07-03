@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Full cPanel deploy for cmsr.in — run from project root (~/cmsr)
 # Usage:
-#   cd ~/cmsr && git pull origin laravel && \
-#   DEPLOY_DB_PASSWORD='your-password' bash scripts/cpanel-deploy.sh
+#   cd ~/cmsr && DEPLOY_DB_PASSWORD='your-password' bash scripts/cpanel-deploy.sh
 
 set -euo pipefail
 
@@ -23,7 +22,49 @@ MAIL_USER="${DEPLOY_MAIL_USER:-noreply@cmsr.in}"
 MARK_MIGRATIONS="${DEPLOY_MARK_MIGRATIONS:-1}"
 LINK_PUBLIC_HTML="${DEPLOY_LINK_PUBLIC_HTML:-0}"
 
+php_ok() {
+  local bin="$1"
+  [ -n "$bin" ] || return 1
+  [ -x "$bin" ] || command -v "$bin" >/dev/null 2>&1 || return 1
+  "$bin" -r 'exit version_compare(PHP_VERSION, "8.3.0", ">=") ? 0 : 1;' 2>/dev/null
+}
+
+find_php() {
+  if [ -n "${DEPLOY_PHP_BIN:-}" ] && php_ok "$DEPLOY_PHP_BIN"; then
+    echo "$DEPLOY_PHP_BIN"
+    return 0
+  fi
+  local candidates=(
+    /opt/cpanel/ea-php84/root/usr/bin/php
+    /opt/cpanel/ea-php83/root/usr/bin/php
+    /usr/local/bin/ea-php84
+    /usr/local/bin/ea-php83
+    /opt/alt/php84/usr/bin/php
+    /opt/alt/php83/usr/bin/php
+    php
+  )
+  local c
+  for c in "${candidates[@]}"; do
+    if php_ok "$c"; then
+      echo "$c"
+      return 0
+    fi
+  done
+  return 1
+}
+
+PHP_BIN="$(find_php || true)"
+if [ -z "$PHP_BIN" ]; then
+  echo "ERROR: PHP 8.3+ required (Laravel 13). Terminal has: $(php -v 2>/dev/null | head -1 || echo unknown)"
+  echo ""
+  echo "Fix in cPanel: MultiPHP Manager -> set cmsr.in to PHP 8.3 or 8.4"
+  echo "Then run:  /opt/cpanel/ea-php83/root/usr/bin/php -v"
+  echo "Or pass:   DEPLOY_PHP_BIN=/opt/cpanel/ea-php83/root/usr/bin/php bash scripts/cpanel-deploy.sh"
+  exit 1
+fi
+
 echo "==> GramUnnati deploy in $ROOT"
+echo "==> Using PHP: $PHP_BIN ($($PHP_BIN -r 'echo PHP_VERSION;'))"
 
 if [ -z "$DB_PASSWORD" ]; then
   echo "ERROR: Set DEPLOY_DB_PASSWORD before running."
@@ -32,9 +73,9 @@ if [ -z "$DB_PASSWORD" ]; then
 fi
 
 if [ "${DEPLOY_GIT_PULL:-0}" = "1" ] && [ -d .git ]; then
-  echo "==> Pull latest code (optional)"
+  echo "==> Sync code from GitHub (optional)"
   git fetch origin 2>/dev/null || true
-  git reset --hard origin/laravel 2>/dev/null || git pull origin laravel 2>/dev/null || true
+  git reset --hard origin/laravel 2>/dev/null || true
 fi
 
 echo "==> Write .env"
@@ -86,39 +127,44 @@ VITE_APP_NAME="${APP_NAME}"
 ENVFILE
 
 echo "==> Composer install"
-if command -v composer >/dev/null 2>&1; then
-  composer install --optimize-autoloader --no-dev --no-interaction
-elif [ -x "$HOME/bin/composer" ]; then
-  "$HOME/bin/composer" install --optimize-autoloader --no-dev --no-interaction
-elif [ -f composer.phar ]; then
-  php composer.phar install --optimize-autoloader --no-dev --no-interaction
-else
-  echo "==> Installing Composer locally..."
-  curl -sS https://getcomposer.org/installer | php
-  php composer.phar install --optimize-autoloader --no-dev --no-interaction
-fi
+run_composer() {
+  if command -v composer >/dev/null 2>&1; then
+    "$PHP_BIN" "$(command -v composer)" install --optimize-autoloader --no-dev --no-interaction
+  elif [ -x "$HOME/bin/composer" ]; then
+    "$PHP_BIN" "$HOME/bin/composer" install --optimize-autoloader --no-dev --no-interaction
+  elif [ -f composer.phar ]; then
+    "$PHP_BIN" composer.phar install --optimize-autoloader --no-dev --no-interaction
+  else
+    echo "==> Installing Composer locally..."
+    "$PHP_BIN" -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    "$PHP_BIN" composer-setup.php
+    rm -f composer-setup.php
+    "$PHP_BIN" composer.phar install --optimize-autoloader --no-dev --no-interaction
+  fi
+}
+run_composer
 
 echo "==> Laravel setup"
-php artisan key:generate --force
+"$PHP_BIN" artisan key:generate --force
 
 if [ "$MARK_MIGRATIONS" = "1" ]; then
-  php artisan gramunnati:mark-migrations-run || true
+  "$PHP_BIN" artisan gramunnati:mark-migrations-run || true
 else
-  php artisan migrate --force
+  "$PHP_BIN" artisan migrate --force
 fi
 
-php artisan storage:link 2>/dev/null || true
+"$PHP_BIN" artisan storage:link 2>/dev/null || true
 chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
-php artisan config:clear
-php artisan route:clear
-php artisan view:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+"$PHP_BIN" artisan config:clear
+"$PHP_BIN" artisan route:clear
+"$PHP_BIN" artisan view:clear
+"$PHP_BIN" artisan config:cache
+"$PHP_BIN" artisan route:cache
+"$PHP_BIN" artisan view:cache
 
 if [ "$LINK_PUBLIC_HTML" = "1" ] && [ -d "$HOME/public_html" ]; then
-  echo "==> Link public_html -> public (only if domain uses ~/public_html)"
+  echo "==> Link public_html -> public"
   ln -sfn "$ROOT/public" "$HOME/public_html"
 fi
 
@@ -126,14 +172,12 @@ echo ""
 echo "=============================================="
 echo " DEPLOY FINISHED"
 echo "=============================================="
+echo " PHP:     $PHP_BIN ($($PHP_BIN -r 'echo PHP_VERSION;'))"
 echo " Site:    ${APP_URL}/"
 echo " Health:  ${APP_URL}/up"
 echo " API:     ${APP_URL}/api/health"
 echo " Admin:   ${APP_URL}/admin"
 echo ""
-echo " If the site does not load, set document root in cPanel to:"
-echo "   ${ROOT}/public"
-echo ""
-echo " Or re-run with public_html link:"
-echo "   DEPLOY_LINK_PUBLIC_HTML=1 DEPLOY_DB_PASSWORD='...' bash scripts/cpanel-deploy.sh"
+echo " Set document root to: ${ROOT}/public"
+echo " Or: DEPLOY_LINK_PUBLIC_HTML=1 ... bash scripts/cpanel-deploy.sh"
 echo "=============================================="

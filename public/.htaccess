@@ -1,3 +1,8 @@
+# cPanel: force PHP 8.3+ for Laravel 13 (change ea-php84 if needed)
+<IfModule mime_module>
+    AddHandler application/x-httpd-ea-php83___lsphp .php .php8 .phtml
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
