@@ -163,9 +163,17 @@ chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 "$PHP_BIN" artisan route:cache
 "$PHP_BIN" artisan view:cache
 
-if [ "$LINK_PUBLIC_HTML" = "1" ] && [ -d "$HOME/public_html" ]; then
-  echo "==> Link public_html -> public"
-  ln -sfn "$ROOT/public" "$HOME/public_html"
+if [ "$LINK_PUBLIC_HTML" = "1" ]; then
+  echo "==> Point public_html at Laravel public/"
+  rm -rf "$HOME/public_html/public" 2>/dev/null || true
+  find "$HOME/public_html" -mindepth 1 -maxdepth 1 ! -name 'cgi-bin' -exec rm -rf {} + 2>/dev/null || true
+  shopt -s dotglob nullglob
+  for item in "$ROOT/public"/*; do
+    base="$(basename "$item")"
+    rm -rf "$HOME/public_html/$base" 2>/dev/null || true
+    ln -sfn "$item" "$HOME/public_html/$base"
+  done
+  shopt -u dotglob nullglob
 fi
 
 echo ""
