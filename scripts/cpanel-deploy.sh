@@ -31,10 +31,10 @@ if [ -z "$DB_PASSWORD" ]; then
   exit 1
 fi
 
-echo "==> Pull latest code (if git repo)"
-if [ -d .git ]; then
+if [ "${DEPLOY_GIT_PULL:-0}" = "1" ] && [ -d .git ]; then
+  echo "==> Pull latest code (optional)"
   git fetch origin 2>/dev/null || true
-  git pull origin laravel 2>/dev/null || git pull 2>/dev/null || true
+  git reset --hard origin/laravel 2>/dev/null || git pull origin laravel 2>/dev/null || true
 fi
 
 echo "==> Write .env"
