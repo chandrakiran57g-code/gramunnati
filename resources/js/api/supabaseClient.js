@@ -30,7 +30,7 @@ class QueryBuilder {
     this.headOnly = false;
     this.countExact = false;
     this.wantSingle = false;
-    this.maybeSingle = false;
+    this.wantMaybeSingle = false;
     this.mutation = null;
     this.mutationPayload = null;
     this.upsertOpts = null;
@@ -73,6 +73,11 @@ class QueryBuilder {
     return this;
   }
 
+  not(col, operator, value) {
+    this.filters.push({ column: col, op: `not.${operator}`, value });
+    return this;
+  }
+
   order(col, { ascending = true } = {}) {
     this.orderCol = col;
     this.orderAsc = ascending;
@@ -97,7 +102,7 @@ class QueryBuilder {
   }
 
   maybeSingle() {
-    this.maybeSingle = true;
+    this.wantMaybeSingle = true;
     this.limitN = 1;
     return this;
   }
@@ -197,7 +202,7 @@ class QueryBuilder {
       let rows = json?.data ?? [];
       const count = json?.count ?? rows.length;
 
-      if (this.wantSingle || this.maybeSingle) {
+      if (this.wantSingle || this.wantMaybeSingle) {
         const row = rows[0] ?? null;
         if (!row && this.wantSingle) {
           return { data: null, error: { message: 'Row not found', code: 'PGRST116' } };

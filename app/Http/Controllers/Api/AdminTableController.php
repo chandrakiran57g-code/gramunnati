@@ -223,6 +223,7 @@ class AdminTableController extends Controller
                 'lt' => $query->where($col, '<', $val),
                 'lte' => $query->where($col, '<=', $val),
                 'is' => $val === null ? $query->whereNull($col) : $query->whereNotNull($col),
+                'not.is' => $val === null ? $query->whereNotNull($col) : $query->whereNull($col),
                 'like' => $query->where($col, 'like', $val),
                 'in' => $query->whereIn($col, (array) $val),
                 default => null,

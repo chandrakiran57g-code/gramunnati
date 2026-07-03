@@ -1,0 +1,1 @@
+import{r as e}from"./Root-coqmlxKO.js";export{e as homeService};
