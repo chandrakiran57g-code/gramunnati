@@ -1,188 +1,93 @@
-import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 
-/**
- * Auth Service — wraps Supabase Auth
- */
 export const authService = {
-  /**
-   * Sign up with email + password
-   * @param {{ email: string, password: string, firstName?: string, lastName?: string }} data
-   */
   async signUp({ email, password, fullName, mobile, firstName, lastName }) {
     const cleanMobile = String(mobile || '').replace(/\D/g, '');
     if (!cleanMobile || cleanMobile.length < 10) throw new Error('Valid mobile number is required');
-    const authEmail = email?.trim() || `${cleanMobile}@gramunnati.local`;
-    const names = (fullName || `${firstName || ''} ${lastName || ''}`).trim().split(/\s+/);
-    const first = names[0] || '';
-    const last = names.slice(1).join(' ') || '';
-    const { data, error } = await supabase.auth.signUp({
-      email: authEmail,
-      password,
-      options: {
-        data: {
-          first_name: first,
-          last_name: last,
-          full_name: fullName || `${first} ${last}`.trim(),
-          mobile: cleanMobile,
-          display_email: email?.trim() || null,
-        },
+    const payload = await apiFetch('/auth/register', {
+      method: 'POST',
+      body: {
+        email: email?.trim() || undefined,
+        password,
+        full_name: fullName || `${firstName || ''} ${lastName || ''}`.trim(),
+        mobile: cleanMobile,
+        first_name: firstName,
+        last_name: lastName,
       },
     });
-    if (error) throw error;
-    if (data.user?.id) {
-      await supabase.from('profiles').upsert({
-        id: data.user.id,
-        full_name: fullName || `${first} ${last}`.trim(),
-        mobile: cleanMobile,
-        email: email?.trim() || null,
-      }).catch(() => {});
-    }
-    return data;
+    return payload;
   },
 
   async signInWithMobile(mobile, password) {
-    const cleanMobile = String(mobile || '').replace(/\D/g, '');
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('id, email, mobile')
-      .or(`mobile.eq.${cleanMobile},mobile.eq.+91${cleanMobile}`)
-      .maybeSingle();
-    if (error) throw error;
-    if (!profile) throw new Error('Mobile number not registered');
-    const authEmail = profile.email || `${cleanMobile}@gramunnati.local`;
-    return this.signInWithPassword(authEmail, password);
+    return apiFetch('/auth/login', {
+      method: 'POST',
+      body: { mobile, password },
+    });
   },
 
-  /**
-   * Sign in with email + password
-   */
   async signInWithPassword(email, password) {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    return data;
+    return apiFetch('/auth/login', {
+      method: 'POST',
+      body: { email, password },
+    });
   },
 
-  /**
-   * Sign in with Google OAuth
-   */
   async signInWithGoogle() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/dashboard` },
-    });
-    if (error) throw error;
-    return data;
+    throw new Error('Google sign-in is not configured yet.');
   },
 
-  /**
-   * Sign out
-   */
   async signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    return apiFetch('/auth/logout', { method: 'POST' });
   },
 
-  /**
-   * Get current session
-   */
   async getSession() {
-    const { data: { session }, error } = await supabase.auth.getSession();
-    if (error) throw error;
-    return session;
+    try {
+      const payload = await apiFetch('/auth/user');
+      if (!payload?.user) return null;
+      return { user: payload.user };
+    } catch {
+      return null;
+    }
   },
 
-  /**
-   * Get current user
-   */
   async getUser() {
-    const { data: { user }, error } = await supabase.auth.getUser();
-    if (error) throw error;
-    return user;
+    const session = await this.getSession();
+    return session?.user ?? null;
   },
 
-  /**
-   * Get user profile from profiles table (with role info)
-   */
-  async getProfile(userId) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select(`
-        *,
-        user_roles(role_id, roles(id, name)),
-        user_category_user(category_id, user_categories(id, name, slug)),
-        states(id, name),
-        districts(id, name),
-        mandals(id, name),
-        villages(id, village_name)
-      `)
-      .eq('id', userId)
-      .single();
-    if (error) throw error;
-    return data;
+  async getProfile(_userId) {
+    const payload = await apiFetch('/auth/user');
+    return payload?.profile ?? null;
   },
 
-  /**
-   * Update user profile
-   */
-  async updateProfile(userId, updates) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', userId)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+  async updateProfile(_userId, updates) {
+    const payload = await apiFetch('/auth/profile', { method: 'PUT', body: updates });
+    return payload?.profile;
   },
 
-  /**
-   * Send password reset email
-   */
   async resetPassword(email) {
-    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
-    if (error) throw error;
-    return data;
+    return apiFetch('/auth/forgot-password', { method: 'POST', body: { email } });
   },
 
-  /**
-   * Update password (after reset)
-   */
-  async updatePassword(newPassword) {
-    const { data, error } = await supabase.auth.updateUser({ password: newPassword });
-    if (error) throw error;
-    return data;
+  async updatePassword(_newPassword) {
+    throw new Error('Use email reset flow when configured.');
   },
 
-  /**
-   * Listen to auth state changes
-   */
   onAuthStateChange(callback) {
-    return supabase.auth.onAuthStateChange(callback);
+    return { data: { subscription: { unsubscribe: () => {} } } };
   },
 
-  /**
-   * Check if user has a specific role
-   */
   async hasRole(userId, roleName) {
-    const { data, error } = await supabase
-      .from('user_roles')
-      .select('roles(name)')
-      .eq('user_id', userId);
-    if (error) return false;
-    return data?.some(ur => ur.roles?.name === roleName) || false;
+    const roles = await this.getUserRoles(userId);
+    return roles.includes(roleName);
   },
 
-  /**
-   * Get all roles for a user
-   */
-  async getUserRoles(userId) {
-    const { data, error } = await supabase
-      .from('user_roles')
-      .select('roles(id, name)')
-      .eq('user_id', userId);
-    if (error) return [];
-    return data?.map(ur => ur.roles?.name).filter(Boolean) || [];
+  async getUserRoles(_userId) {
+    try {
+      const payload = await apiFetch('/auth/user');
+      return payload?.roles ?? [];
+    } catch {
+      return [];
+    }
   },
 };

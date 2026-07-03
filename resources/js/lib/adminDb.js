@@ -2,7 +2,7 @@ import { supabase } from '@/api/supabaseClient';
 import { ADMIN_CREDENTIALS } from '@/lib/adminAuth';
 
 export const ADMIN_DB_SETUP_HINT =
-  `Create Supabase Auth user "${ADMIN_CREDENTIALS.email}" and run supabase/admin-policies.sql.`;
+  'Run: php artisan migrate:fresh --seed (local) or import gramunnati.sql on cPanel.';
 
 /** Sign in to Supabase so RLS allows admin writes. Called before mutations. */
 export async function ensureAdminDbAccess() {

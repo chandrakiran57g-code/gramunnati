@@ -41,7 +41,6 @@ export async function clearAdminSession() {
   }
 }
 
-/** Sign in to admin panel + Supabase Auth for database writes */
 export async function authenticateAdmin(email, password) {
   if (!validateAdminCredentials(email, password)) {
     return { ok: false, error: 'Invalid admin email or password' };
@@ -55,7 +54,7 @@ export async function authenticateAdmin(email, password) {
   if (error) {
     return {
       ok: false,
-      error: `Cannot sign in to database: ${error.message}. Create user ${ADMIN_CREDENTIALS.email} in Supabase Auth and run supabase/admin-policies.sql.`,
+      error: `Cannot sign in: ${error.message}. Run php artisan migrate:fresh --seed locally.`,
     };
   }
 

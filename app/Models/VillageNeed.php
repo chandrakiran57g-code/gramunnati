@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class VillageNeed extends Model
+{
+    protected $table = 'village_needs';
+
+    protected $guarded = ['id'];
+
+    public function village(): BelongsTo
+    {
+        return $this->belongsTo(Village::class);
+    }
+
+}

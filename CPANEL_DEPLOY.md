@@ -1,18 +1,24 @@
-# cPanel Deployment
+# cPanel Deployment — cmsr.in
 
-> **This guide has moved.** See the full documentation:
+| Item | Value |
+|------|--------|
+| Domain | `https://cmsr.in` |
+| Server path | `/home/cmsr/cmsr` |
+| Document root | `/home/cmsr/cmsr/public` |
+| Git repo | `https://github.com/chandrakiran57g-code/cmsr.git` |
 
-## → [docs/CPANEL_DEPLOYMENT.md](./docs/CPANEL_DEPLOYMENT.md)
+> **No Node.js on cPanel.** Build on your PC (`npm run build`), upload `public/build/`.
 
-Quick reference:
+## Deploy steps
 
-1. Set document root to `public/`
-2. Configure `.env` (especially `VITE_SUPABASE_*` and `APP_URL`)
-3. Run `composer install --no-dev`
-4. Run `npm run build`
-5. Set permissions: `chmod -R 775 storage bootstrap/cache`
-6. Run `php artisan config:cache`
+1. Clone (done): `cd ~/cmsr && git clone https://github.com/chandrakiran57g-code/cmsr.git .`
+2. Copy `.env` from `env.cmsr.in.example` (fill password) or upload your local `.env`
+3. `composer install --optimize-autoloader --no-dev`
+4. `php artisan key:generate` (if `APP_KEY` empty)
+5. `php artisan gramunnati:mark-migrations-run` (if DB already imported) **or** `php artisan migrate --force` (empty DB)
+6. `php artisan storage:link`
+7. `chmod -R 775 storage bootstrap/cache`
+8. `php artisan config:cache`
+9. Set document root → `/home/cmsr/cmsr/public`
 
-Full checklist, troubleshooting, and security notes are in the linked guide.
-
-Other docs: [docs/README.md](./docs/README.md)
+Full guide: [docs/DEPLOYMENT_STATUS.md](./docs/DEPLOYMENT_STATUS.md)

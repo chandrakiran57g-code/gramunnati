@@ -1,22 +1,34 @@
 # GramUnnati Documentation
 
-Complete documentation for the **gramunnati-app** project (Laravel + Inertia + React + Supabase).
+Complete documentation for **gramunnati-app** (Laravel 13 + Inertia + React + **MySQL**).
 
 | Document | Description |
 |----------|-------------|
-| [Project Analysis](./PROJECT_ANALYSIS.md) | Full codebase analysis — stack, features, data flow, risks |
-| [Architecture](./ARCHITECTURE.md) | System design, routing model, request lifecycle |
-| [Local Development](./LOCAL_DEVELOPMENT.md) | Run the app locally with hot reload |
-| [Supabase Setup](./SUPABASE_SETUP.md) | Database, auth, RLS policies, storage |
-| [Admin Panel Guide](./ADMIN_GUIDE.md) | Admin routes, CMS features, Active Works |
-| [cPanel Deployment](./CPANEL_DEPLOYMENT.md) | Production deployment on shared hosting |
+| **[Deployment Status](./DEPLOYMENT_STATUS.md)** | **START HERE** — what’s done, what you did, how to deploy |
+| **[Manual Setup Guide](./MANUAL_SETUP_GUIDE.md)** | Your cPanel checklist (Steps 1–9) |
+| [cPanel Deployment](./CPANEL_DEPLOYMENT.md) | Technical deploy reference |
+| [cPanel MySQL Migration](./CPANEL_MYSQL_MIGRATION_GUIDE.md) | Supabase → MySQL migration overview |
+| [Local Development](./LOCAL_DEVELOPMENT.md) | Run the app locally |
+| [Project Analysis](./PROJECT_ANALYSIS.md) | Codebase analysis |
+| [Architecture](./ARCHITECTURE.md) | System design |
+| [Admin Panel Guide](./ADMIN_GUIDE.md) | Admin routes and CMS |
 
 ## Quick links
 
 - **GitHub:** `https://github.com/chandrakiran57g-code/gramunnati.git` (branch: `laravel`)
-- **Sibling project:** `../village_project` — standalone Vite SPA (branch: `main`)
-- **Production URL:** Set `APP_URL` in `.env` to your domain
+- **Production domain:** `https://cmsr.in`
+- **Admin login (default):** `test@gmail.com` / `testadmin123` — change after go-live
 
 ## Project summary
 
-GramUnnati is a rural development platform for villages, schools, programs, donations, and volunteer engagement. The **gramunnati-app** version wraps the original React SPA in a thin **Laravel 13** shell so it can run on **cPanel / Apache** hosting. All business data lives in **Supabase**; Laravel handles HTTP delivery and asset serving only.
+GramUnnati is a rural development platform for villages, schools, programs, donations, and volunteer engagement. **gramunnati-app** wraps the React SPA in **Laravel 13** for **cPanel / Apache** hosting. All business data lives in **MySQL** on cPanel (migrated from Supabase). Laravel serves the app, API, auth (Sanctum), and file uploads.
+
+## Current status (June 2026)
+
+| Who | Status |
+|-----|--------|
+| **You (cPanel)** | MySQL, SSL, email, SQL import — done |
+| **Developer (code)** | Laravel API, frontend shim, local tests — done |
+| **Deploy** | Upload app, `.env`, document root — **your next step** |
+
+See **[DEPLOYMENT_STATUS.md](./DEPLOYMENT_STATUS.md)** for the full breakdown.

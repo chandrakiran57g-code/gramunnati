@@ -1,0 +1,55 @@
+{
+  "_supabaseClient-BRFYMF5o.js": {
+    "file": "assets/supabaseClient-BRFYMF5o.js",
+    "name": "supabaseClient"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-Di8iDbUI.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/api/home.js": {
+    "file": "assets/home-B1zJvU1s.js",
+    "name": "home",
+    "src": "resources/js/api/home.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/pages/Root.jsx"
+    ]
+  },
+  "resources/js/api/needsSupport.js": {
+    "file": "assets/needsSupport-4J9y_-bB.js",
+    "name": "needsSupport",
+    "src": "resources/js/api/needsSupport.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/pages/Root.jsx"
+    ]
+  },
+  "resources/js/inertia.jsx": {
+    "file": "assets/inertia-D6dDv6-g.js",
+    "name": "inertia",
+    "src": "resources/js/inertia.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/pages/Root.jsx"
+    ]
+  },
+  "resources/js/pages/Root.jsx": {
+    "file": "assets/Root-m64vUzGv.js",
+    "name": "Root",
+    "src": "resources/js/pages/Root.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/inertia.jsx",
+      "_supabaseClient-BRFYMF5o.js"
+    ],
+    "dynamicImports": [
+      "resources/js/pages/Root.jsx"
+    ]
+  }
+}

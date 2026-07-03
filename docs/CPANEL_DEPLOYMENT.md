@@ -1,6 +1,9 @@
 # cPanel Deployment Guide
 
-Step-by-step guide to deploy **gramunnati-app** on cPanel shared hosting (Apache + PHP).
+Step-by-step guide to deploy **gramunnati-app** on cPanel shared hosting (Apache + PHP + **MySQL**).
+
+> **For a simple who-did-what summary, start with [DEPLOYMENT_STATUS.md](./DEPLOYMENT_STATUS.md).**  
+> **For your personal checklist, use [MANUAL_SETUP_GUIDE.md](./MANUAL_SETUP_GUIDE.md).**
 
 ---
 
@@ -10,27 +13,29 @@ Step-by-step guide to deploy **gramunnati-app** on cPanel shared hosting (Apache
 |-------------|---------|-------------|
 | PHP | 8.2 | 8.3 |
 | Composer | 2.x | Latest |
-| Node.js | 18 | 20 LTS |
+| Node.js | 18 (build on PC) | 20 LTS |
 | npm | 9+ | Latest |
 | Apache | mod_rewrite enabled | — |
-| SSL | Recommended | Let's Encrypt via cPanel |
+| MySQL | 8.0 | 8.0+ on cPanel |
+| SSL | Required | Let's Encrypt via cPanel |
 
-**Database:** The app uses **Supabase** (cloud). You do **not** need MySQL on cPanel for application data. Laravel's default SQLite is optional (sessions/cache only).
+**Database:** The app uses **MySQL on cPanel**. Import `database/gramunnati.sql` in phpMyAdmin, then run `php artisan gramunnati:mark-migrations-run` on deploy — **not** `migrate --force`.
 
 ---
 
 ## Deployment checklist
 
-- [ ] Supabase project configured (see [Supabase Setup](./SUPABASE_SETUP.md))
-- [ ] Admin user created in Supabase Auth
-- [ ] RLS SQL scripts executed
-- [ ] Files uploaded to server
-- [ ] Document root set to `public/`
-- [ ] `.env` configured with production values
+- [x] MySQL database created and `gramunnati.sql` imported (you)
+- [x] SSL + domain configured (you)
+- [ ] Laravel app uploaded to server
+- [ ] Production `.env` configured (MySQL, `APP_URL`, Sanctum domains)
 - [ ] `composer install --no-dev` completed
-- [ ] `npm run build` completed
-- [ ] Storage permissions set
-- [ ] Laravel caches optimized
+- [ ] `npm run build` completed (preferably on PC)
+- [ ] `php artisan gramunnati:mark-migrations-run` completed
+- [ ] `php artisan storage:link` completed
+- [ ] Document root set to `public/`
+- [ ] Storage permissions set (`chmod -R 775 storage bootstrap/cache`)
+- [ ] Laravel caches optimized (`config:cache`, `route:cache`, `view:cache`)
 - [ ] Site loads over HTTPS
 
 ---
@@ -42,13 +47,8 @@ Build assets locally before upload to avoid Node.js issues on shared hosting:
 ```bash
 cd gramunnati-app
 
-# Copy environment template
 cp .env.example .env
-
-# Edit .env with production values (see Step 4)
-# VITE_SUPABASE_URL=...
-# VITE_SUPABASE_ANON_KEY=...
-# APP_URL=https://yourdomain.com
+# Local only — production .env is created on cPanel (see DEPLOYMENT_STATUS.md)
 
 php artisan key:generate
 composer install --optimize-autoloader --no-dev
@@ -56,7 +56,7 @@ npm ci
 npm run build
 ```
 
-Verify `public/build/manifest.json` exists and contains entry files.
+Verify `public/build/manifest.json` exists. **No Supabase env vars needed.**
 
 ---
 

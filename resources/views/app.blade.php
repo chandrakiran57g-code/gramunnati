@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title inertia>GramUnnati — Village Development & School Empowerment Platform</title>
     <meta name="description" content="GramUnnati is a rural development platform empowering villages and schools across India through donations, volunteer programs, and community-driven initiatives.">
     <link rel="icon" type="image/svg+xml" href="https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png">

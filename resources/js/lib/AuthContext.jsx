@@ -1,42 +1,19 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { supabase } from '@/api/supabaseClient';
 import { authService } from '@/api/auth';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);           // Supabase auth user
-  const [profile, setProfile] = useState(null);      // Profile from profiles table
-  const [userRoles, setUserRoles] = useState([]);    // Array of role names
+  const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [userRoles, setUserRoles] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoadingAuth, setIsLoadingAuth] = useState(true);
   const [authChecked, setAuthChecked] = useState(false);
   const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
-    // Check initial session
     checkSession();
-
-    // Listen for auth state changes (login, logout, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
-          setUser(session.user);
-          setIsAuthenticated(true);
-          // Fetch profile data
-          await loadProfile(session.user.id);
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
-          setProfile(null);
-          setUserRoles([]);
-          setIsAuthenticated(false);
-        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
-          setUser(session.user);
-        }
-      }
-    );
-
-    return () => subscription?.unsubscribe();
   }, []);
 
   const checkSession = async () => {
@@ -44,12 +21,12 @@ export const AuthProvider = ({ children }) => {
       setIsLoadingAuth(true);
       setAuthError(null);
 
-      const { data: { session } } = await supabase.auth.getSession();
+      const payload = await authService.getSession();
 
-      if (session?.user) {
-        setUser(session.user);
+      if (payload?.user) {
+        setUser(payload.user);
         setIsAuthenticated(true);
-        await loadProfile(session.user.id);
+        await loadProfile(payload.user.id);
       } else {
         setUser(null);
         setIsAuthenticated(false);
@@ -70,13 +47,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const profileData = await authService.getProfile(userId);
       setProfile(profileData);
-
-      // Extract role names
-      const roles = profileData?.user_roles?.map(ur => ur.roles?.name).filter(Boolean) || [];
-      setUserRoles(roles);
+      const roles = profileData?.user_roles?.map((ur) => ur.roles?.name).filter(Boolean)
+        || await authService.getUserRoles(userId);
+      setUserRoles(roles?.length ? roles : ['Member']);
     } catch (error) {
       console.error('Failed to load profile:', error);
-      // Profile might not exist yet for new users — that's okay
       setProfile(null);
       setUserRoles(['Member']);
     }
@@ -84,20 +59,18 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (identifier, password) => {
     const isMobile = /^[\d+\s-]{10,}$/.test(String(identifier).trim());
-    if (isMobile) {
-      return authService.signInWithMobile(identifier, password);
-    }
-    return authService.signInWithPassword(identifier, password);
+    const result = isMobile
+      ? await authService.signInWithMobile(identifier, password)
+      : await authService.signInWithPassword(identifier, password);
+    await checkSession();
+    return result;
   };
 
   const register = async ({ email, password, fullName, mobile, firstName, lastName }) => {
     return authService.signUp({ email, password, fullName, mobile, firstName, lastName });
   };
 
-  const loginWithGoogle = async () => {
-    const data = await authService.signInWithGoogle();
-    return data;
-  };
+  const loginWithGoogle = async () => authService.signInWithGoogle();
 
   const logout = async () => {
     try {
@@ -111,80 +84,44 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const resetPassword = async (email) => {
-    return await authService.resetPassword(email);
-  };
+  const resetPassword = async (email) => authService.resetPassword(email);
 
-  const updatePassword = async (newPassword) => {
-    return await authService.updatePassword(newPassword);
-  };
+  const updatePassword = async (newPassword) => authService.updatePassword(newPassword);
 
   const updateProfile = async (updates) => {
-    if (!user) throw new Error('Not authenticated');
-    const updated = await authService.updateProfile(user.id, updates);
-    setProfile(prev => ({ ...prev, ...updated }));
+    const updated = await authService.updateProfile(user?.id, updates);
+    setProfile(updated);
     return updated;
   };
 
-  /**
-   * Check if current user has a specific role
-   */
-  const hasRole = (roleName) => {
-    if (roleName === 'Super Admin' && userRoles.includes('Super Admin')) return true;
-    return userRoles.includes(roleName);
-  };
-
-  const isAdmin = () => hasRole('Super Admin');
-  const isContentManager = () => hasRole('Super Admin') || hasRole('Content Manager');
-  const isVillageRep = () => hasRole('Village Representative');
-  const isSchoolRep = () => hasRole('School Representative');
-
-  const value = {
-    // State
-    user,
-    profile,
-    userRoles,
-    isAuthenticated,
-    isLoadingAuth,
-    authChecked,
-    authError,
-
-    // Auth actions
-    login,
-    register,
-    loginWithGoogle,
-    logout,
-    resetPassword,
-    updatePassword,
-    updateProfile,
-    checkSession,
-
-    // Role checks
-    hasRole,
-    isAdmin,
-    isContentManager,
-    isVillageRep,
-    isSchoolRep,
-
-    // Backward compatibility
-    isLoadingPublicSettings: false,
-    appPublicSettings: null,
-    navigateToLogin: () => { window.location.href = '/login'; },
-    checkUserAuth: checkSession,
-    checkAppState: checkSession,
-  };
+  const isAdmin = userRoles.includes('Super Admin');
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        user,
+        profile,
+        userRoles,
+        isAuthenticated,
+        isLoadingAuth,
+        authChecked,
+        authError,
+        isAdmin,
+        login,
+        register,
+        loginWithGoogle,
+        logout,
+        resetPassword,
+        updatePassword,
+        updateProfile,
+        checkSession,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+export const useAuth = () => useContext(AuthContext);
+
+export default AuthContext;
