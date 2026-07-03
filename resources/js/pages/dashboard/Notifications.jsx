@@ -10,7 +10,7 @@ const DEMO_NOTIFICATIONS = [
   { id: 2, type: 'donation', title: 'Thank you for your donation!', desc: 'Your donation of ₹1,000 to ZPHS Medaram has been received.', date: '1 day ago', icon: Heart, color: 'text-donation', bg: 'bg-donation/10', read: false },
   { id: 3, type: 'school', title: 'New library inaugurated', desc: 'ZPHS Medaram school library with 500 books is now open.', date: '2 days ago', icon: School, color: 'text-school', bg: 'bg-school/10', read: true },
   { id: 4, type: 'project', title: 'Tree plantation drive completed', desc: '500 saplings planted across 3 villages this weekend.', date: '3 days ago', icon: FolderOpen, color: 'text-projects', bg: 'bg-projects/10', read: true },
-  { id: 5, type: 'system', title: 'New feature: Compare Villages', desc: 'You can now compare villages side by side on GramUnnati.', date: '1 week ago', icon: Info, color: 'text-cms', bg: 'bg-cms/10', read: true },
+  { id: 5, type: 'system', title: 'New feature: Compare Villages', desc: 'You can now compare villages side by side on CMSR.', date: '1 week ago', icon: Info, color: 'text-cms', bg: 'bg-cms/10', read: true },
 ];
 
 export default function Notifications() {

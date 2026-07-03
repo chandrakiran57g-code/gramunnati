@@ -13,10 +13,11 @@ use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\UploadController;
 use App\Http\Controllers\Api\VillageController;
+use App\Http\Controllers\Api\VolunteerController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/health', fn () => response()->json(['ok' => true, 'service' => 'gramunnati-api']));
+Route::get('/health', fn () => response()->json(['ok' => true, 'service' => 'cmsr-api']));
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -84,6 +85,7 @@ Route::prefix('cms')->group(function () {
 Route::get('/search', [CmsController::class, 'search']);
 Route::post('/contact', [CmsController::class, 'contact']);
 Route::post('/donations', [DonationController::class, 'store']);
+Route::post('/volunteers/register', [VolunteerController::class, 'register']);
 
 Route::get('/active-works/store', [ActiveWorkController::class, 'show']);
 Route::get('/active-works/public-bundle', [ActiveWorkController::class, 'publicBundle']);

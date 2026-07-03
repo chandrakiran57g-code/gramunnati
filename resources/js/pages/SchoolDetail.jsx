@@ -238,7 +238,7 @@ export default function SchoolDetail() {
                 <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-school/20" />
                 <div className="space-y-6 pl-12">
                   {[
-                    { date: 'Jun 2026', title: 'School Registered on GramUnnati', desc: `${school.school_name} was officially registered on the GramUnnati digital platform.`, type: 'milestone', icon: '🏫' },
+                    { date: 'Jun 2026', title: 'School Registered on CMSR', desc: `${school.school_name} was officially registered on the CMSR digital platform.`, type: 'milestone', icon: '🏫' },
                     { date: 'May 2026', title: 'Infrastructure Audit Completed', desc: 'Full audit of existing infrastructure completed — library, computer lab, playground status documented.', type: 'assessment', icon: '📋' },
                     { date: 'Apr 2026', title: 'First Digital Classroom Initiated', desc: 'Planning began for the first digital classroom setup with smart board and internet connectivity.', type: 'education', icon: '💻' },
                     { date: 'Mar 2026', title: 'Teacher Training Workshop', desc: '12 teachers attended a professional development workshop on digital teaching tools.', type: 'education', icon: '👩‍🏫' },

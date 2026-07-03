@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { Loader2, Pencil, Trash2, Layers, ExternalLink } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
+import { BilingualInput } from '@/components/admin/BilingualField';
 
 const BUILT_IN_TEMPLATES = BUILT_IN_ENTITY_TEMPLATES.map((t) => ({
   ...t,
@@ -21,6 +22,7 @@ const BUILT_IN_TEMPLATES = BUILT_IN_ENTITY_TEMPLATES.map((t) => ({
 
 const EMPTY_FORM = {
   name: '',
+  name_te: '',
   slug: '',
   icon: '📋',
   display_order: 2,
@@ -78,6 +80,7 @@ export default function AdminActiveWorksTemplates() {
     setEditId(tpl.id);
     setForm({
       name: tpl.name || '',
+      name_te: tpl.name_te || '',
       slug: tpl.slug || '',
       icon: tpl.icon || '📋',
       display_order: tpl.display_order ?? 2,
@@ -118,22 +121,17 @@ export default function AdminActiveWorksTemplates() {
           Example: name “Temples” → public section title “Active Temples”
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label>Template name *</Label>
-            <Input
-              className="mt-1"
-              value={form.name}
-              onChange={(e) => {
-                const name = e.target.value;
-                setForm((f) => ({
-                  ...f,
-                  name,
-                  slug: editId ? f.slug : slugifyTitle(name),
-                }));
-              }}
-              placeholder="Temples"
-            />
-          </div>
+          <BilingualInput
+            name="name"
+            label="Template name"
+            form={form}
+            setForm={setForm}
+            required
+            className="sm:col-span-2"
+            onEnChange={(name) => {
+              if (!editId) setForm((f) => ({ ...f, slug: slugifyTitle(name) }));
+            }}
+          />
           <div>
             <Label>Public section title</Label>
             <Input

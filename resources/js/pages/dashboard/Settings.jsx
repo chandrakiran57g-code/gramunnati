@@ -97,7 +97,7 @@ export default function Settings() {
                 { key: 'villageUpdates', label: 'Village Updates', desc: 'Get updates about your followed villages' },
                 { key: 'schoolUpdates', label: 'School Updates', desc: 'Get updates about your followed schools' },
                 { key: 'donationReceipts', label: 'Donation Receipts', desc: 'Receive receipts for your donations' },
-                { key: 'newsletter', label: 'Newsletter', desc: 'Monthly GramUnnati newsletter' },
+                { key: 'newsletter', label: 'Newsletter', desc: 'Monthly CMSR newsletter' },
               ].map(item => (
                 <div key={item.key} className="flex items-center justify-between">
                   <div>

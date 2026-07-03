@@ -249,6 +249,13 @@ class AdminTableController extends Controller
                 }
             });
         }
+        if ($table === 'team_groups') {
+            $rows->each(function ($g) {
+                if ($g->relationLoaded('members')) {
+                    $g->setAttribute('team_members', $g->members);
+                }
+            });
+        }
         if ($table === 'profiles') {
             $rows->each(function ($p) {
                 if ($p->relationLoaded('user') && $p->user?->relationLoaded('roles')) {

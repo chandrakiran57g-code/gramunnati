@@ -1,6 +1,6 @@
 # Architecture
 
-How GramUnnati is structured and how requests flow through the system.
+How CMSR is structured and how requests flow through the system.
 
 ---
 
@@ -34,7 +34,7 @@ How GramUnnati is structured and how requests flow through the system.
                              │
                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│  React Application (GramUnnatiApp.jsx)                          │
+│  React Application (CmsrApp.jsx)                          │
 │  • React Router — 70+ routes                                    │
 │  • AuthProvider — member Supabase auth                          │
 │  • LanguageProvider — i18n                                      │
@@ -85,7 +85,7 @@ This is sometimes called a **SPA-in-a-shell** or **hybrid Inertia** pattern (Ine
 4. Inertia renders `Root` with Vite asset URLs from `public/build/manifest.json`
 5. Browser downloads JS/CSS bundles
 6. `inertia.jsx` bootstraps React
-7. `Root.jsx` renders `GramUnnatiApp.jsx`
+7. `Root.jsx` renders `CmsrApp.jsx`
 8. React Router matches `/villages/:slug` → `VillageDetail`
 9. Component calls `entities.js` → Supabase fetch
 10. Page renders with data
@@ -108,7 +108,7 @@ This is sometimes called a **SPA-in-a-shell** or **hybrid Inertia** pattern (Ine
 ```
 resources/js/
 ├── inertia.jsx              # Entry: createInertiaApp
-├── GramUnnatiApp.jsx        # Router + providers + all routes
+├── CmsrApp.jsx        # Router + providers + all routes
 ├── pages/
 │   ├── Home.jsx             # Public pages
 │   ├── admin/               # Admin CMS pages
@@ -230,7 +230,7 @@ resources/js/pages/Root.jsx ┘         │
 
 ```
 /home/username/
-└── gramunnati-app/              ← project root (NOT web root)
+└── CMSR-app/              ← project root (NOT web root)
     ├── app/
     ├── resources/
     ├── storage/                 ← must be writable
@@ -265,7 +265,7 @@ Laravel's role is **HTTP delivery**, **Inertia bridge**, and **production compat
 
 | To add… | Where to work |
 |---------|---------------|
-| New public page | `GramUnnatiApp.jsx` route + `pages/` component |
+| New public page | `CmsrApp.jsx` route + `pages/` component |
 | New admin section | `adminRoutes.js`, `adminNavConfig.js`, admin page |
 | New Supabase table | SQL migration in Supabase + new `api/*.js` module |
 | New homepage section | `components/home/` + hook/API |

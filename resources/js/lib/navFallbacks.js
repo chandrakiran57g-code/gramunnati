@@ -3,7 +3,7 @@ import { PROGRAMS } from '@/lib/programs';
 export const LOGO_URL = 'https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png';
 
 export const FALLBACK_ABOUT_KEYS = [
-  { key: 'aboutGramUnnati', path: '/about' },
+  { key: 'aboutCMSR', path: '/about' },
   { key: 'visionMission', path: '/vision' },
   { key: 'beneficiaries', path: '/beneficiaries' },
   { key: 'aboutVillages', path: '/villages' },

@@ -5,11 +5,12 @@ import SafeImage from '@/components/shared/SafeImage';
 import { resolveImageUrl } from '@/lib/villageImages';
 import { homeService } from '@/api/home';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 function ProjectCard({ project }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const slug = project.slug || project.id;
-  const name = project.project_name || project.title;
+  const name = localize(project, 'project_name', lang) || localize(project, 'title', lang) || localize(project, 'name', lang);
   const image = resolveImageUrl(project.cover_image || project.featured_image, 0, 600);
   const progress = project.progress ?? 0;
   const village = project.villages?.village_name;

@@ -1,22 +1,22 @@
-# GramUnnati App — Complete Project Analysis
+# CMSR App — Complete Project Analysis
 
-**Project:** `gramunnati-app`  
+**Project:** `CMSR-app`  
 **Branch:** `laravel`  
-**Repository:** `https://github.com/chandrakiran57g-code/gramunnati.git`  
+**Repository:** `https://github.com/chandrakiran57g-code/CMSR.git`  
 **Last reviewed:** June 2026
 
 ---
 
 ## 1. Executive summary
 
-GramUnnati is a full-stack community platform for model villages, schools, development programs, donations, volunteers, and CMS-driven content. The **gramunnati-app** codebase is a **Laravel 13 + Inertia.js + React 18** application designed for **cPanel deployment**.
+CMSR is a full-stack community platform for model villages, schools, development programs, donations, volunteers, and CMS-driven content. The **CMSR-app** codebase is a **Laravel 13 + Inertia.js + React 18** application designed for **cPanel deployment**.
 
 | Aspect | Detail |
 |--------|--------|
 | **Primary purpose** | Public website + member portal + admin CMS |
 | **Backend (data)** | Supabase (PostgreSQL, Auth, Storage) |
 | **Backend (HTTP)** | Laravel — single catch-all route, no custom API |
-| **Frontend** | React SPA inside Inertia (`GramUnnatiApp.jsx`) |
+| **Frontend** | React SPA inside Inertia (`CmsrApp.jsx`) |
 | **Routing** | React Router (70+ client routes) |
 | **i18n** | English + Telugu (`resources/js/i18n/`) |
 | **Scale** | ~246 JS/JSX files, ~94 page components |
@@ -78,7 +78,7 @@ routes/web.php  →  Inertia::render('Root')   [every URL]
 resources/views/app.blade.php  +  Vite assets (public/build/)
    │
    ▼
-inertia.jsx  →  Root.jsx  →  GramUnnatiApp.jsx
+inertia.jsx  →  Root.jsx  →  CmsrApp.jsx
    │
    ├── React Router (public / admin / dashboard routes)
    │
@@ -94,7 +94,7 @@ See [Architecture](./ARCHITECTURE.md) for detailed diagrams.
 ## 4. Directory structure
 
 ```
-gramunnati-app/
+CMSR-app/
 ├── app/                          # Minimal Laravel app
 │   ├── Http/Middleware/
 │   │   └── HandleInertiaRequests.php
@@ -109,7 +109,7 @@ gramunnati-app/
 ├── resources/
 │   ├── css/app.css
 │   ├── js/                       # ★ Entire React application
-│   │   ├── GramUnnatiApp.jsx     # Main app + routes
+│   │   ├── CmsrApp.jsx     # Main app + routes
 │   │   ├── inertia.jsx           # Vite entry
 │   │   ├── pages/                # Route pages (public, admin, dashboard)
 │   │   ├── components/           # UI, layout, home, admin
@@ -142,7 +142,7 @@ All paths (`/`, `/admin`, `/villages/foo`, etc.) return the same Inertia page. D
 
 ### React Router (client)
 
-Defined in `resources/js/GramUnnatiApp.jsx`.
+Defined in `resources/js/CmsrApp.jsx`.
 
 #### Public routes (with `PublicLayout`)
 
@@ -243,7 +243,7 @@ Default **SQLite** (`database/database.sqlite`) — used only for Laravel intern
 - Flow:
   1. Validate credentials client-side
   2. Sign in to Supabase Auth (same user must exist in Supabase)
-  3. Set `sessionStorage` flag `gramunnati_admin_session=1`
+  3. Set `sessionStorage` flag `cmsr_admin_session=1`
   4. RLS policies allow `authenticated` role to write
 
 **Security note:** Admin gate is client-side. Real protection depends on Supabase RLS. Change default admin credentials before production and restrict Supabase policies to specific admin user IDs if needed.
@@ -318,12 +318,12 @@ Output: `public/build/manifest.json` + hashed JS/CSS chunks.
 
 ## 10. Relationship to village_project
 
-| | `village_project` | `gramunnati-app` |
+| | `village_project` | `CMSR-app` |
 |--|-------------------|------------------|
 | **Branch** | `main` | `laravel` |
 | **Bundler** | Vite standalone | Vite + Laravel plugin |
 | **Entry** | `src/main.jsx` | `resources/js/inertia.jsx` |
-| **Router** | React Router in `App.jsx` | React Router in `GramUnnatiApp.jsx` |
+| **Router** | React Router in `App.jsx` | React Router in `CmsrApp.jsx` |
 | **Hosting** | Static / Vercel-friendly | cPanel / Apache |
 | **Code sync** | Same React components (mirrored paths) | |
 

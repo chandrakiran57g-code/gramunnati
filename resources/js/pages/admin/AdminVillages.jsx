@@ -12,12 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useGeoPickers, villageDisplay, slugifyName } from '@/hooks/useGeoPickers';
 import { toast } from 'sonner';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import AdminUrlField from '@/components/admin/AdminUrlField';
 
 const EMPTY_FORM = {
   village_name: '',
+  village_name_te: '',
   slug: '',
   short_description: '',
+  short_description_te: '',
   description: '',
+  description_te: '',
   population: '',
   cover_image: '',
   is_featured: false,
@@ -72,9 +77,12 @@ export default function AdminVillages() {
     setEditing(v);
     setForm({
       village_name: v.village_name || '',
+      village_name_te: v.village_name_te || '',
       slug: v.slug || '',
       short_description: v.short_description || '',
+      short_description_te: v.short_description_te || '',
       description: v.description || '',
+      description_te: v.description_te || '',
       population: v.population ?? '',
       cover_image: v.cover_image || '',
       is_featured: Boolean(v.is_featured),
@@ -232,15 +240,14 @@ export default function AdminVillages() {
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>Village Name *</Label>
-                  <Input value={form.village_name} onChange={(e) => setForm((f) => ({ ...f, village_name: e.target.value }))} required className="mt-1 rounded-xl" />
-                </div>
-                <div>
-                  <Label>Slug</Label>
-                  <Input value={form.slug} onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))} placeholder="auto-generated" className="mt-1 rounded-xl" />
-                </div>
+                <BilingualInput name="village_name" label="Village Name" form={form} setForm={setForm} required />
               </div>
+              <AdminUrlField
+                title={form.village_name}
+                slug={form.slug}
+                onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))}
+                publicBase="/villages"
+              />
               <div className="grid sm:grid-cols-3 gap-4">
                 <div>
                   <Label>State *</Label>
@@ -264,14 +271,8 @@ export default function AdminVillages() {
                   </select>
                 </div>
               </div>
-              <div>
-                <Label>Short Description</Label>
-                <Textarea value={form.short_description} onChange={(e) => setForm((f) => ({ ...f, short_description: e.target.value }))} className="mt-1 rounded-xl h-20" />
-              </div>
-              <div>
-                <Label>Full Description</Label>
-                <Textarea value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} className="mt-1 rounded-xl h-24" />
-              </div>
+              <BilingualTextarea name="short_description" label="Short Description" form={form} setForm={setForm} rows={3} />
+              <BilingualTextarea name="description" label="Full Description" form={form} setForm={setForm} rows={4} />
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Population</Label>

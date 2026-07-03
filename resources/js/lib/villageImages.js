@@ -55,7 +55,7 @@ const APPROVED_UNSPLASH_IDS = new Set(
 
 const BLOCKED_URL_PATTERN = /cake|birthday|food|dessert|wedding|party|restaurant|coffee|pizza|burger|pastry|bakery|cupcake|sweets|candy/i;
 
-const TRUSTED_UPLOAD_HOSTS = ['supabase.co', 'gramunnati.in'];
+const TRUSTED_UPLOAD_HOSTS = ['supabase.co', 'cmsr.in'];
 
 export const VILLAGE_SIDE_PHOTOS = VILLAGE_HERO_PHOTOS.slice(0, 4).map((p, i) => ({
   src: p.url.replace('w=1920', 'w=600'),

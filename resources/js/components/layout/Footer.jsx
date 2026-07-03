@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Heart, MapPin, Phone, Mail } from 'lucide-react';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
+import BrandTagline from '@/components/brand/BrandTagline';
 
 const LOGO_URL = "https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png";
 
@@ -12,10 +13,10 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src={LOGO_URL} alt="GramUnnati" className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
+              <img src={LOGO_URL} alt="CMSR" className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
               <div>
-                <div className="font-heading font-bold text-xl text-white">GramUnnati</div>
-                <div className="text-xs text-brown-400">Village Development</div>
+                <div className="font-heading font-bold text-xl text-white">CMSR</div>
+                <BrandTagline className="text-xs text-brown-400 [&_span:first-child]:text-brown-400 [&_span:last-child]:text-primary" />
               </div>
             </div>
             <p className="text-sm text-brown-400 leading-relaxed mb-4">
@@ -96,7 +97,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-cream-200 flex-shrink-0" />
-                <a href="mailto:contact@GramUnnati.in" className="hover:text-white transition-colors">contact@GramUnnati.in</a>
+                <a href="mailto:contact@CMSR.in" className="hover:text-white transition-colors">contact@CMSR.in</a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-cream-200 flex-shrink-0" />
@@ -115,7 +116,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brown-400">
-          <p>© {new Date().getFullYear()} GramUnnati — Village Development & School Empowerment Platform. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} CMSR — Village Development & School Empowerment Platform. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Made with</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />

@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 const generateReceipt = (d) => {
-  const content = `GramUnnati — Village Development Platform\nReceipt: ${d.receipt_number || 'N/A'}\nDate: ${new Date(d.created_date).toLocaleDateString('en-IN')}\nDonor: ${d.is_anonymous ? 'Anonymous' : d.donor_name}\nAmount: ₹${(d.amount || 0).toLocaleString('en-IN')}\nType: ${d.target_type} Donation\nPayment: ${d.payment_status}\n\n80G Tax Exempt — PAN: ${d.pan_number || 'N/A'}\nThank you for your contribution!`;
+  const content = `CMSR — Village Development Platform\nReceipt: ${d.receipt_number || 'N/A'}\nDate: ${new Date(d.created_date).toLocaleDateString('en-IN')}\nDonor: ${d.is_anonymous ? 'Anonymous' : d.donor_name}\nAmount: ₹${(d.amount || 0).toLocaleString('en-IN')}\nType: ${d.target_type} Donation\nPayment: ${d.payment_status}\n\n80G Tax Exempt — PAN: ${d.pan_number || 'N/A'}\nThank you for your contribution!`;
   const blob = new Blob([content], { type: 'text/plain' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `Receipt-${d.receipt_number || 'GramUnnati'}.txt`; a.click();
+  a.href = url; a.download = `Receipt-${d.receipt_number || 'CMSR'}.txt`; a.click();
   URL.revokeObjectURL(url);
 };
 

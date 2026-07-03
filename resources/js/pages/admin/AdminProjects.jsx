@@ -10,14 +10,17 @@ import { Progress } from '@/components/ui/progress';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useVillageOptions, useProjectCategoryOptions, slugifyName } from '@/hooks/useGeoPickers';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 
 const STATUSES = ['upcoming', 'active', 'completed', 'cancelled'];
 const EMPTY = {
   project_name: '',
+  project_name_te: '',
   slug: '',
   project_category_id: '',
   village_id: '',
   short_description: '',
+  short_description_te: '',
   budget_amount: 0,
   raised_amount: 0,
   spent_amount: 0,
@@ -59,10 +62,12 @@ export default function AdminProjects() {
     const raised = Number(form.raised_amount) || 0;
     const payload = {
       project_name: form.project_name,
+      project_name_te: form.project_name_te || null,
       slug: form.slug || slugifyName(form.project_name),
       project_category_id: Number(form.project_category_id),
       village_id: Number(form.village_id),
       short_description: form.short_description || null,
+      short_description_te: form.short_description_te || null,
       budget_amount: budget,
       raised_amount: raised,
       spent_amount: Number(form.spent_amount) || 0,
@@ -133,9 +138,12 @@ export default function AdminProjects() {
       {showForm && <div className="fixed inset-0 z-50 flex items-center justify-center"><div className="absolute inset-0 bg-black/50" onClick={() => setShowForm(false)} /><div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex items-center justify-between rounded-t-2xl z-10"><h3 className="font-heading text-lg font-bold">{editing ? 'Edit' : 'New'} Project</h3><button type="button" onClick={() => setShowForm(false)} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-5 h-5" /></button></div>
         <form onSubmit={save} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4"><div><Label>Name *</Label><Input value={form.project_name} onChange={(e) => setForm((f) => ({ ...f, project_name: e.target.value }))} required className="mt-1" /></div><div><Label>Category *</Label><select value={form.project_category_id} onChange={(e) => setForm((f) => ({ ...f, project_category_id: e.target.value }))} required className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="">Select category</option>{categories.map((c) => <option key={c.id} value={String(c.id)}>{c.name}</option>)}</select></div></div>
+          <div className="grid grid-cols-2 gap-4">
+            <BilingualInput name="project_name" label="Name" form={form} setForm={setForm} required className="col-span-2 sm:col-span-1" />
+            <div><Label>Category *</Label><select value={form.project_category_id} onChange={(e) => setForm((f) => ({ ...f, project_category_id: e.target.value }))} required className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="">Select category</option>{categories.map((c) => <option key={c.id} value={String(c.id)}>{c.name}</option>)}</select></div>
+          </div>
           <div><Label>Village *</Label><select value={form.village_id} onChange={(e) => setForm((f) => ({ ...f, village_id: e.target.value }))} required className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="">Select village</option>{villages.map((v) => <option key={v.id} value={String(v.id)}>{v.village_name}</option>)}</select></div>
-          <div><Label>Description</Label><Textarea value={form.short_description} onChange={(e) => setForm((f) => ({ ...f, short_description: e.target.value }))} className="mt-1 h-20" /></div>
+          <BilingualTextarea name="short_description" label="Description" form={form} setForm={setForm} rows={4} />
           <div className="grid grid-cols-3 gap-4"><div><Label>Budget ₹</Label><Input type="number" value={form.budget_amount} onChange={(e) => setForm((f) => ({ ...f, budget_amount: +e.target.value }))} className="mt-1" /></div><div><Label>Raised ₹</Label><Input type="number" value={form.raised_amount} onChange={(e) => setForm((f) => ({ ...f, raised_amount: +e.target.value }))} className="mt-1" /></div><div><Label>Spent ₹</Label><Input type="number" value={form.spent_amount} onChange={(e) => setForm((f) => ({ ...f, spent_amount: +e.target.value }))} className="mt-1" /></div></div>
           <div className="grid grid-cols-2 gap-4"><div><Label>Start</Label><Input type="date" value={form.start_date} onChange={(e) => setForm((f) => ({ ...f, start_date: e.target.value }))} className="mt-1" /></div><div><Label>End</Label><Input type="date" value={form.end_date} onChange={(e) => setForm((f) => ({ ...f, end_date: e.target.value }))} className="mt-1" /></div></div>
           <div><Label>Status</Label><select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm">{STATUSES.map((s) => <option key={s}>{s}</option>)}</select></div>

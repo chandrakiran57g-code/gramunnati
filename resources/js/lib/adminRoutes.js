@@ -31,6 +31,7 @@ export const adminRoutes = {
   /* Content */
   stories: `${ADMIN_BASE}/stories`,
   news: `${ADMIN_BASE}/news`,
+  faqs: `${ADMIN_BASE}/faqs`,
 
   reports: `${ADMIN_BASE}/reports`,
   settings: `${ADMIN_BASE}/settings`,

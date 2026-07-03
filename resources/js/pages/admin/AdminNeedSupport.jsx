@@ -3,6 +3,7 @@ import { needsSupportService, PROGRAM_CATEGORY_OPTIONS } from '@/api/needsSuppor
 import AdminShell from '@/components/admin/AdminShell';
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,9 +16,11 @@ import { resolveCardCover } from '@/lib/adminMedia';
 
 const EMPTY = {
   name: '',
+  name_te: '',
   slug: '',
   cover_image: '',
   description: '',
+  description_te: '',
   village_name: '',
   program_category: '',
   funding_goal: '',
@@ -83,9 +86,11 @@ export default function AdminNeedSupport() {
     setEditId(item._adminKey || item.id);
     setForm({
       name: item.name || '',
+      name_te: item.name_te || '',
       slug: item.slug || '',
       cover_image: item.cover_image || '',
       description: item.description || '',
+      description_te: item.description_te || '',
       village_name: item.village_name || '',
       program_category: item.program_category || '',
       funding_goal: item.funding_goal ?? '',
@@ -111,17 +116,17 @@ export default function AdminNeedSupport() {
       <div className="mb-6 rounded-xl border border-border bg-white p-6">
         <h2 className="mb-4 font-semibold">{editId ? 'Edit Card' : 'New Card'}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label>Project title *</Label>
-            <Input
-              className="mt-1"
-              value={form.name}
-              onChange={(e) => {
-                const name = e.target.value;
-                setForm((f) => ({ ...f, name, slug: editId ? f.slug : slugifyTitle(name) }));
-              }}
-            />
-          </div>
+          <BilingualInput
+            name="name"
+            label="Project title"
+            form={form}
+            setForm={setForm}
+            required
+            className="sm:col-span-2"
+            onEnChange={(name) => {
+              if (!editId) setForm((f) => ({ ...f, slug: slugifyTitle(name) }));
+            }}
+          />
           <div>
             <Label>Program category *</Label>
             <select
@@ -149,8 +154,7 @@ export default function AdminNeedSupport() {
             />
           </div>
           <div className="sm:col-span-2">
-            <Label>Short description</Label>
-            <Textarea className="mt-1" rows={2} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <BilingualTextarea name="description" label="Short description" form={form} setForm={setForm} rows={2} />
           </div>
           <div>
             <Label>Funding goal (₹)</Label>
@@ -172,7 +176,7 @@ export default function AdminNeedSupport() {
             </select>
           </div>
           <div className="sm:col-span-2">
-            <AdminUrlField title={form.name} slug={form.slug} onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))} publicBase="/donate" />
+            <AdminUrlField title={form.name} slug={form.slug} onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))} publicBase="/need-support" />
           </div>
         </div>
         <div className="mt-4 flex gap-2">

@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Schema;
 
 class MarkMigrationsRun extends Command
 {
-    protected $signature = 'gramunnati:mark-migrations-run';
+    protected $signature = 'cmsr:mark-migrations-run';
 
-    protected $description = 'Mark all GramUnnati migrations as run (use after importing gramunnati.sql on cPanel)';
+    protected $description = 'Mark all CMSR migrations as run (use after importing cmsrr.sql on cPanel)';
 
     public function handle(): int
     {

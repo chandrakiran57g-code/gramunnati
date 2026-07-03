@@ -1,6 +1,6 @@
 # cPanel Deployment Guide
 
-Step-by-step guide to deploy **gramunnati-app** on cPanel shared hosting (Apache + PHP + **MySQL**).
+Step-by-step guide to deploy **CMSR-app** on cPanel shared hosting (Apache + PHP + **MySQL**).
 
 > **For a simple who-did-what summary, start with [DEPLOYMENT_STATUS.md](./DEPLOYMENT_STATUS.md).**  
 > **For your personal checklist, use [MANUAL_SETUP_GUIDE.md](./MANUAL_SETUP_GUIDE.md).**
@@ -19,19 +19,19 @@ Step-by-step guide to deploy **gramunnati-app** on cPanel shared hosting (Apache
 | MySQL | 8.0 | 8.0+ on cPanel |
 | SSL | Required | Let's Encrypt via cPanel |
 
-**Database:** The app uses **MySQL on cPanel**. Import `database/gramunnati.sql` in phpMyAdmin, then run `php artisan gramunnati:mark-migrations-run` on deploy — **not** `migrate --force`.
+**Database:** The app uses **MySQL on cPanel**. Import `database/cmsrr.sql` in phpMyAdmin, then run `php artisan cmsr:mark-migrations-run` on deploy — **not** `migrate --force`.
 
 ---
 
 ## Deployment checklist
 
-- [x] MySQL database created and `gramunnati.sql` imported (you)
+- [x] MySQL database created and `cmsrr.sql` imported (you)
 - [x] SSL + domain configured (you)
 - [ ] Laravel app uploaded to server
 - [ ] Production `.env` configured (MySQL, `APP_URL`, Sanctum domains)
 - [ ] `composer install --no-dev` completed
 - [ ] `npm run build` completed (preferably on PC)
-- [ ] `php artisan gramunnati:mark-migrations-run` completed
+- [ ] `php artisan cmsr:mark-migrations-run` completed
 - [ ] `php artisan storage:link` completed
 - [ ] Document root set to `public/`
 - [ ] Storage permissions set (`chmod -R 775 storage bootstrap/cache`)
@@ -45,7 +45,7 @@ Step-by-step guide to deploy **gramunnati-app** on cPanel shared hosting (Apache
 Build assets locally before upload to avoid Node.js issues on shared hosting:
 
 ```bash
-cd gramunnati-app
+cd CMSR-app
 
 cp .env.example .env
 # Local only — production .env is created on cPanel (see DEPLOYMENT_STATUS.md)
@@ -62,7 +62,7 @@ Verify `public/build/manifest.json` exists. **No Supabase env vars needed.**
 
 ## Step 2 — Upload files
 
-Upload the entire `gramunnati-app` folder via:
+Upload the entire `CMSR-app` folder via:
 
 - **cPanel File Manager**, or
 - **FTP/SFTP** (FileZilla, WinSCP)
@@ -70,7 +70,7 @@ Upload the entire `gramunnati-app` folder via:
 Suggested server path:
 
 ```
-/home/username/gramunnati-app/
+/home/username/CMSR-app/
 ```
 
 ### Files to upload
@@ -97,7 +97,7 @@ In **cPanel → Domains → Domains** (or Subdomains):
 
 | Setting | Value |
 |---------|-------|
-| Document Root | `/home/username/gramunnati-app/public` |
+| Document Root | `/home/username/CMSR-app/public` |
 
 **Critical:** The document root must be the `public/` folder, **not** the project root.
 
@@ -121,7 +121,7 @@ Prefer pointing the domain directly to `public/` when possible.
 SSH or cPanel Terminal:
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 cp .env.example .env
 php artisan key:generate
 ```
@@ -129,7 +129,7 @@ php artisan key:generate
 Edit `.env`:
 
 ```env
-APP_NAME=GramUnnati
+APP_NAME=CMSR
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://yourdomain.com
@@ -153,7 +153,7 @@ VITE_SUPABASE_ANON_KEY=your_anon_key_here
 ## Step 5 — Install PHP dependencies
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 composer install --optimize-autoloader --no-dev
 ```
 
@@ -168,7 +168,7 @@ php ~/composer.phar install --optimize-autoloader --no-dev
 ## Step 6 — Build frontend (if not built locally)
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 npm ci
 npm run build
 ```
@@ -253,7 +253,7 @@ Should return `200 OK`.
 ## Updating after code changes
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 git pull origin laravel          # if using Git on server
 composer install --no-dev
 npm ci && npm run build
@@ -298,8 +298,8 @@ tail -f storage/logs/laravel.log
 If SSH + Git available on cPanel:
 
 ```bash
-cd ~/gramunnati-app
-git clone -b laravel https://github.com/chandrakiran57g-code/gramunnati.git .
+cd ~/CMSR-app
+git clone -b laravel https://github.com/chandrakiran57g-code/CMSR.git .
 cp .env.example .env
 # configure .env
 composer install --no-dev

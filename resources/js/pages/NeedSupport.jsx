@@ -9,11 +9,13 @@ import { resolveImageUrl } from '@/lib/villageImages';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 
 function NeedSupportCard({ project, index = 0 }) {
-  const { t } = useLanguage();
-  const name = project.project_name || project.title;
+  const { t, lang } = useLanguage();
+  const name = localize(project, 'project_name', lang) || localize(project, 'title', lang) || localize(project, 'name', lang);
+  const description = localize(project, 'short_description', lang) || localize(project, 'description', lang);
   const image = resolveImageUrl(project.cover_image || project.featured_image, index, 600);
   const target = Number(project.target || 0);
   const raised = Number(project.raised || 0);
@@ -41,8 +43,8 @@ function NeedSupportCard({ project, index = 0 }) {
         </div>
       </div>
       <div className="p-4 flex flex-col flex-1">
-        {project.short_description && (
-          <p className="text-sm text-[#5C4033]/75 line-clamp-2 mb-3 flex-1">{project.short_description}</p>
+        {description && (
+          <p className="text-sm text-[#5C4033]/75 line-clamp-2 mb-3 flex-1">{description}</p>
         )}
         <div className="flex justify-between text-xs text-[#5C4033]/70 mb-1.5 gap-1">
           <span className="truncate">{t('home.raised')} {homeService.formatINR(raised)}</span>

@@ -8,10 +8,11 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { cmsService } from '@/api/cms';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import { BilingualSettingsField } from '@/components/admin/BilingualField';
 
-const GENERAL_KEYS = ['site_name', 'contact_email', 'contact_phone', 'address', 'logo_url', 'favicon_url'];
+const GENERAL_KEYS = ['site_name', 'site_name_te', 'contact_email', 'contact_phone', 'address', 'address_te', 'logo_url', 'favicon_url'];
 const PAYMENT_KEYS = ['rzp_key', 'rzp_secret', 'upi_id', 'bank_name', 'bank_account', 'ifsc'];
-const SEO_KEYS = ['meta_title', 'meta_desc', 'meta_keywords', 'ga_id'];
+const SEO_KEYS = ['meta_title', 'meta_title_te', 'meta_desc', 'meta_desc_te', 'meta_keywords', 'ga_id'];
 const NOTIFICATION_KEYS = ['notify_donation', 'notify_volunteer', 'notify_contact', 'notify_weekly', 'notify_monthly'];
 
 function SettingsFields({ fields, values, onChange }) {
@@ -107,16 +108,16 @@ export default function AdminSettings() {
           <TabsContent value="general">
             <div className="bg-white rounded-2xl border border-border p-6 space-y-5">
               <h3 className="font-heading font-bold text-lg mb-4">General Settings</h3>
+              <BilingualSettingsField enKey="site_name" label="Site Name" values={values} onChange={handleChange} />
               <SettingsFields
                 fields={[
-                  { label: 'Site Name', placeholder: 'GramUnnati', id: 'site_name' },
-                  { label: 'Contact Email', placeholder: 'contact@gramunnati.in', id: 'contact_email' },
+                  { label: 'Contact Email', placeholder: 'contact@cmsr.in', id: 'contact_email' },
                   { label: 'Contact Phone', placeholder: '+91 9XXXXXXXXX', id: 'contact_phone' },
-                  { label: 'Address', placeholder: 'GramUnnati Office, Hyderabad', id: 'address' },
                 ]}
                 values={values}
                 onChange={handleChange}
               />
+              <BilingualSettingsField enKey="address" label="Address" values={values} onChange={handleChange} multiline rows={2} />
               <div className="grid gap-4 sm:grid-cols-2">
                 <AdminImageUpload label="Site logo" value={values.logo_url || ''} onChange={(url) => handleChange('logo_url', url)} subPath="settings" />
                 <AdminImageUpload label="Favicon" value={values.favicon_url || ''} onChange={(url) => handleChange('favicon_url', url)} subPath="settings" />
@@ -138,8 +139,8 @@ export default function AdminSettings() {
                 fields={[
                   { label: 'Razorpay Key ID', placeholder: 'rzp_live_XXXXXXXXXX', id: 'rzp_key' },
                   { label: 'Razorpay Key Secret', placeholder: '••••••••••••••••', id: 'rzp_secret', type: 'password' },
-                  { label: 'UPI ID', placeholder: 'gramunnati@upi', id: 'upi_id' },
-                  { label: 'Bank Account Name', placeholder: 'GramUnnati Foundation', id: 'bank_name' },
+                  { label: 'UPI ID', placeholder: 'cmsr@upi', id: 'upi_id' },
+                  { label: 'Bank Account Name', placeholder: 'CMSR Foundation', id: 'bank_name' },
                   { label: 'Bank Account Number', placeholder: 'XXXXXXXXXXXX', id: 'bank_account' },
                   { label: 'IFSC Code', placeholder: 'SBIN0XXXXXX', id: 'ifsc' },
                 ]}
@@ -156,10 +157,10 @@ export default function AdminSettings() {
           <TabsContent value="seo">
             <div className="bg-white rounded-2xl border border-border p-6 space-y-5">
               <h3 className="font-heading font-bold text-lg mb-4">SEO Settings</h3>
+              <BilingualSettingsField enKey="meta_title" label="Default Meta Title" values={values} onChange={handleChange} />
+              <BilingualSettingsField enKey="meta_desc" label="Default Meta Description" values={values} onChange={handleChange} multiline rows={3} />
               <SettingsFields
                 fields={[
-                  { label: 'Default Meta Title', placeholder: 'GramUnnati — Village Development', id: 'meta_title' },
-                  { label: 'Default Meta Description', placeholder: 'Join the movement…', id: 'meta_desc' },
                   { label: 'Default Keywords', placeholder: 'village development, rural India…', id: 'meta_keywords' },
                   { label: 'Google Analytics ID', placeholder: 'G-XXXXXXXXXX', id: 'ga_id' },
                 ]}

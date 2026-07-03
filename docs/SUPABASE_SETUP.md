@@ -1,6 +1,6 @@
 # Supabase Setup
 
-Configure Supabase for GramUnnati — database, authentication, Row Level Security, and file storage.
+Configure Supabase for CMSR — database, authentication, Row Level Security, and file storage.
 
 ---
 

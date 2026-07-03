@@ -13,7 +13,7 @@ Everything goes through **GitHub** → **cPanel pull**. No File Manager uploads.
 ## On your PC (after code changes)
 
 ```powershell
-cd c:\Users\USER\Downloads\village_project1\gramunnati-app
+cd c:\Users\USER\Downloads\village_project1\CMSR-app
 
 npm run build
 git add -A
@@ -32,7 +32,7 @@ git push cmsr laravel
 ```bash
 cd ~/cmsr
 git pull origin laravel
-DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+DEPLOY_DB_PASSWORD='CMSR@#121' bash scripts/cpanel-deploy.sh
 ```
 
 That script automatically:
@@ -54,22 +54,53 @@ cd ~/cmsr
 git config credential.helper store
 git remote set-url origin https://github.com/chandrakiran57g-code/cmsr.git
 git pull origin laravel
-DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+DEPLOY_DB_PASSWORD='CMSR@#121' bash scripts/cpanel-deploy.sh
 ```
 
 When Git asks for password → paste **GitHub token only** (not commands).
 
 ---
 
-## Import full data (optional)
+## Create `cmsrr.sql` on cPanel Terminal
 
-1. cPanel → phpMyAdmin → `cmsr_db` → Import → `database/gramunnati.sql`
+Generate the SQL file **on the server** (cPanel → Terminal):
+
+### First time — empty DB → seed → create cmsrr.sql
+
+```bash
+cd ~/cmsr
+git pull origin laravel
+CMSRR_CONFIRM=1 DEPLOY_DB_PASSWORD='CMSR@#121' bash scripts/cpanel-export-cmsrr.sh --seed
+```
+
+Output: **`~/cmsr/database/cmsrr.sql`**
+
+Admin after seed: `test@gmail.com` / `testadmin123`
+
+### Export only — backup current database (no delete)
+
+```bash
+cd ~/cmsr
+DEPLOY_DB_PASSWORD='CMSR@#121' bash scripts/cpanel-export-cmsrr.sh
+```
+
+Download: cPanel File Manager → `cmsr/database/cmsrr.sql`
+
+---
+
+## Import full data (alternative: phpMyAdmin import)
+
+1. cPanel → phpMyAdmin → `cmsr_db` → Import → **`database/cmsrr.sql`**
 2. Then on server:
 
 ```bash
 cd ~/cmsr
-DEPLOY_MARK_MIGRATIONS=1 DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+DEPLOY_MARK_MIGRATIONS=1 DEPLOY_DB_PASSWORD='CMSR@#121' bash scripts/cpanel-deploy.sh
 ```
+
+`cmsrr.sql` includes the full schema (Telugu `_te` columns, `video_url` on CMS pages) plus seed data.
+
+Regenerate on PC: `php artisan migrate:fresh --seed && php artisan cmsr:export-sql`
 
 ---
 

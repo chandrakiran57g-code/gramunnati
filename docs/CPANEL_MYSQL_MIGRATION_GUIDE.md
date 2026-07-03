@@ -1,4 +1,4 @@
-# GramUnnati — cPanel + MySQL Migration Action Plan
+# CMSR — cPanel + MySQL Migration Action Plan
 
 **Your situation (confirmed):**
 
@@ -44,7 +44,7 @@ Do these **before or while** development happens.
 
 1. Log in to **cPanel**
 2. Open **MySQL® Databases**
-3. Create database: e.g. `myvillagemart_gramunnati`
+3. Create database: e.g. `myvillagemart_CMSR`
 4. Create user: e.g. `myvillagemart_app` with a **strong password**
 5. **Add user to database** → grant **ALL PRIVILEGES**
 6. Save these four values (you will need them in `.env`):
@@ -53,7 +53,7 @@ Do these **before or while** development happens.
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=myvillagemart_gramunnati
+DB_DATABASE=myvillagemart_CMSR
 DB_USERNAME=myvillagemart_app
 DB_PASSWORD=your_strong_password_here
 ```
@@ -74,7 +74,7 @@ MAIL_USERNAME=noreply@yourdomain.com
 MAIL_PASSWORD=email_account_password
 MAIL_ENCRYPTION=ssl
 MAIL_FROM_ADDRESS=noreply@yourdomain.com
-MAIL_FROM_NAME="GramUnnati"
+MAIL_FROM_NAME="CMSR"
 ```
 
 #### Step A3 — Point domain to Laravel `public/` folder
@@ -83,7 +83,7 @@ MAIL_FROM_NAME="GramUnnati"
 2. Set **Document Root** to:
 
 ```
-/home/myvillagemart/gramunnati-app/public
+/home/myvillagemart/CMSR-app/public
 ```
 
 (Adjust path to where you upload the project.)
@@ -151,12 +151,12 @@ If Terminal is not available, use **SSH** from PuTTY on Windows.
 
 ### Step 1 — Upload project
 
-Upload `gramunnati-app` folder via **File Manager** or **Git**:
+Upload `CMSR-app` folder via **File Manager** or **Git**:
 
 ```bash
 cd ~
-git clone -b laravel https://github.com/chandrakiran57g-code/gramunnati.git gramunnati-app
-cd gramunnati-app
+git clone -b laravel https://github.com/chandrakiran57g-code/CMSR.git CMSR-app
+cd CMSR-app
 ```
 
 ### Step 2 — Install Composer (one-time on server)
@@ -174,7 +174,7 @@ composer --version
 ### Step 3 — Configure environment
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 cp .env.example .env
 nano .env   # or edit via cPanel File Manager
 ```
@@ -182,14 +182,14 @@ nano .env   # or edit via cPanel File Manager
 Set at minimum:
 
 ```env
-APP_NAME=GramUnnati
+APP_NAME=CMSR
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://yourdomain.com
 
 DB_CONNECTION=mysql
 DB_HOST=localhost
-DB_DATABASE=myvillagemart_gramunnati
+DB_DATABASE=myvillagemart_CMSR
 DB_USERNAME=myvillagemart_app
 DB_PASSWORD=...
 
@@ -229,7 +229,7 @@ php artisan migrate --force
 (After migration import command is built in Phase 6):
 
 ```bash
-php artisan gramunnati:import-supabase --path=storage/imports
+php artisan CMSR:import-supabase --path=storage/imports
 ```
 
 Upload your CSV exports to `storage/imports/` first.
@@ -255,7 +255,7 @@ npm run build
 
 ```bash
 # On your Windows PC
-cd gramunnati-app
+cd CMSR-app
 npm ci
 npm run build
 # Upload public/build/ folder via File Manager
@@ -278,7 +278,7 @@ php artisan view:cache
 ### Step 11 — Create admin user
 
 ```bash
-php artisan gramunnati:create-admin
+php artisan CMSR:create-admin
 # OR via tinker after seeders exist
 ```
 

@@ -92,6 +92,7 @@ import AdminPrograms from '@/pages/admin/AdminPrograms';
 import AdminStories from '@/pages/admin/AdminStories';
 import AdminEvents from '@/pages/admin/AdminEvents';
 import AdminNews from '@/pages/admin/AdminNews';
+import AdminFaqs from '@/pages/admin/AdminFaqs';
 import AdminGallery from '@/pages/admin/AdminGallery';
 import AdminUsers from '@/pages/admin/AdminUsers';
 import AdminMemberDirectory from '@/pages/admin/AdminMemberDirectory';
@@ -124,7 +125,7 @@ const AuthenticatedApp = () => {
       <div className="fixed inset-0 flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
-          <p className="text-muted-foreground text-sm">Loading GramUnnati Platform...</p>
+          <p className="text-muted-foreground text-sm">Loading CMSR Platform...</p>
         </div>
       </div>
     );
@@ -253,6 +254,7 @@ const AuthenticatedApp = () => {
           {/* Stories & News */}
           <Route path="stories" element={<AdminStories />} />
           <Route path="news" element={<AdminNews />} />
+          <Route path="faqs" element={<AdminFaqs />} />
 
           {/* Reports & Settings */}
           <Route path="reports" element={<AdminReports />} />

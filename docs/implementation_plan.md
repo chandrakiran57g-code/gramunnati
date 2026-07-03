@@ -1,4 +1,4 @@
-# Migrate GramUnnati from Supabase to Laravel + MySQL (cPanel)
+# Migrate CMSR from Supabase to Laravel + MySQL (cPanel)
 
 Replace all Supabase dependencies (database, auth, file storage) with Laravel + MySQL, keeping the React frontend intact. Deploy on cPanel.
 
@@ -57,7 +57,7 @@ Replace all Supabase dependencies (database, auth, file storage) with Laravel + 
 | Composer | Not installed yet — install via one-time script on server |
 | Domain | Ready — point document root to `public/` |
 
-**User-facing action plan:** [docs/CPANEL_MYSQL_MIGRATION_GUIDE.md](./gramunnati-app/docs/CPANEL_MYSQL_MIGRATION_GUIDE.md)
+**User-facing action plan:** [docs/CPANEL_MYSQL_MIGRATION_GUIDE.md](./CMSR-app/docs/CPANEL_MYSQL_MIGRATION_GUIDE.md)
 
 
 ## Proposed Changes

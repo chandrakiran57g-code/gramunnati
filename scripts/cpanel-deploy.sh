@@ -8,7 +8,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
-APP_NAME="${DEPLOY_APP_NAME:-GramUnnati}"
+APP_NAME="${DEPLOY_APP_NAME:-CMSR}"
 APP_URL="${DEPLOY_APP_URL:-https://cmsr.in}"
 DB_HOST="${DEPLOY_DB_HOST:-localhost}"
 DB_PORT="${DEPLOY_DB_PORT:-3306}"
@@ -63,7 +63,7 @@ if [ -z "$PHP_BIN" ]; then
   exit 1
 fi
 
-echo "==> GramUnnati deploy in $ROOT"
+echo "==> CMSR deploy in $ROOT"
 echo "==> Using PHP: $PHP_BIN ($($PHP_BIN -r 'echo PHP_VERSION;'))"
 
 if [ -z "$DB_PASSWORD" ]; then
@@ -148,7 +148,7 @@ echo "==> Laravel setup"
 "$PHP_BIN" artisan key:generate --force
 
 if [ "$MARK_MIGRATIONS" = "1" ]; then
-  "$PHP_BIN" artisan gramunnati:mark-migrations-run || true
+  "$PHP_BIN" artisan cmsr:mark-migrations-run || true
 else
   "$PHP_BIN" artisan migrate --force
 fi

@@ -9,21 +9,28 @@ import { toast } from 'sonner';
 import { CMS_STATUS, isCmsPagePublic } from '@/lib/cmsStatus';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminShell from '@/components/admin/AdminShell';
+import AdminDbSetupBanner from '@/components/admin/AdminDbSetupBanner';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 import AdminImageUpload, { AdminVideoUpload } from '@/components/admin/AdminMediaUpload';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 
 const EMPTY_FORM = {
   title: '',
+  title_te: '',
   slug: '',
   short_description: '',
+  short_description_te: '',
   content: '',
+  content_te: '',
   status: CMS_STATUS.ACTIVE,
   display_order: 0,
   featured_image: '',
   video_url: '',
   seo_title: '',
+  seo_title_te: '',
   seo_description: '',
+  seo_description_te: '',
 };
 
 export default function AdminCmsPages() {
@@ -53,15 +60,20 @@ export default function AdminCmsPages() {
     setEditing(page);
     setForm({
       title: page.title,
+      title_te: page.title_te || '',
       slug: page.slug,
       short_description: page.short_description || '',
+      short_description_te: page.short_description_te || '',
       content: page.content || '',
+      content_te: page.content_te || '',
       status: page.status || CMS_STATUS.ACTIVE,
       display_order: page.display_order || 0,
       featured_image: page.featured_image || '',
       video_url: page.video_url || '',
       seo_title: page.seo_title || '',
+      seo_title_te: page.seo_title_te || '',
       seo_description: page.seo_description || '',
+      seo_description_te: page.seo_description_te || '',
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -126,26 +138,20 @@ export default function AdminCmsPages() {
       <div className="mb-8 rounded-xl border border-border bg-white p-6">
         <h2 className="mb-4 font-semibold">{editing ? 'Edit Page' : 'Create Page'}</h2>
         <div className="space-y-4">
-          <div>
-            <Label>Title *</Label>
-            <Input
-              className="mt-1"
-              value={form.title}
-              onChange={(e) => {
-                const title = e.target.value;
-                setForm((prev) => ({
-                  ...prev,
-                  title,
-                  slug: editing ? prev.slug : slugifyTitle(title),
-                }));
-              }}
-              placeholder="Our Vision"
-            />
-          </div>
-          <div>
-            <Label>Content *</Label>
-            <Textarea className="mt-1 font-mono text-sm" rows={8} value={form.content} onChange={(e) => setForm({ ...form, content: e.target.value })} />
-          </div>
+          <BilingualInput
+            name="title"
+            label="Title"
+            form={form}
+            setForm={setForm}
+            required
+            onEnChange={(title) => {
+              if (!editing) {
+                setForm((prev) => ({ ...prev, slug: slugifyTitle(title) }));
+              }
+            }}
+          />
+          <BilingualTextarea name="short_description" label="Short description" form={form} setForm={setForm} rows={2} />
+          <BilingualTextarea name="content" label="Content" form={form} setForm={setForm} rows={8} required />
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminImageUpload
               label="Featured image (optional)"
@@ -196,7 +202,9 @@ export default function AdminCmsPages() {
       {loading ? (
         <div className="space-y-3">{[...Array(3)].map((_, i) => <div key={i} className="h-14 animate-pulse rounded-lg bg-muted" />)}</div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <>
+          {pages.length === 0 && <AdminDbSetupBanner itemLabel="About Us pages" />}
+          <div className="overflow-hidden rounded-xl border border-border bg-white">
           {pages.length === 0 ? (
             <div className="px-5 py-12 text-center text-muted-foreground">No About Us pages yet.</div>
           ) : (
@@ -219,6 +227,7 @@ export default function AdminCmsPages() {
             </div>
           )}
         </div>
+        </>
       )}
     </AdminShell>
   );

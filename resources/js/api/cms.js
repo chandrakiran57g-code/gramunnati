@@ -143,7 +143,14 @@ export const cmsService = {
     if (activeOnly) query = query.eq('status', 'active');
     const { data, error } = await query;
     if (error) throw error;
-    return data || [];
+    return (data || []).map((g) => ({
+      ...g,
+      team_members: Array.isArray(g.team_members)
+        ? g.team_members
+        : Array.isArray(g.members)
+          ? g.members
+          : [],
+    }));
   },
 
   async createTeamGroup(data) {
@@ -303,6 +310,29 @@ export const cmsService = {
       .order('sort_order', { ascending: true });
     if (error) throw error;
     return data;
+  },
+
+  async createFaq(data) {
+    return adminDbMutation(async () => {
+      const { data: row, error } = await supabase.from('faqs').insert(data).select().single();
+      if (error) throw error;
+      return row;
+    });
+  },
+
+  async updateFaq(id, updates) {
+    return adminDbMutation(async () => {
+      const { data, error } = await supabase.from('faqs').update(updates).eq('id', id).select().single();
+      if (error) throw error;
+      return data;
+    });
+  },
+
+  async deleteFaq(id) {
+    return adminDbMutation(async () => {
+      const { error } = await supabase.from('faqs').delete().eq('id', id);
+      if (error) throw error;
+    });
   },
 
   // ─── Testimonials ─────────────────────

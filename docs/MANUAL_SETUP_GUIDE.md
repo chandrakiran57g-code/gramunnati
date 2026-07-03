@@ -14,7 +14,7 @@
 [x] Step 1 — MySQL database created
 [x] Step 2 — Email account created
 [x] Step 3 — Domain + SSL ready
-[x] Step 4 — Data in MySQL (gramunnati.sql imported — Supabase export skipped)
+[x] Step 4 — Data in MySQL (cmsrr.sql imported — Supabase export skipped)
 [ ] Step 5 — Stripe keys (optional — can do later)
 [ ] Step 6 — Upload app + create production .env
 [ ] Step 7 — Run deploy commands in Terminal
@@ -38,15 +38,15 @@ cPanel → search **「MySQL® Databases」** or **「MySQL Database Wizard」**
 
 1. **Create a new database**
    - Section: **Create New Database**
-   - Name example: `gramunnati`  
+   - Name example: `CMSR`  
    - cPanel adds a prefix automatically → full name may look like:  
-     `myvillagemart_gramunnati`
+     `myvillagemart_CMSR`
    - Click **Create Database**
 
 2. **Create a database user**
    - Section: **MySQL Users** → **Add New User**
-   - Username example: `gramunnati_app`  
-   - Full name may look like: `myvillagemart_gramunnati_app`
+   - Username example: `CMSR_app`  
+   - Full name may look like: `myvillagemart_CMSR_app`
    - Password: use **Generate Password** → **copy and save it** (password manager or secure note)
    - Click **Create User**
 
@@ -169,7 +169,7 @@ curl -sI "https://${DOMAIN}" | head -5
 | Live URL | `https://________________` |
 | SSL active? | Yes / No |
 
-> **Document root:** Do **not** change yet. After upload we point it to `.../gramunnati-app/public`.
+> **Document root:** Do **not** change yet. After upload we point it to `.../CMSR-app/public`.
 
 ---
 
@@ -303,26 +303,26 @@ Start Phase 1 — coding can begin.
 
 ## Step 6 — Upload the Laravel app
 
-Coding is done locally. Upload **`gramunnati-app`** to cPanel.
+Coding is done locally. Upload **`CMSR-app`** to cPanel.
 
 ### Option A — File Manager (recommended if Git is not updated)
 
-1. On your PC, zip `gramunnati-app` (you may exclude `node_modules`, `vendor`, `.git`)
+1. On your PC, zip `CMSR-app` (you may exclude `node_modules`, `vendor`, `.git`)
 2. cPanel → **File Manager** → upload to `/home/myvillagemart/`
-3. Extract → folder path: `/home/myvillagemart/gramunnati-app/`
+3. Extract → folder path: `/home/myvillagemart/CMSR-app/`
 
 ### Option B — Git
 
 ```bash
 cd ~
-git clone -b laravel https://github.com/chandrakiran57g-code/gramunnati.git gramunnati-app
-cd gramunnati-app
+git clone -b laravel https://github.com/chandrakiran57g-code/CMSR.git CMSR-app
+cd CMSR-app
 ```
 
 ### Build frontend on your PC first (recommended)
 
 ```powershell
-cd gramunnati-app
+cd CMSR-app
 npm ci
 npm run build
 ```
@@ -336,7 +336,7 @@ Upload the project **including** `public/build/` to the server.
 Open cPanel → **Terminal**:
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 ```
 
 Create `.env` via File Manager or `nano .env`. Use the template in [DEPLOYMENT_STATUS.md](./DEPLOYMENT_STATUS.md) Section 3.3 (MySQL + mail + `APP_URL=https://myvillagemart.com`).
@@ -346,7 +346,7 @@ Then run:
 ```bash
 composer install --optimize-autoloader --no-dev
 php artisan key:generate
-php artisan gramunnati:mark-migrations-run
+php artisan cmsr:mark-migrations-run
 php artisan storage:link
 chmod -R 775 storage bootstrap/cache
 php artisan config:cache
@@ -354,8 +354,8 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-> **Important:** Your database already has tables from `gramunnati.sql`.  
-> Use **`gramunnati:mark-migrations-run`** — do **NOT** run `php artisan migrate --force` or `migrate:fresh`.
+> **Important:** Your database already has tables from `cmsrr.sql`.  
+> Use **`cmsr:mark-migrations-run`** — do **NOT** run `php artisan migrate --force` or `migrate:fresh`.
 
 > If `npm` fails on server, build on your PC (`npm run build`) and upload `public/build/`.
 
@@ -368,7 +368,7 @@ php artisan view:cache
 3. Set to:
 
 ```text
-/home/myvillagemart/gramunnati-app/public
+/home/myvillagemart/CMSR-app/public
 ```
 
 4. Save

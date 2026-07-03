@@ -5,6 +5,8 @@ import { base44 } from '@/api/base44Client';
 import { Users, Mail, Phone, ArrowLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize, useLocalizedRecord } from '@/lib/localizedContent';
 
 export default function TeamDetail() {
   const { slug } = useParams();
@@ -25,6 +27,9 @@ export default function TeamDetail() {
       }
     }).catch(() => {}).finally(() => setLoading(false));
   }, [slug]);
+
+  const { lang } = useLanguage();
+  const localizedGroup = useLocalizedRecord(group, ['name', 'description']);
 
   if (loading) return (
     <div className="min-h-screen bg-background pt-20">
@@ -59,10 +64,10 @@ export default function TeamDetail() {
             </Link>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
-              {group.name}
+              {localizedGroup?.name || group.name}
             </motion.h1>
-            {group.description && (
-              <p className="text-white/70 text-lg max-w-2xl">{group.description}</p>
+            {(localizedGroup?.description || group.description) && (
+              <p className="text-white/70 text-lg max-w-2xl">{localizedGroup?.description || group.description}</p>
             )}
           </div>
         </section>
@@ -91,10 +96,10 @@ export default function TeamDetail() {
                   </div>
                   <h3 className="font-heading font-semibold text-foreground text-lg">{member.full_name}</h3>
                   {member.designation && (
-                    <p className="text-primary text-sm font-medium mt-1">{member.designation}</p>
+                    <p className="text-primary text-sm font-medium mt-1">{localize(member, 'designation', lang)}</p>
                   )}
                   {member.description && (
-                    <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{member.description}</p>
+                    <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{localize(member, 'description', lang)}</p>
                   )}
                   <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border text-sm">
                     {member.email && (

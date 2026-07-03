@@ -1,6 +1,6 @@
 import { supabase } from '@/api/supabaseClient';
 
-const ADMIN_SESSION_KEY = 'gramunnati_admin_session';
+const ADMIN_SESSION_KEY = 'cmsr_admin_session';
 
 export const ADMIN_CREDENTIALS = {
   email: 'test@gmail.com',

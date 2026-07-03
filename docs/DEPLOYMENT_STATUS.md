@@ -1,8 +1,8 @@
-# GramUnnati — Deployment Status & Checklist
+# CMSR — Deployment Status & Checklist
 
 **Last updated:** June 2026  
 **Domain:** `myvillagemart.com`  
-**Repo:** `https://github.com/chandrakiran57g-code/gramunnati.git` (branch: `laravel`)
+**Repo:** `https://github.com/chandrakiran57g-code/CMSR.git` (branch: `laravel`)
 
 This document answers three questions in one place:
 
@@ -33,14 +33,14 @@ This document answers three questions in one place:
 
 ## 1. What the developer has done (coding)
 
-All work is in the `gramunnati-app` folder on branch `laravel`.
+All work is in the `CMSR-app` folder on branch `laravel`.
 
 ### Database & schema
 
 - Created **8 Laravel migrations** matching your MySQL schema (`database/migrations/2026_06_19_*`)
-- Generated **`database/gramunnati.sql`** (~105 KB) — full MySQL dump for cPanel import (you already imported this)
-- Added Artisan command **`php artisan gramunnati:mark-migrations-run`** — use this on cPanel because tables already exist from SQL import (do **not** run `migrate:fresh` or `migrate --force` on production)
-- Added **`database/seeders/GramunnatiSeeder.php`** for local dev only
+- Generated **`database/cmsrr.sql`** (~105 KB) — full MySQL dump for cPanel import (you already imported this)
+- Added Artisan command **`php artisan cmsr:mark-migrations-run`** — use this on cPanel because tables already exist from SQL import (do **not** run `migrate:fresh` or `migrate --force` on production)
+- Added **`database/seeders/CMSRSeeder.php`** for local dev only
 
 ### Backend (Laravel API)
 
@@ -69,7 +69,7 @@ All work is in the `gramunnati-app` folder on branch `laravel`.
 
 ### Scripts (developer tools)
 
-- `scripts/generate-gramunnati-sql.js` — regenerate SQL from Supabase if needed
+- `scripts/cpanel-export-cmsrr.sh` — generate `database/cmsrr.sql` on cPanel
 - `scripts/generate-models.php` — regenerate Eloquent models
 
 ### Verified locally
@@ -106,8 +106,8 @@ Based on your completed setup:
 
 | Step | Task | Your status |
 |------|------|-------------|
-| 1 | MySQL database + user created (`myvillagemart_gramunnati`) | ✅ Done |
-| 2 | **`gramunnati.sql` imported** via phpMyAdmin (~128 queries) | ✅ Done |
+| 1 | MySQL database + user created (`myvillagemart_CMSR`) | ✅ Done |
+| 2 | **`cmsrr.sql` imported** via phpMyAdmin (~128 queries) | ✅ Done |
 | 3 | Email account created (`noreply@myvillagemart.com` or similar) | ✅ Done |
 | 4 | Domain **`myvillagemart.com`** → server IP `66.116.227.9` | ✅ Done |
 | 5 | **SSL** (Let's Encrypt, active until Sep 2026) | ✅ Done |
@@ -136,16 +136,16 @@ Follow this exactly. Full detail also in [MANUAL_SETUP_GUIDE.md](./MANUAL_SETUP_
 
 **Option A — File Manager (easiest if Git is not updated yet)**
 
-1. On your PC, zip the folder `gramunnati-app` (exclude `node_modules`, `vendor`, `.git` if zip is too large)
+1. On your PC, zip the folder `CMSR-app` (exclude `node_modules`, `vendor`, `.git` if zip is too large)
 2. cPanel → **File Manager** → upload to `/home/myvillagemart/`
-3. Extract → you should have `/home/myvillagemart/gramunnati-app/`
+3. Extract → you should have `/home/myvillagemart/CMSR-app/`
 
 **Option B — Git (after developer pushes latest code)**
 
 ```bash
 cd ~
-git clone -b laravel https://github.com/chandrakiran57g-code/gramunnati.git gramunnati-app
-cd gramunnati-app
+git clone -b laravel https://github.com/chandrakiran57g-code/CMSR.git CMSR-app
+cd CMSR-app
 ```
 
 ### 3.2 — Build frontend on your PC (recommended)
@@ -153,7 +153,7 @@ cd gramunnati-app
 Many cPanel accounts do not have Node.js. Run on your Windows PC:
 
 ```powershell
-cd c:\Users\USER\Downloads\village_project1\gramunnati-app
+cd c:\Users\USER\Downloads\village_project1\CMSR-app
 npm ci
 npm run build
 ```
@@ -162,10 +162,10 @@ Confirm `public/build/manifest.json` exists, then upload the whole project (incl
 
 ### 3.3 — Create production `.env` on server
 
-In cPanel File Manager, create `/home/myvillagemart/gramunnati-app/.env` with your real values:
+In cPanel File Manager, create `/home/myvillagemart/CMSR-app/.env` with your real values:
 
 ```env
-APP_NAME=GramUnnati
+APP_NAME=CMSR
 APP_ENV=production
 APP_KEY=
 APP_DEBUG=false
@@ -174,8 +174,8 @@ APP_URL=https://myvillagemart.com
 DB_CONNECTION=mysql
 DB_HOST=localhost
 DB_PORT=3306
-DB_DATABASE=myvillagemart_gramunnati
-DB_USERNAME=myvillagemart_gramunnati_app
+DB_DATABASE=myvillagemart_CMSR
+DB_USERNAME=myvillagemart_CMSR_app
 DB_PASSWORD=YOUR_DATABASE_PASSWORD_HERE
 
 SESSION_DRIVER=database
@@ -204,7 +204,7 @@ Copy `.env.example` from the project as a starting point if present.
 ### 3.4 — Run deploy commands in cPanel Terminal
 
 ```bash
-cd ~/gramunnati-app
+cd ~/CMSR-app
 
 # PHP dependencies
 composer install --optimize-autoloader --no-dev
@@ -212,8 +212,8 @@ composer install --optimize-autoloader --no-dev
 # App key (only if APP_KEY= is empty in .env)
 php artisan key:generate
 
-# IMPORTANT: DB already has tables from gramunnati.sql — do NOT run migrate --force
-php artisan gramunnati:mark-migrations-run
+# IMPORTANT: DB already has tables from cmsrr.sql — do NOT run migrate --force
+php artisan cmsr:mark-migrations-run
 
 # Public storage for uploads
 php artisan storage:link
@@ -245,7 +245,7 @@ npm run build
 2. Set **Document Root** to:
 
 ```text
-/home/myvillagemart/gramunnati-app/public
+/home/myvillagemart/CMSR-app/public
 ```
 
 3. Save and wait 1–2 minutes.
@@ -256,7 +256,7 @@ npm run build
 |------|-----|----------|
 | Homepage | `https://myvillagemart.com/` | Loads with village data |
 | Health | `https://myvillagemart.com/up` | 200 OK |
-| API health | `https://myvillagemart.com/api/health` | `{"ok":true,"service":"gramunnati-api"}` |
+| API health | `https://myvillagemart.com/api/health` | `{"ok":true,"service":"cmsr-api"}` |
 | Villages | `https://myvillagemart.com/villages` | List shows |
 | Admin login | `https://myvillagemart.com/admin` | Login page |
 | Admin auth | Login: `test@gmail.com` / `testadmin123` | Dashboard loads |
@@ -269,13 +269,13 @@ If something fails: cPanel File Manager → `storage/logs/laravel.log` → send 
 
 | Problem | Fix |
 |---------|-----|
-| White / blank page | Document root must be `.../gramunnati-app/public` not project root |
+| White / blank page | Document root must be `.../CMSR-app/public` not project root |
 | 500 error | Check `storage/logs/laravel.log` |
 | CSS/JS missing | Run `npm run build` on PC; upload `public/build/` |
 | Admin login fails | Check `.env` DB credentials; confirm user exists in `users` table |
 | CSRF / session errors | Set `SANCTUM_STATEFUL_DOMAINS` and `SESSION_DOMAIN` correctly |
 | `composer: not found` | Install Composer — see [MANUAL_SETUP_GUIDE.md](./MANUAL_SETUP_GUIDE.md) Step 8.4 |
-| Tables already exist error | Use `gramunnati:mark-migrations-run`, not `migrate` |
+| Tables already exist error | Use `cmsr:mark-migrations-run`, not `migrate` |
 
 ---
 

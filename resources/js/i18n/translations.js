@@ -6,7 +6,8 @@ export const LANGUAGES = {
 export const translations = {
   en: {
     brand: {
-      tagline: 'Village Development',
+      taglinePrefix: 'Common Man Social',
+      taglineHighlight: 'Responsibility',
     },
     nav: {
       aboutUs: 'About Us',
@@ -32,7 +33,7 @@ export const translations = {
       mySchools: 'My Schools',
       notifications: 'Notifications',
       adminPanel: 'Admin Panel',
-      aboutGramUnnati: 'About GramUnnati',
+      aboutCMSR: 'About CMSR',
       visionMission: 'Vision & Mission',
       aboutVillages: 'About Villages',
       aboutSchools: 'About Schools',
@@ -153,7 +154,8 @@ export const translations = {
   },
   te: {
     brand: {
-      tagline: 'గ్రామ అభివృద్ధి',
+      taglinePrefix: 'సాధారణ మనిషి సామాజిక',
+      taglineHighlight: 'బాధ్యత',
     },
     nav: {
       aboutUs: 'మా గురించి',
@@ -179,7 +181,7 @@ export const translations = {
       mySchools: 'నా పాఠశాలలు',
       notifications: 'నోటిఫికేషన్లు',
       adminPanel: 'అడ్మిన్ ప్యానెల్',
-      aboutGramUnnati: 'GramUnnati గురించి',
+      aboutCMSR: 'CMSR గురించి',
       visionMission: 'దృష్టి & మిషన్',
       aboutVillages: 'గ్రామాల గురించి',
       aboutSchools: 'పాఠశాలల గురించి',

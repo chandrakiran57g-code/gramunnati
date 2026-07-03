@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import GramUnnatiLeaf from '@/components/splash/GramUnnatiLeaf';
-import { BRAND_COLORS, BRAND_LOGO_URL, BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand';
+import CMSRLeaf from '@/components/splash/CmsrLeaf';
+import { BRAND_COLORS, BRAND_LOGO_URL, BRAND_NAME } from '@/lib/brand';
 
 export const HOLD_AFTER_REVEAL_MS = 800;
 export const SPLASH_DURATION_MS = 4200;
@@ -94,7 +94,7 @@ export default function SplashScreen({ onComplete }) {
       animate={{ opacity: isExiting ? 0 : 1 }}
       transition={{ duration: EXIT_FADE_MS / 1000, ease: EASE }}
       role="dialog"
-      aria-label="GramUnnati brand introduction"
+      aria-label="CMSR brand introduction"
     >
       {/* Step 1–3: deep green intro */}
       <motion.div
@@ -162,7 +162,7 @@ export default function SplashScreen({ onComplete }) {
                 ease: EASE,
               }}
             >
-              <GramUnnatiLeaf gradientId={leaf.gradientId} className="h-full w-full drop-shadow-md" />
+              <CMSRLeaf gradientId={leaf.gradientId} className="h-full w-full drop-shadow-md" />
             </motion.div>
           ))}
 
@@ -199,7 +199,8 @@ export default function SplashScreen({ onComplete }) {
             animate={{ opacity: showTagline ? 1 : 0, y: showTagline ? 0 : 10 }}
             transition={{ duration: 0.45, ease: EASE }}
           >
-            {BRAND_TAGLINE}
+            Common Man Social{' '}
+            <span style={{ color: BRAND_COLORS.green, fontWeight: 600 }}>Responsibility</span>
           </motion.p>
         </div>
       </motion.div>

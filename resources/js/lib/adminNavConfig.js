@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, Navigation, FileText, Users, BookOpen, Building2, Image,
   Layers, DollarSign, Receipt, MessageSquare, UserPlus, Quote, Newspaper,
-  BarChart3, Settings, Heart, LayoutTemplate,
+  BarChart3, Settings, Heart, LayoutTemplate, HelpCircle,
 } from 'lucide-react';
 import { adminRoutes } from '@/lib/adminRoutes';
 
@@ -68,6 +68,7 @@ export const adminSidebarSections = [
     children: [
       { label: 'Success Stories', icon: Quote, path: adminRoutes.stories },
       { label: 'News', icon: Newspaper, path: adminRoutes.news },
+      { label: 'FAQs', icon: HelpCircle, path: adminRoutes.faqs },
     ],
   },
   {

@@ -1,6 +1,6 @@
 # Local Development
 
-Run GramUnnati locally for development and testing.
+Run CMSR locally for development and testing.
 
 ---
 
@@ -20,7 +20,7 @@ Supabase project with keys and SQL scripts applied (see [Supabase Setup](./SUPAB
 ## First-time setup
 
 ```bash
-cd gramunnati-app
+cd CMSR-app
 
 # Environment
 cp .env.example .env
@@ -100,7 +100,7 @@ Runs simultaneously:
 ## Environment variables (local)
 
 ```env
-APP_NAME=GramUnnati
+APP_NAME=CMSR
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://127.0.0.1:8000
@@ -141,10 +141,10 @@ VITE_SUPABASE_ANON_KEY=your_anon_key
 
 The standalone Vite app lives at `../village_project` (Git branch `main`).
 
-| gramunnati-app | village_project |
+| CMSR-app | village_project |
 |----------------|-----------------|
 | `resources/js/` | `src/` |
-| `GramUnnatiApp.jsx` | `App.jsx` |
+| `CmsrApp.jsx` | `App.jsx` |
 
 When adding features, update **both** codebases to keep them in sync.
 

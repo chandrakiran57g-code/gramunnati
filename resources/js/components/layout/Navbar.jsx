@@ -6,14 +6,16 @@ import { Button } from '@/components/ui/button';
 import { base44 } from '@/api/base44Client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import LanguageToggle from '@/components/layout/LanguageToggle';
+import BrandTagline from '@/components/brand/BrandTagline';
 import { usePlatformNavData } from '@/hooks/usePlatformNavData';
 import { FALLBACK_ABOUT_KEYS, FALLBACK_PROGRAM_ITEMS, LOGO_URL } from '@/lib/navFallbacks';
+import { localize } from '@/lib/localizedContent';
 
 
 
 export default function Navbar() {
 
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -100,24 +102,36 @@ export default function Navbar() {
 
 
   const aboutChildren = useMemo(() => {
+    const staticExtras = [
+      { label: t('nav.impactDashboard'), path: '/impact' },
+      { label: t('nav.successStories'), path: '/stories' },
+      { label: t('nav.faqs'), path: '/faqs' },
+    ];
+
+    let cms;
     if (aboutPages.length > 0) {
-      return aboutPages.map((p) => ({ label: p.title, path: `/page/${p.slug}` }));
+      cms = aboutPages.map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
+    } else {
+      cms = FALLBACK_ABOUT_KEYS.map((item) => ({ label: t(`nav.${item.key}`), path: item.path }));
     }
-    return FALLBACK_ABOUT_KEYS.map((item) => ({ label: t(`nav.${item.key}`), path: item.path }));
-  }, [aboutPages, t]);
+
+    const paths = new Set(cms.map((c) => c.path));
+    const extras = staticExtras.filter((l) => !paths.has(l.path));
+    return [...cms, ...extras];
+  }, [aboutPages, t, lang]);
 
   const programChildren = useMemo(() => {
     if (programs.length > 0) {
-      return programs.map((p) => ({ label: p.title, path: `/programs/${p.slug}` }));
+      return programs.map((p) => ({ label: localize(p, 'title', lang), path: `/programs/${p.slug}` }));
     }
     return FALLBACK_PROGRAM_ITEMS;
-  }, [programs]);
+  }, [programs, lang]);
 
   const teamChildren = useMemo(() => (
     teamGroups.length > 0
-      ? teamGroups.map((g) => ({ label: g.name, path: `/teams/${g.slug}` }))
+      ? teamGroups.map((g) => ({ label: localize(g, 'name', lang), path: `/teams/${g.slug}` }))
       : [{ label: t('nav.ourTeam'), path: '/our-team' }]
-  ), [teamGroups, t]);
+  ), [teamGroups, t, lang]);
 
   const navItems = useMemo(() => {
     const enabled = [...(navConfig.items || [])]
@@ -151,10 +165,10 @@ export default function Navbar() {
 
   const brandBlock = (
     <>
-      <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
-      <div className="hidden lg:block leading-tight whitespace-nowrap min-w-0">
-        <div className="font-heading font-bold text-sm xl:text-base text-foreground truncate">GramUnnati</div>
-        <div className="text-[10px] xl:text-xs text-muted-foreground truncate">{t('brand.tagline')}</div>
+      <img src={LOGO_URL} alt="CMSR Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
+      <div className="hidden lg:block leading-tight min-w-0">
+        <div className="font-heading font-bold text-sm xl:text-base text-foreground">CMSR</div>
+        <BrandTagline className="text-[9px] xl:text-[10px] 2xl:text-xs max-w-[10.5rem] xl:max-w-[12rem] 2xl:max-w-[14rem]" />
       </div>
     </>
   );
@@ -333,7 +347,7 @@ export default function Navbar() {
 
           {/* Desktop xl+: flex keeps center nav bounded so it never overlaps utilities */}
           <div className="hidden xl:flex w-full items-center min-w-0 gap-2 overflow-visible">
-            <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0 max-w-[11rem] 2xl:max-w-[13rem]">
+            <Link to="/" className="flex items-center gap-2 shrink-0 min-w-0 max-w-[10.5rem] xl:max-w-[12rem] 2xl:max-w-[15rem]">
               {brandBlock}
             </Link>
 

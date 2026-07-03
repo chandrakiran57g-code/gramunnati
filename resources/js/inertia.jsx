@@ -4,8 +4,8 @@ import { createRoot } from 'react-dom/client';
 createInertiaApp({
     title: (title) =>
         title
-            ? `${title} — GramUnnati`
-            : 'GramUnnati — Village Development & School Empowerment Platform',
+            ? `${title} — CMSR`
+            : 'CMSR — Village Development & School Empowerment Platform',
     resolve: (name) => {
         if (name === 'Root') {
             return import('./pages/Root.jsx');

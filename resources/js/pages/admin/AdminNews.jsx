@@ -10,8 +10,10 @@ import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 
-const EMPTY = { title:'',slug:'',content:'',summary:'',featured_image:'',category:'general',is_published:false };
+const EMPTY = { title: '', title_te: '', slug: '', content: '', content_te: '', summary: '', featured_image: '', category: 'general', is_published: false };
 
 export default function AdminNews() {
   const [items, setItems] = useState([]);
@@ -61,9 +63,10 @@ export default function AdminNews() {
       {showForm&&<div className="fixed inset-0 z-50 flex items-center justify-center"><div className="absolute inset-0 bg-black/50" onClick={()=>setShowForm(false)}/><div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between rounded-t-2xl z-10"><h3 className="font-heading text-lg font-bold">{editing?'Edit':'New'} Article</h3><button onClick={()=>setShowForm(false)}><X className="w-5 h-5"/></button></div>
         <form onSubmit={save} className="p-6 space-y-4">
-          <div><Label>Title *</Label><Input value={form.title} onChange={e=>setForm(f=>({...f,title:e.target.value}))} required className="mt-1"/></div>
+          <BilingualInput name="title" label="Title" form={form} setForm={setForm} required />
+          <AdminUrlField title={form.title} slug={form.slug} onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))} publicBase="/news" />
           <div><Label>Summary</Label><Textarea value={form.summary} onChange={e=>setForm(f=>({...f,summary:e.target.value}))} className="mt-1 h-20"/></div>
-          <div><Label>Content *</Label><Textarea value={form.content} onChange={e=>setForm(f=>({...f,content:e.target.value}))} required className="mt-1 h-32"/></div>
+          <BilingualTextarea name="content" label="Content" form={form} setForm={setForm} rows={6} required />
           <AdminImageUpload label="Featured image" value={form.featured_image} onChange={(url) => setForm(f => ({...f, featured_image: url}))} subPath="news" />
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Category</Label><select value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="general">General</option><option value="village">Village</option><option value="school">School</option><option value="project">Project</option><option value="event">Event</option></select></div>

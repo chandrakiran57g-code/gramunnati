@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 const LEAF_PATH =
   'M40 6 C16 32, 10 72, 40 114 C70 72, 64 32, 40 6 Z';
 
-export default function GramUnnatiLeaf({ gradientId = 'leaf-grad', className = '' }) {
+export default function CMSRLeaf({ gradientId = 'leaf-grad', className = '' }) {
   return (
     <svg
       viewBox="0 0 80 120"

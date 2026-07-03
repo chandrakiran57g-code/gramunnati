@@ -1,6 +1,6 @@
 # Admin Panel Guide
 
-Complete reference for the GramUnnati admin CMS at `/admin`.
+Complete reference for the CMSR admin CMS at `/admin`.
 
 ---
 

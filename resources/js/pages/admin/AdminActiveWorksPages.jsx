@@ -23,6 +23,7 @@ import { toast } from 'sonner';
 import { Loader2, Layers, Save } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import { BilingualInput, BilingualTextarea, BilingualNestedTextarea } from '@/components/admin/BilingualField';
 
 export default function AdminActiveWorksPages() {
   const [searchParams] = useSearchParams();
@@ -157,14 +158,17 @@ export default function AdminActiveWorksPages() {
           ) : (
             <>
               <div className="mb-6 grid gap-4 sm:grid-cols-2">
-                <div>
-                  <Label>Page title *</Label>
-                  <Input
-                    className="mt-1"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugifyTitle(e.target.value) })}
-                  />
-                </div>
+                <BilingualInput
+                  name="name"
+                  label="Page title"
+                  form={form}
+                  setForm={setForm}
+                  required
+                  className="sm:col-span-2"
+                  onEnChange={(name) => {
+                    if (!form.slug) setForm((f) => ({ ...f, slug: slugifyTitle(name) }));
+                  }}
+                />
                 <div>
                   <Label>Template</Label>
                   <select
@@ -210,11 +214,11 @@ export default function AdminActiveWorksPages() {
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
-                  <div><Label>Short description</Label><Textarea className="mt-1" rows={2} value={form.description || ''} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-                  <div><Label>About</Label><Textarea className="mt-1" rows={3} value={form.overview?.about || ''} onChange={(e) => setNested('overview', 'about', e.target.value)} /></div>
-                  <div><Label>Vision</Label><Textarea className="mt-1" rows={2} value={form.overview?.vision || ''} onChange={(e) => setNested('overview', 'vision', e.target.value)} /></div>
-                  <div><Label>Challenges</Label><Textarea className="mt-1" rows={2} value={form.overview?.challenges || ''} onChange={(e) => setNested('overview', 'challenges', e.target.value)} /></div>
-                  <div><Label>Achievements</Label><Textarea className="mt-1" rows={2} value={form.overview?.achievements || ''} onChange={(e) => setNested('overview', 'achievements', e.target.value)} /></div>
+                  <BilingualTextarea name="description" label="Short description" form={form} setForm={setForm} rows={2} />
+                  <BilingualNestedTextarea parent="overview" name="about" label="About" form={form} setForm={setForm} rows={3} />
+                  <BilingualNestedTextarea parent="overview" name="vision" label="Vision" form={form} setForm={setForm} rows={2} />
+                  <BilingualNestedTextarea parent="overview" name="challenges" label="Challenges" form={form} setForm={setForm} rows={2} />
+                  <BilingualNestedTextarea parent="overview" name="achievements" label="Achievements" form={form} setForm={setForm} rows={2} />
                 </TabsContent>
 
                 <TabsContent value="impact">

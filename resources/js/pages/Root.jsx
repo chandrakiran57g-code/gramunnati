@@ -1,4 +1,4 @@
-import App from '@/GramUnnatiApp.jsx';
+import App from '@/CmsrApp.jsx';
 
 /**
  * Single Inertia root — preserves the full React Router app unchanged

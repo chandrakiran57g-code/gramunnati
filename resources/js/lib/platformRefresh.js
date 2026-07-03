@@ -1,6 +1,6 @@
 /** Fired after admin creates/updates/deletes platform content — Navbar and pages listen for this. */
-export const PLATFORM_DATA_CHANGED = 'gramunnati-platform-data-changed';
-export const PLATFORM_STORAGE_KEY = 'gramunnati-platform-data-changed';
+export const PLATFORM_DATA_CHANGED = 'cmsr-platform-data-changed';
+export const PLATFORM_STORAGE_KEY = 'cmsr-platform-data-changed';
 
 export function notifyPlatformDataChanged(detail = {}) {
   if (typeof window === 'undefined') return;

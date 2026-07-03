@@ -1,4 +1,4 @@
-# GramUnnati — Laravel + Inertia + React
+# CMSR — Laravel + Inertia + React
 
 Converted from the Vite SPA (`../village_project`) for **cPanel deployment** with **zero visual or functional changes**.
 
@@ -48,7 +48,7 @@ See **[docs/CPANEL_DEPLOYMENT.md](./docs/CPANEL_DEPLOYMENT.md)** for the full gu
 
 | Path | Purpose |
 |------|---------|
-| `resources/js/GramUnnatiApp.jsx` | React app (routes, layouts, pages) |
+| `resources/js/CmsrApp.jsx` | React app (routes, layouts, pages) |
 | `resources/js/inertia.jsx` | Inertia bootstrap entry |
 | `resources/js/pages/Root.jsx` | Inertia page mounting the React app |
 | `routes/web.php` | Catch-all route — every URL serves the app |
@@ -60,10 +60,10 @@ See **[docs/CPANEL_DEPLOYMENT.md](./docs/CPANEL_DEPLOYMENT.md)** for the full gu
 
 | Branch | Project folder | Hosting |
 |--------|----------------|---------|
-| `laravel` | `gramunnati-app` | cPanel / Apache |
+| `laravel` | `cmsr-app` (local folder may still be `CMSR-app`) | cPanel / Apache |
 | `main` | `village_project` | Vite SPA / static |
 
-Repository: https://github.com/chandrakiran57g-code/gramunnati.git
+Repository: https://github.com/chandrakiran57g-code/cmsr.git
 
 ## Why this approach?
 

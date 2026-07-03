@@ -11,6 +11,7 @@ import ServiceDirectoryTable from '@/components/cms/ServiceDirectoryTable';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useLocalizedRecord } from '@/lib/localizedContent';
 
 export default function CmsPageView() {
   const { slug } = useParams();
@@ -50,6 +51,8 @@ export default function CmsPageView() {
     return () => window.removeEventListener(PLATFORM_DATA_CHANGED, onChange);
   }, [slug]);
 
+  const localized = useLocalizedRecord(page, ['title', 'short_description', 'content']);
+
   if (loading) return (
     <div className="min-h-screen bg-background pt-20">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-16 animate-pulse space-y-6">
@@ -74,7 +77,7 @@ export default function CmsPageView() {
       <HeroScrollSection size="detail">
         {page.featured_image && (
           <div className="h-48 sm:h-64 bg-muted overflow-hidden">
-            <img src={page.featured_image} alt={page.title} className="w-full h-full object-cover" />
+            <img src={page.featured_image} alt={localized?.title || page.title} className="w-full h-full object-cover" />
           </div>
         )}
 
@@ -85,11 +88,11 @@ export default function CmsPageView() {
             </Link>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className={`font-heading text-3xl sm:text-4xl font-bold mb-4 ${page.featured_image ? 'text-foreground' : 'text-white'}`}>
-              {page.title}
+              {localized?.title || page.title}
             </motion.h1>
-            {page.short_description && (
+            {(localized?.short_description || page.short_description) && (
               <p className={`text-lg ${page.featured_image ? 'text-muted-foreground' : 'text-white/70'}`}>
-                {page.short_description}
+                {localized?.short_description || page.short_description}
               </p>
             )}
           </div>
@@ -106,7 +109,7 @@ export default function CmsPageView() {
           ) : (
             <div className="bg-white rounded-2xl border border-border p-8">
               <div className="prose prose-slate max-w-none">
-                <ReactMarkdown>{page.content || page.short_description || ''}</ReactMarkdown>
+                <ReactMarkdown>{localized?.content || page.content || localized?.short_description || page.short_description || ''}</ReactMarkdown>
               </div>
             </div>
           )}

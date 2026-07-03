@@ -1,6 +1,6 @@
-# GramUnnati Documentation
+# CMSR Documentation
 
-Complete documentation for **gramunnati-app** (Laravel 13 + Inertia + React + **MySQL**).
+Complete documentation for **CMSR-app** (Laravel 13 + Inertia + React + **MySQL**).
 
 | Document | Description |
 |----------|-------------|
@@ -15,13 +15,13 @@ Complete documentation for **gramunnati-app** (Laravel 13 + Inertia + React + **
 
 ## Quick links
 
-- **GitHub:** `https://github.com/chandrakiran57g-code/gramunnati.git` (branch: `laravel`)
+- **GitHub:** `https://github.com/chandrakiran57g-code/CMSR.git` (branch: `laravel`)
 - **Production domain:** `https://cmsr.in`
 - **Admin login (default):** `test@gmail.com` / `testadmin123` — change after go-live
 
 ## Project summary
 
-GramUnnati is a rural development platform for villages, schools, programs, donations, and volunteer engagement. **gramunnati-app** wraps the React SPA in **Laravel 13** for **cPanel / Apache** hosting. All business data lives in **MySQL** on cPanel (migrated from Supabase). Laravel serves the app, API, auth (Sanctum), and file uploads.
+CMSR is a rural development platform for villages, schools, programs, donations, and volunteer engagement. **CMSR-app** wraps the React SPA in **Laravel 13** for **cPanel / Apache** hosting. All business data lives in **MySQL** on cPanel (migrated from Supabase). Laravel serves the app, API, auth (Sanctum), and file uploads.
 
 ## Current status (June 2026)
 

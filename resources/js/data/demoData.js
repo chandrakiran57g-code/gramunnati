@@ -234,27 +234,35 @@ function hasStats(dbStats) {
   return dbStats.villages > 0 || dbStats.schools > 0 || dbStats.totalAmount > 0;
 }
 
-/** Fill empty DB responses with static demo content for home page */
+/** Fill empty DB list sections with demo content only when VITE_USE_DEMO_DATA=true */
 export function mergeHomePageWithDemo(db) {
   if (useDemoData()) return { ...DEMO_PAGE_DATA };
 
   return {
-    stats: hasStats(db.stats) ? db.stats : DEMO_STATS,
-    villages: db.villages?.length ? db.villages : DEMO_VILLAGES,
-    schools: db.schools?.length ? db.schools : DEMO_SCHOOLS,
-    projects: db.projects?.length ? db.projects : DEMO_PROJECTS,
+    stats: db.stats || {
+      villages: 0,
+      schools: 0,
+      projects: 0,
+      donations: 0,
+      totalAmount: 0,
+      volunteers: 0,
+      beneficiaries: 0,
+    },
+    villages: db.villages?.length ? db.villages : [],
+    schools: db.schools?.length ? db.schools : [],
+    projects: db.projects?.length ? db.projects : [],
     programs: db.programs?.length ? db.programs : [],
     stories: db.stories?.length ? db.stories : [],
     testimonials: db.testimonials?.length ? db.testimonials : [],
     news: db.news?.length ? db.news : [],
     events: db.events?.length ? db.events : [],
-    activity: db.activity?.length ? db.activity : DEMO_ACTIVITY,
-    heroPhotos: db.heroPhotos?.length >= 2 ? db.heroPhotos : DEMO_HERO_PHOTOS,
-    monthlyDonations: db.monthlyDonations || DEMO_PAGE_DATA.monthlyDonations,
+    activity: db.activity?.length ? db.activity : [],
+    heroPhotos: db.heroPhotos?.length >= 2 ? db.heroPhotos : [],
+    monthlyDonations: db.monthlyDonations || 0,
     donationBreakdown: db.donationBreakdown?.some((d) => d.value > 0)
       ? db.donationBreakdown
-      : DEMO_PAGE_DATA.donationBreakdown,
-    stateStats: db.stateStats?.length ? db.stateStats : DEMO_PAGE_DATA.stateStats,
+      : [],
+    stateStats: db.stateStats?.length ? db.stateStats : [],
     partners: db.partners?.length ? db.partners : [],
     gallery: db.gallery?.length ? db.gallery : [],
     urgentProjects: db.urgentProjects?.length ? db.urgentProjects : [],

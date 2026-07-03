@@ -17,12 +17,15 @@ import { Loader2, Pencil, Trash2, ExternalLink, FileText } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { resolveCardCover } from '@/lib/adminMedia';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 
 const EMPTY_FORM = {
   name: '',
+  name_te: '',
   slug: '',
   cover_image: '',
   description: '',
+  description_te: '',
   template_type: 'village',
   status: 'active',
   display_order: 0,
@@ -97,9 +100,11 @@ export default function AdminActiveWorksCards() {
     setEditKey(item._adminKey);
     setForm({
       name: item.name || '',
+      name_te: item.name_te || '',
       slug: item.slug || '',
       cover_image: item.cover_image || '',
       description: item.description || '',
+      description_te: item.description_te || '',
       template_type: item.template_type || 'village',
       status: item.status || 'active',
       display_order: item.display_order || 0,
@@ -131,18 +136,17 @@ export default function AdminActiveWorksCards() {
       <div className="mb-6 rounded-xl border border-border bg-white p-6">
         <h2 className="mb-4 font-semibold">{editKey ? 'Edit Card' : 'New Card'}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <Label>Title *</Label>
-            <Input
-              className="mt-1"
-              value={form.name}
-              onChange={(e) => {
-                const name = e.target.value;
-                setForm((f) => ({ ...f, name, slug: editKey ? f.slug : slugifyTitle(name) }));
-              }}
-              placeholder="Kondapur Village"
-            />
-          </div>
+          <BilingualInput
+            name="name"
+            label="Title"
+            form={form}
+            setForm={setForm}
+            required
+            className="sm:col-span-2"
+            onEnChange={(name) => {
+              if (!editKey) setForm((f) => ({ ...f, slug: slugifyTitle(name) }));
+            }}
+          />
           <div>
             <Label>Template</Label>
             <select
@@ -174,8 +178,7 @@ export default function AdminActiveWorksCards() {
             />
           </div>
           <div className="sm:col-span-2">
-            <Label>Description *</Label>
-            <Textarea className="mt-1" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={3} required />
           </div>
           <div>
             <Label>Sort Order</Label>

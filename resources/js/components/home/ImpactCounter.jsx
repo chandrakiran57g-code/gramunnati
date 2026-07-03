@@ -69,10 +69,14 @@ export default function ImpactCounter({ stats, loading }) {
               </div>
               <div className={`text-2xl font-bold ${stat.color} font-heading`}>
                 {loading ? '…' : (
-                  <>
-                    <CountUp end={stats?.[stat.key] || 0} />
-                    +
-                  </>
+                  (stats?.[stat.key] || 0) > 0 ? (
+                    <>
+                      <CountUp end={stats[stat.key]} />
+                      +
+                    </>
+                  ) : (
+                    '0'
+                  )
                 )}
               </div>
               <div className="text-xs text-[#5C4033]/65 mt-1 leading-tight font-body">{t(`home.${stat.labelKey}`)}</div>

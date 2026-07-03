@@ -6,7 +6,7 @@
         "dev": "vite",
         "build": "vite build",
         "lint": "eslint resources/js --quiet",
-        "seed:platform": "node scripts/seed-platform-data.js"
+        "seed:platform": "php artisan db:seed --class=CmsrSeeder --force"
     },
     "dependencies": {
         "@hello-pangea/dnd": "^17.0.0",

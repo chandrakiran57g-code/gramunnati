@@ -8,15 +8,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 
 const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
+const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', status: 'active' };
 
 export default function AdminPartners() {
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', status: 'active' });
+  const [form, setForm] = useState(EMPTY_PARTNER);
 
   const load = () => {
     setLoading(true);
@@ -27,7 +29,7 @@ export default function AdminPartners() {
 
   const handleEdit = (p) => {
     setEditing(p);
-    setForm({ name: p.name, slug: p.slug, logo: p.logo || '', partner_type: p.partner_type, website: p.website || '', email: p.email || '', mobile: p.mobile || '', description: p.description || '', status: p.status || 'active' });
+    setForm({ name: p.name, name_te: p.name_te || '', slug: p.slug, logo: p.logo || '', partner_type: p.partner_type, website: p.website || '', email: p.email || '', mobile: p.mobile || '', description: p.description || '', description_te: p.description_te || '', status: p.status || 'active' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -46,7 +48,7 @@ export default function AdminPartners() {
     if (editing) { await base44.entities.Partner.update(editing.id, data); toast.success('Partner updated'); }
     else { await base44.entities.Partner.create(data); toast.success('Partner created'); }
     setEditing(null);
-    setForm({ name: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', status: 'active' });
+    setForm(EMPTY_PARTNER);
     setSaving(false);
     load();
   };
@@ -60,14 +62,23 @@ export default function AdminPartners() {
           </h1>
           <p className="text-muted-foreground mt-1">Manage partner organizations shown on the website</p>
         </div>
-        <Button onClick={() => { setEditing(null); setForm({ name: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', status: 'active' }); }}
+        <Button onClick={() => { setEditing(null); setForm(EMPTY_PARTNER); }}
           className="brand-gradient text-white border-0"><Plus className="w-4 h-4 mr-2" /> New Partner</Button>
       </div>
 
       <div className="bg-white rounded-xl border border-border p-6 mb-8">
         <h2 className="font-semibold text-lg mb-4">{editing ? 'Edit Partner' : 'Add New Partner'}</h2>
         <div className="grid sm:grid-cols-2 gap-4 mb-4">
-          <div><Label>Name *</Label><Input value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); if (!editing) setForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-') })); }} /></div>
+          <BilingualInput
+            name="name"
+            label="Name"
+            form={form}
+            setForm={setForm}
+            required
+            onEnChange={(name) => {
+              if (!editing) setForm((prev) => ({ ...prev, slug: name.toLowerCase().replace(/[^a-z0-9]/g, '-') }));
+            }}
+          />
           <div><Label>Slug *</Label><Input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} /></div>
           <AdminImageUpload label="Logo" value={form.logo} onChange={(url) => setForm({ ...form, logo: url })} subPath="partners" />
           <div>
@@ -86,7 +97,7 @@ export default function AdminPartners() {
             </select>
           </div>
         </div>
-        <div className="mb-4"><Label>Description</Label><Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} /></div>
+        <BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={3} className="mb-4" />
         <div className="flex gap-3">
           <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{editing ? 'Update' : 'Create'}</Button>
           {editing && <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>}

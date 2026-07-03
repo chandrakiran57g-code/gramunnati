@@ -27,7 +27,7 @@ class AuthController extends Controller
         ]);
 
         $mobile = preg_replace('/\D/', '', $data['mobile']);
-        $email = $data['email'] ?? "{$mobile}@gramunnati.local";
+        $email = $data['email'] ?? "{$mobile}@cmsr.local";
         $fullName = $data['full_name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? ''));
 
         if (User::query()->where('email', $email)->exists()) {
