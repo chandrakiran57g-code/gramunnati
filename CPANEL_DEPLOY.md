@@ -1,24 +1,61 @@
-# cPanel Deployment — cmsr.in
+# cPanel Deploy — cmsr.in (terminal only)
 
-| Item | Value |
-|------|--------|
-| Domain | `https://cmsr.in` |
-| Server path | `/home/cmsr/cmsr` |
-| Document root | `/home/cmsr/cmsr/public` |
-| Git repo | `https://github.com/chandrakiran57g-code/cmsr.git` |
+**One command** — paste in cPanel Terminal:
 
-> **No Node.js on cPanel.** Build on your PC (`npm run build`), upload `public/build/`.
+```bash
+cd ~/cmsr && git pull origin laravel && DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+```
 
-## Deploy steps
+That script automatically:
 
-1. Clone (done): `cd ~/cmsr && git clone https://github.com/chandrakiran57g-code/cmsr.git .`
-2. Copy `.env` from `env.cmsr.in.example` (fill password) or upload your local `.env`
-3. `composer install --optimize-autoloader --no-dev`
-4. `php artisan key:generate` (if `APP_KEY` empty)
-5. `php artisan gramunnati:mark-migrations-run` (if DB already imported) **or** `php artisan migrate --force` (empty DB)
-6. `php artisan storage:link`
-7. `chmod -R 775 storage bootstrap/cache`
-8. `php artisan config:cache`
-9. Set document root → `/home/cmsr/cmsr/public`
+1. Pulls latest code from GitHub  
+2. Creates `.env` (no File Manager)  
+3. Runs `composer install`  
+4. Runs `php artisan key:generate`  
+5. Runs `php artisan gramunnati:mark-migrations-run`  
+6. Runs `storage:link` + permissions + cache  
 
-Full guide: [docs/DEPLOYMENT_STATUS.md](./docs/DEPLOYMENT_STATUS.md)
+---
+
+## First time only (if not cloned yet)
+
+```bash
+cd ~
+git clone -b laravel https://github.com/chandrakiran57g-code/cmsr.git cmsr
+cd ~/cmsr
+DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+```
+
+---
+
+## Optional: link `public_html` (if domain points there)
+
+```bash
+cd ~/cmsr && git pull origin laravel && DEPLOY_LINK_PUBLIC_HTML=1 DEPLOY_DB_PASSWORD='Gramunnati@#121' bash scripts/cpanel-deploy.sh
+```
+
+---
+
+## Custom DB names (if cPanel prefix differs)
+
+```bash
+cd ~/cmsr && git pull origin laravel && \
+DEPLOY_DB_DATABASE='cmsr_cmsr_db' \
+DEPLOY_DB_USERNAME='cmsr_cmsr_db' \
+DEPLOY_DB_PASSWORD='Gramunnati@#121' \
+bash scripts/cpanel-deploy.sh
+```
+
+---
+
+## Test after deploy
+
+| URL | Expected |
+|-----|----------|
+| `https://cmsr.in/` | Homepage |
+| `https://cmsr.in/up` | 200 OK |
+| `https://cmsr.in/api/health` | `{"ok":true}` |
+
+---
+
+**No Node.js on cPanel** — `public/build/` is already in Git.
