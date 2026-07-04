@@ -67,7 +67,9 @@ class AdminTableController extends Controller
 
     public function query(Request $request, string $table): JsonResponse
     {
-        $filters = $this->normalizeFilters($table, $request->input('filters', []));
+        $filtersInput = $request->input('filters', []);
+        $filters = is_string($filtersInput) ? (json_decode($filtersInput, true) ?? []) : $filtersInput;
+        $filters = $this->normalizeFilters($table, $filters);
 
         if ($table === 'user_roles') {
             $query = DB::table('user_roles');
@@ -98,7 +100,8 @@ class AdminTableController extends Controller
             return response()->json(['data' => null, 'count' => $query->count(), 'error' => null]);
         }
 
-        $order = $request->input('order', []);
+        $orderInput = $request->input('order', []);
+        $order = is_string($orderInput) ? (json_decode($orderInput, true) ?? []) : $orderInput;
         if (! empty($order['column'])) {
             $query->orderBy($order['column'], ($order['ascending'] ?? true) ? 'asc' : 'desc');
         }
