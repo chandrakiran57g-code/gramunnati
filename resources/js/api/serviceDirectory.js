@@ -1,24 +1,33 @@
 import { supabase } from './supabaseClient';
 import { getServiceDirectoryConfig, SAMPLE_DIRECTORY_ROWS } from '@/lib/serviceDirectory';
 
+/** API may return a plain string or a nested { name } relation object. */
+function relationName(value) {
+  if (!value) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && value.name != null) return String(value.name);
+  return '';
+}
+
 function mapVillageRow(v) {
   return {
     id: v.id,
     name: v.village_name,
     slug: v.slug,
-    mandal: v.mandals?.name || v.mandal,
-    district: v.districts?.name || v.district,
+    mandal: relationName(v.mandal) || relationName(v.mandals),
+    district: relationName(v.district) || relationName(v.districts),
     date_of_entry: v.created_at,
   };
 }
 
 function mapSchoolRow(s) {
+  const village = s.village || s.villages;
   return {
     id: s.id,
     name: s.school_name,
     slug: s.slug,
-    mandal: s.villages?.mandals?.name || s.mandal,
-    district: s.villages?.districts?.name || s.district,
+    mandal: relationName(village?.mandal) || relationName(village?.mandals),
+    district: relationName(village?.district) || relationName(village?.districts),
     date_of_entry: s.created_at,
   };
 }
@@ -34,14 +43,15 @@ function mapVolunteerRow(v) {
 }
 
 function mapProjectRow(p) {
+  const village = p.village || p.villages;
   return {
     id: p.id,
     name: p.project_name,
     slug: p.slug,
-    mandal: p.villages?.mandals?.name || p.mandal,
-    district: p.villages?.districts?.name || p.district,
+    mandal: relationName(village?.mandal) || relationName(village?.mandals),
+    district: relationName(village?.district) || relationName(village?.districts),
     date_of_entry: p.created_at,
-    category: p.project_categories?.name,
+    category: relationName(p.project_categories) || relationName(p.category),
   };
 }
 
