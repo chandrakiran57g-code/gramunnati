@@ -1,4 +1,4 @@
--- CMSRR MySQL schema + seed (generated 2026-07-04 16:11:38)
+-- CMSRR MySQL schema + seed (generated 2026-07-04 16:15:31)
 -- Import on cPanel: phpMyAdmin → Import → cmsrr.sql
 -- Admin login: test@gmail.com / testadmin123
 

@@ -50,7 +50,11 @@ class ExportCmsrrSql extends Command
             if (! $this->tableExists($table)) {
                 continue;
             }
-            $rows = DB::table($table)->orderBy('id')->get();
+            $query = DB::table($table);
+            if (Schema::hasColumn($table, 'id')) {
+                $query->orderBy('id');
+            }
+            $rows = $query->get();
             if ($rows->isEmpty()) {
                 $sql .= "-- {$table}: no rows\n\n";
                 continue;
