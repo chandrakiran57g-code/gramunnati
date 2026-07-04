@@ -83,6 +83,9 @@ if [ "${DEPLOY_GIT_PULL:-0}" = "1" ] && [ -d .git ]; then
   git reset --hard origin/laravel 2>/dev/null || true
 fi
 
+if [ -f .env ] && [ "${DEPLOY_WRITE_ENV:-0}" != "1" ]; then
+  echo "==> Keeping existing .env (set DEPLOY_WRITE_ENV=1 to overwrite)"
+else
 echo "==> Write .env"
 cat > .env <<ENVFILE
 APP_NAME=${APP_NAME}
@@ -130,6 +133,7 @@ MAIL_FROM_NAME="${APP_NAME}"
 
 VITE_APP_NAME="${APP_NAME}"
 ENVFILE
+fi
 
 echo "==> Composer install"
 run_composer() {
