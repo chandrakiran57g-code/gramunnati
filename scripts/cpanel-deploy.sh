@@ -30,9 +30,14 @@ php_ok() {
 }
 
 find_php() {
-  if [ -n "${DEPLOY_PHP_BIN:-}" ] && php_ok "$DEPLOY_PHP_BIN"; then
-    echo "$DEPLOY_PHP_BIN"
-    return 0
+  # If the operator explicitly points at a PHP binary, trust it: use it as long
+  # as it is runnable. This avoids false negatives from the version probe when
+  # the terminal's default `php` is an older version (e.g. 8.1).
+  if [ -n "${DEPLOY_PHP_BIN:-}" ]; then
+    if [ -x "$DEPLOY_PHP_BIN" ] || command -v "$DEPLOY_PHP_BIN" >/dev/null 2>&1; then
+      echo "$DEPLOY_PHP_BIN"
+      return 0
+    fi
   fi
   local candidates=(
     /opt/cpanel/ea-php84/root/usr/bin/php
