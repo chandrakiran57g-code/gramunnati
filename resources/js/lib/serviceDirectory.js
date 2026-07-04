@@ -10,6 +10,10 @@ export const SERVICE_DIRECTORY_PAGES = {
     title: 'About Schools',
     linkPattern: (row) => `/schools/${row.slug}`,
   },
+  'about-volunteers': {
+    type: 'volunteers',
+    title: 'About Volunteers',
+  },
   'about-village-development': {
     type: 'projects',
     categoryMatch: ['village development', 'village-development'],
@@ -76,5 +80,10 @@ export const SAMPLE_DIRECTORY_ROWS = {
     { id: 6, name: 'Tree Plantation Drive', mandal: 'Shamirpet', district: 'Medchal-Malkajgiri', date_of_entry: '2026-03-01', slug: 'tree-plantation-drive' },
     { id: 7, name: 'Water Harvest Project', mandal: 'Rajendranagar', district: 'Rangareddy', date_of_entry: '2026-03-05', slug: 'water-harvest-project' },
     { id: 8, name: 'Women SHG Support', mandal: 'Chevella', district: 'Rangareddy', date_of_entry: '2026-03-10', slug: 'women-shg-support' },
+  ],
+  volunteers: [
+    { id: 'v1', name: 'Ravi Kumar', mandal: '', district: 'Rangareddy', date_of_entry: '2026-01-18' },
+    { id: 'v2', name: 'Sita Devi', mandal: '', district: 'Medchal-Malkajgiri', date_of_entry: '2026-02-02' },
+    { id: 'v3', name: 'Anil Reddy', mandal: '', district: 'Rangareddy', date_of_entry: '2026-02-20' },
   ],
 };

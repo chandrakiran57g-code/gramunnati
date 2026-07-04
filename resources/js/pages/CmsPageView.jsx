@@ -52,6 +52,7 @@ export default function CmsPageView() {
   }, [slug]);
 
   const localized = useLocalizedRecord(page, ['title', 'short_description', 'content']);
+  const adminContent = (localized?.content || page?.content || '').trim();
 
   if (loading) return (
     <div className="min-h-screen bg-background pt-20">
@@ -100,18 +101,28 @@ export default function CmsPageView() {
       </HeroScrollSection>
 
       <section className="py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
+          {/* Admin-entered content. On directory pages it appears ABOVE the list;
+              on regular pages it's the main body. */}
+          {adminContent && (
+            <div className="bg-white rounded-2xl border border-border p-8">
+              <div className="prose prose-slate max-w-none">
+                <ReactMarkdown>{adminContent}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+
           {isDirectory ? (
             <ServiceDirectoryTable
               rows={directoryRows}
               getLink={(row) => dirConfig?.linkPattern?.(row)}
             />
           ) : (
-            <div className="bg-white rounded-2xl border border-border p-8">
-              <div className="prose prose-slate max-w-none">
-                <ReactMarkdown>{localized?.content || page.content || localized?.short_description || page.short_description || ''}</ReactMarkdown>
+            !adminContent && (
+              <div className="bg-white rounded-2xl border border-border p-8 text-center text-muted-foreground">
+                {localized?.short_description || page.short_description || 'Content coming soon.'}
               </div>
-            </div>
+            )
           )}
         </div>
       </section>

@@ -23,6 +23,16 @@ function mapSchoolRow(s) {
   };
 }
 
+function mapVolunteerRow(v) {
+  return {
+    id: v.id,
+    name: v.full_name,
+    mandal: '',
+    district: v.district || '',
+    date_of_entry: v.created_at,
+  };
+}
+
 function mapProjectRow(p) {
   return {
     id: p.id,
@@ -63,6 +73,16 @@ export const serviceDirectoryApi = {
         .order('school_name');
       const rows = (data || []).map(mapSchoolRow);
       return rows.length ? rows : SAMPLE_DIRECTORY_ROWS.schools;
+    }
+
+    if (config.type === 'volunteers') {
+      const { data } = await supabase
+        .from('volunteers')
+        .select('id, full_name, district, created_at, status')
+        .eq('status', 'active')
+        .order('full_name');
+      const rows = (data || []).map(mapVolunteerRow);
+      return rows.length ? rows : SAMPLE_DIRECTORY_ROWS.volunteers;
     }
 
     if (config.type === 'projects') {
