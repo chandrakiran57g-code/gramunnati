@@ -61,6 +61,65 @@ class HomeController extends Controller
         return response()->json($this->statsArray());
     }
 
+    public function impact(): JsonResponse
+    {
+        $metricRows = ImpactMetric::query()
+            ->where('metricable_type', 'site')
+            ->where('metricable_id', 0)
+            ->pluck('metric_value', 'metric_name');
+
+        $villages = (int) Village::query()->where('is_active', true)->count();
+        $schools = (int) School::query()->where('is_active', true)->count();
+        $donationsTotal = (float) Donation::query()->where('payment_status', 'success')->sum('amount');
+        $volunteers = (int) Volunteer::query()->count();
+
+        $metrics = [
+            'villages' => $villages,
+            'schools' => $schools,
+            'donations_total' => $donationsTotal,
+            'trees_planted' => (int) ($metricRows['trees_planted'] ?? 0),
+            'farmers_benefited' => (int) ($metricRows['farmers_benefited'] ?? 0),
+            'students_benefited' => (int) ($metricRows['students_benefited'] ?? 0),
+            'volunteers' => $volunteers,
+            'water_projects' => (int) ($metricRows['water_projects']
+                ?? Project::query()->where('status', 'active')
+                    ->whereHas('category', fn ($q) => $q->where('slug', 'water-conservation'))
+                    ->count()),
+        ];
+
+        return response()->json([
+            'metrics' => $metrics,
+            'stateStats' => $this->stateStats(),
+        ]);
+    }
+
+    private function stateStats(): array
+    {
+        $states = \App\Models\State::query()->where('is_active', true)->get(['id', 'name']);
+
+        return $states->map(function ($state) {
+            $villageIds = Village::query()->where('state_id', $state->id)->pluck('id');
+            $villages = Village::query()->where('state_id', $state->id)->where('is_active', true)->count();
+            $schools = School::query()->whereIn('village_id', $villageIds)->where('is_active', true)->count();
+            $donations = (float) Donation::query()
+                ->where('payment_status', 'success')
+                ->whereIn('village_id', $villageIds)
+                ->sum('amount');
+
+            return [
+                'state' => $state->name,
+                'villages' => $villages,
+                'schools' => $schools,
+                'donations' => $donations,
+            ];
+        })
+            ->filter(fn ($row) => $row['villages'] > 0 || $row['schools'] > 0 || $row['donations'] > 0)
+            ->sortByDesc(fn ($row) => $row['villages'] + $row['schools'])
+            ->take(8)
+            ->values()
+            ->all();
+    }
+
     private function statsArray(): array
     {
         $metrics = ImpactMetric::query()

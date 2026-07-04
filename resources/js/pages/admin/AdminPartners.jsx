@@ -11,7 +11,7 @@ import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 
 const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
-const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', status: 'active' };
+const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', is_active: true };
 
 export default function AdminPartners() {
   const [partners, setPartners] = useState([]);
@@ -29,7 +29,7 @@ export default function AdminPartners() {
 
   const handleEdit = (p) => {
     setEditing(p);
-    setForm({ name: p.name, name_te: p.name_te || '', slug: p.slug, logo: p.logo || '', partner_type: p.partner_type, website: p.website || '', email: p.email || '', mobile: p.mobile || '', description: p.description || '', description_te: p.description_te || '', status: p.status || 'active' });
+    setForm({ name: p.name, name_te: p.name_te || '', slug: p.slug, logo: p.logo || '', partner_type: p.partner_type, website: p.website || '', email: p.email || '', mobile: p.mobile || '', description: p.description || '', description_te: p.description_te || '', is_active: p.is_active ?? true });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -92,7 +92,7 @@ export default function AdminPartners() {
           <div><Label>Mobile</Label><Input value={form.mobile} onChange={e => setForm({ ...form, mobile: e.target.value })} /></div>
           <div>
             <Label>Status</Label>
-            <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">
+            <select value={form.is_active ? 'active' : 'inactive'} onChange={e => setForm({ ...form, is_active: e.target.value === 'active' })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">
               <option value="active">Active</option><option value="inactive">Inactive</option>
             </select>
           </div>
@@ -119,7 +119,7 @@ export default function AdminPartners() {
                   </div>
                   <div>
                     <div className="font-medium text-sm">{p.name}</div>
-                    <div className="text-xs text-muted-foreground">{p.partner_type?.replace(/_/g, ' ')} · {p.status}</div>
+                    <div className="text-xs text-muted-foreground">{p.partner_type?.replace(/_/g, ' ')} · {p.is_active ? 'active' : 'inactive'}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import SafeImage from '@/components/shared/SafeImage';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 const categoryColors = {
   'Village Development': 'bg-service-village-tint text-service-village border-service-village/30',
@@ -38,6 +40,9 @@ const statusColors = {
 };
 
 export default function ProjectCard({ project, index = 0 }) {
+  const { lang } = useLanguage();
+  const projectName = localize(project, 'project_name', lang);
+  const shortDescription = localize(project, 'short_description', lang);
   const slug = project.slug || project.project_name?.toLowerCase().replace(/\s+/g, '-') || project.id;
   const raisedPct = project.budget_amount > 0
     ? Math.min(Math.round((project.raised_amount / project.budget_amount) * 100), 100)
@@ -56,7 +61,7 @@ export default function ProjectCard({ project, index = 0 }) {
         <div className="relative h-44 overflow-hidden">
           <SafeImage
             src={project.cover_image}
-            alt={project.project_name}
+            alt={projectName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
           {project.is_featured && (
@@ -73,7 +78,7 @@ export default function ProjectCard({ project, index = 0 }) {
       <div className="p-5">
         <Link to={`/projects/${slug}`}>
           <h3 className="font-heading font-bold text-base mb-1 group-hover:text-primary transition-colors line-clamp-1">
-            {project.project_name}
+            {projectName}
           </h3>
         </Link>
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
@@ -81,7 +86,7 @@ export default function ProjectCard({ project, index = 0 }) {
           {project.village_name}, {project.district}
         </div>
         <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
-          {project.short_description}
+          {shortDescription}
         </p>
 
         <div className="mb-4">

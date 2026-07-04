@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 
 const beneficiaryTypes = ['village', 'school', 'farmer', 'student', 'women_shg', 'youth_group', 'artisan', 'other'];
 
@@ -15,7 +16,7 @@ export default function AdminBeneficiaries() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: '', slug: '', beneficiary_type: 'village', image: '', description: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', status: 'active' });
+  const [form, setForm] = useState({ name: '', name_te: '', slug: '', beneficiary_type: 'village', image: '', description: '', description_te: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', is_active: true });
 
   const load = () => {
     setLoading(true);
@@ -25,7 +26,7 @@ export default function AdminBeneficiaries() {
 
   const handleEdit = (b) => {
     setEditing(b);
-    setForm({ name: b.name, slug: b.slug, beneficiary_type: b.beneficiary_type, image: b.image || '', description: b.description || '', village_name: b.village_name || '', village_id: b.village_id || '', school_name: b.school_name || '', school_id: b.school_id || '', impact_details: b.impact_details || '', state: b.state || '', district: b.district || '', status: b.status || 'active' });
+    setForm({ name: b.name, name_te: b.name_te || '', slug: b.slug, beneficiary_type: b.beneficiary_type, image: b.image || '', description: b.description || '', description_te: b.description_te || '', village_name: b.village_name || '', village_id: b.village_id || '', school_name: b.school_name || '', school_id: b.school_id || '', impact_details: b.impact_details || '', state: b.state || '', district: b.district || '', is_active: b.is_active ?? true });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -44,7 +45,7 @@ export default function AdminBeneficiaries() {
     if (editing) { await base44.entities.Beneficiary.update(editing.id, data); toast.success('Updated'); }
     else { await base44.entities.Beneficiary.create(data); toast.success('Created'); }
     setEditing(null);
-    setForm({ name: '', slug: '', beneficiary_type: 'village', image: '', description: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', status: 'active' });
+    setForm({ name: '', name_te: '', slug: '', beneficiary_type: 'village', image: '', description: '', description_te: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', is_active: true });
     setSaving(false);
     load();
   };
@@ -58,14 +59,14 @@ export default function AdminBeneficiaries() {
           </h1>
           <p className="text-muted-foreground mt-1">Manage beneficiaries displayed on the public website</p>
         </div>
-        <Button onClick={() => { setEditing(null); setForm({ name: '', slug: '', beneficiary_type: 'village', image: '', description: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', status: 'active' }); }}
+        <Button onClick={() => { setEditing(null); setForm({ name: '', name_te: '', slug: '', beneficiary_type: 'village', image: '', description: '', description_te: '', village_name: '', village_id: '', school_name: '', school_id: '', impact_details: '', state: '', district: '', is_active: true }); }}
           className="brand-gradient text-white border-0"><Plus className="w-4 h-4 mr-2" /> New</Button>
       </div>
 
       <div className="bg-white rounded-xl border border-border p-6 mb-8">
         <h2 className="font-semibold text-lg mb-4">{editing ? 'Edit' : 'Add New'} Beneficiary</h2>
         <div className="grid sm:grid-cols-2 gap-4 mb-4">
-          <div><Label>Name *</Label><Input value={form.name} onChange={e => { setForm({ ...form, name: e.target.value }); if (!editing) setForm(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '-') })); }} /></div>
+          <div className="sm:col-span-2"><BilingualInput name="name" label="Name" form={form} setForm={setForm} required onEnChange={(v) => { if (!editing) setForm(prev => ({ ...prev, slug: v.toLowerCase().replace(/[^a-z0-9]/g, '-') })); }} /></div>
           <div><Label>Slug *</Label><Input value={form.slug} onChange={e => setForm({ ...form, slug: e.target.value })} /></div>
           <div>
             <Label>Type</Label>
@@ -79,12 +80,12 @@ export default function AdminBeneficiaries() {
           <div><Label>District</Label><Input value={form.district} onChange={e => setForm({ ...form, district: e.target.value })} /></div>
           <div>
             <Label>Status</Label>
-            <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">
+            <select value={form.is_active ? 'active' : 'inactive'} onChange={e => setForm({ ...form, is_active: e.target.value === 'active' })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">
               <option value="active">Active</option><option value="inactive">Inactive</option>
             </select>
           </div>
         </div>
-        <div className="mb-4"><Label>Description</Label><Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3} /></div>
+        <div className="mb-4"><BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={3} /></div>
         <div className="mb-4"><Label>Impact Details</Label><Textarea value={form.impact_details} onChange={e => setForm({ ...form, impact_details: e.target.value })} rows={2} /></div>
         <div className="flex gap-3">
           <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{editing ? 'Update' : 'Create'}</Button>

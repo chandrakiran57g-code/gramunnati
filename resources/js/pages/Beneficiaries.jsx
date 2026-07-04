@@ -15,7 +15,7 @@ export default function Beneficiaries() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Beneficiary.filter({ status: 'active' }, '-created_date', 100)
+    base44.entities.Beneficiary.filter({ is_active: true }, '-created_date', 100)
       .then(setBeneficiaries).catch(() => {}).finally(() => setLoading(false));
   }, []);
 

@@ -4,6 +4,8 @@ import { MapPin, Users, BookOpen, Heart, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import SafeImage from '@/components/shared/SafeImage';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 const typeColors = {
   government: 'bg-service-village-tint text-service-village',
@@ -20,6 +22,8 @@ const typeLabel = {
 };
 
 export default function SchoolCard({ school, index = 0 }) {
+  const { lang } = useLanguage();
+  const schoolName = localize(school, 'school_name', lang);
   const slug = school.slug || school.school_name?.toLowerCase().replace(/\s+/g, '-') || school.id;
 
   return (
@@ -34,7 +38,7 @@ export default function SchoolCard({ school, index = 0 }) {
       <div className="relative h-44 overflow-hidden">
         <SafeImage
           src={school.cover_image}
-          alt={school.school_name}
+          alt={schoolName}
           fallbackIndex={index + 2}
           width={600}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -47,7 +51,7 @@ export default function SchoolCard({ school, index = 0 }) {
           {typeLabel[school.school_type] || 'School'}
         </span>
         <div className="absolute bottom-3 left-3 right-3">
-          <h3 className="font-heading font-bold text-white text-base leading-tight line-clamp-2">{school.school_name}</h3>
+          <h3 className="font-heading font-bold text-white text-base leading-tight line-clamp-2">{schoolName}</h3>
         </div>
       </div>
 

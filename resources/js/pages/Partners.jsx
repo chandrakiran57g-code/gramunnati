@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
-const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
+const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Others' };
 const typeColors = { ngo: 'bg-green-100 text-green-700', company: 'bg-blue-100 text-blue-700', educational_institution: 'bg-purple-100 text-purple-700', government: 'bg-orange-100 text-orange-700', individual: 'bg-gray-100 text-gray-700', csr_partner: 'bg-yellow-100 text-yellow-700', foundation: 'bg-pink-100 text-pink-700' };
 
 export default function Partners() {
@@ -16,7 +16,7 @@ export default function Partners() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.Partner.filter({ status: 'active' }, '-created_date', 100)
+    base44.entities.Partner.filter({ is_active: true }, '-created_date', 100)
       .then(setPartners).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
@@ -38,20 +38,6 @@ export default function Partners() {
         </section>
       </HeroScrollSection>
 
-      <section className="py-12 border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <LogoCloud
-            logos={filtered.map((p) => ({
-              id: p.id,
-              name: p.name,
-              src: p.logo,
-              alt: p.name,
-              website: p.website,
-            }))}
-          />
-        </div>
-      </section>
-
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap gap-2 mb-10 justify-center">
@@ -62,6 +48,18 @@ export default function Partners() {
                 }`}
               >{label}</button>
             ))}
+          </div>
+
+          <div className="max-w-5xl mx-auto mb-12">
+            <LogoCloud
+              logos={filtered.map((p) => ({
+                id: p.id,
+                name: p.name,
+                src: p.logo,
+                alt: p.name,
+                website: p.website,
+              }))}
+            />
           </div>
 
           {loading ? (

@@ -58,6 +58,10 @@ export default function AdminNeedSupport() {
   const handleSave = async () => {
     if (!form.name.trim()) return toast.error('Project title is required');
     if (!form.program_category) return toast.error('Program category is required');
+    const goal = Number(form.funding_goal) || 0;
+    const raised = Number(form.raised_amount) || 0;
+    if (raised < 0 || goal < 0) return toast.error('Amounts cannot be negative');
+    if (goal > 0 && raised > goal) return toast.error('Raised amount cannot exceed the funding goal');
     setSaving(true);
     try {
       await ensureAdminDbAccess();

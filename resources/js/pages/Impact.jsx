@@ -2,6 +2,15 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TreePine, School, Heart, Users, Droplets, Wheat, MapPin } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { apiFetch } from '@/api/apiClient';
+
+function formatINRShort(amount) {
+  const n = Number(amount) || 0;
+  if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)}Cr`;
+  if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
+  if (n >= 1000) return `₹${(n / 1000).toFixed(1)}K`;
+  return `₹${n.toLocaleString('en-IN')}`;
+}
 
 function CountUp({ end, suffix = '', prefix = '', duration = 2000 }) {
   const [count, setCount] = useState(0);
@@ -32,29 +41,33 @@ function CountUp({ end, suffix = '', prefix = '', duration = 2000 }) {
   return <span ref={ref}>{prefix}{count.toLocaleString('en-IN')}{suffix}</span>;
 }
 
-const metrics = [
-  { label: 'Villages with Digital Profiles', value: 1200, suffix: '+', icon: TreePine, color: 'text-primary', bg: 'bg-primary/10', gradient: 'from-village/20 to-village/5' },
-  { label: 'Schools Empowered', value: 450, suffix: '+', icon: School, color: 'text-school', bg: 'bg-school/10', gradient: 'from-school/20 to-school/5' },
-  { label: 'Donations Raised (₹)', value: 25000000, prefix: '₹', suffix: '+', icon: Heart, color: 'text-donation', bg: 'bg-donation/10', gradient: 'from-donation/20 to-donation/5' },
-  { label: 'Trees Planted', value: 50000, suffix: '+', icon: TreePine, color: 'text-green-600', bg: 'bg-green-100', gradient: 'from-green-100 to-green-50' },
-  { label: 'Farmers Benefited', value: 8500, suffix: '+', icon: Wheat, color: 'text-yellow-600', bg: 'bg-yellow-100', gradient: 'from-yellow-100 to-yellow-50' },
-  { label: 'Students Benefited', value: 150000, suffix: '+', icon: Users, color: 'text-purple-600', bg: 'bg-purple-100', gradient: 'from-purple-100 to-purple-50' },
-  { label: 'Volunteers Active', value: 5000, suffix: '+', icon: Users, color: 'text-volunteer', bg: 'bg-volunteer/10', gradient: 'from-volunteer/20 to-volunteer/5' },
-  { label: 'Water Projects', value: 320, suffix: '+', icon: Droplets, color: 'text-cyan-600', bg: 'bg-cyan-100', gradient: 'from-cyan-100 to-cyan-50' },
-];
-
-const stateStats = [
-  { state: 'Andhra Pradesh', villages: 230, schools: 85, donations: '₹48L' },
-  { state: 'Telangana', villages: 195, schools: 72, donations: '₹42L' },
-  { state: 'Karnataka', villages: 165, schools: 60, donations: '₹35L' },
-  { state: 'Tamil Nadu', villages: 142, schools: 55, donations: '₹31L' },
-  { state: 'Maharashtra', villages: 128, schools: 48, donations: '₹28L' },
-  { state: 'Gujarat', villages: 98, schools: 38, donations: '₹22L' },
-  { state: 'Uttar Pradesh', villages: 87, schools: 34, donations: '₹19L' },
-  { state: 'Rajasthan', villages: 76, schools: 29, donations: '₹17L' },
+const METRIC_META = [
+  { key: 'villages', label: 'Villages with Digital Profiles', suffix: '+', icon: TreePine, color: 'text-primary', bg: 'bg-primary/10', gradient: 'from-village/20 to-village/5' },
+  { key: 'schools', label: 'Schools Empowered', suffix: '+', icon: School, color: 'text-school', bg: 'bg-school/10', gradient: 'from-school/20 to-school/5' },
+  { key: 'donations_total', label: 'Donations Raised (₹)', prefix: '₹', suffix: '+', icon: Heart, color: 'text-donation', bg: 'bg-donation/10', gradient: 'from-donation/20 to-donation/5' },
+  { key: 'trees_planted', label: 'Trees Planted', suffix: '+', icon: TreePine, color: 'text-green-600', bg: 'bg-green-100', gradient: 'from-green-100 to-green-50' },
+  { key: 'farmers_benefited', label: 'Farmers Benefited', suffix: '+', icon: Wheat, color: 'text-yellow-600', bg: 'bg-yellow-100', gradient: 'from-yellow-100 to-yellow-50' },
+  { key: 'students_benefited', label: 'Students Benefited', suffix: '+', icon: Users, color: 'text-purple-600', bg: 'bg-purple-100', gradient: 'from-purple-100 to-purple-50' },
+  { key: 'volunteers', label: 'Volunteers Active', suffix: '+', icon: Users, color: 'text-volunteer', bg: 'bg-volunteer/10', gradient: 'from-volunteer/20 to-volunteer/5' },
+  { key: 'water_projects', label: 'Water Projects', suffix: '+', icon: Droplets, color: 'text-cyan-600', bg: 'bg-cyan-100', gradient: 'from-cyan-100 to-cyan-50' },
 ];
 
 export default function Impact() {
+  const [metrics, setMetrics] = useState({});
+  const [stateStats, setStateStats] = useState([]);
+
+  useEffect(() => {
+    apiFetch('/home/impact')
+      .then((res) => {
+        setMetrics(res?.metrics || {});
+        setStateStats(Array.isArray(res?.stateStats) ? res.stateStats : []);
+      })
+      .catch(() => {
+        setMetrics({});
+        setStateStats([]);
+      });
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -78,7 +91,9 @@ export default function Impact() {
             <p className="text-muted-foreground">Cumulative impact since platform launch</p>
           </motion.div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {metrics.map((m, i) => (
+            {METRIC_META.map((m, i) => {
+              const value = Number(metrics[m.key]) || 0;
+              return (
               <motion.div key={m.label} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
                 className={`bg-gradient-to-br ${m.gradient} rounded-2xl p-5 border border-border`}
               >
@@ -86,11 +101,16 @@ export default function Impact() {
                   <m.icon className={`w-5 h-5 ${m.color}`} />
                 </div>
                 <div className={`text-2xl font-bold ${m.color} font-heading`}>
-                  <CountUp end={m.value} prefix={m.prefix || ''} suffix={m.suffix || ''} />
+                  {value > 0 ? (
+                    <CountUp end={value} prefix={m.prefix || ''} suffix={m.suffix || ''} />
+                  ) : (
+                    <span>{m.prefix || ''}0</span>
+                  )}
                 </div>
                 <div className="text-xs text-muted-foreground mt-1 leading-tight">{m.label}</div>
               </motion.div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -113,6 +133,9 @@ export default function Impact() {
               <span className="text-center">Schools</span>
               <span className="text-right">Donations</span>
             </div>
+            {stateStats.length === 0 && (
+              <div className="px-5 py-10 text-center text-muted-foreground text-sm">No state data yet.</div>
+            )}
             {stateStats.map((s, i) => (
               <motion.div key={s.state} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                 className="grid grid-cols-4 px-5 py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors items-center"
@@ -120,7 +143,7 @@ export default function Impact() {
                 <span className="font-medium text-sm">{s.state}</span>
                 <span className="text-center text-primary font-semibold text-sm">{s.villages}</span>
                 <span className="text-center text-school font-semibold text-sm">{s.schools}</span>
-                <span className="text-right text-donation font-semibold text-sm">{s.donations}</span>
+                <span className="text-right text-donation font-semibold text-sm">{formatINRShort(s.donations)}</span>
               </motion.div>
             ))}
           </div>

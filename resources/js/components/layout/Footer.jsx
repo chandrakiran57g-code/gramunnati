@@ -2,10 +2,13 @@ import { Link } from 'react-router-dom';
 import { Heart, MapPin, Phone, Mail } from 'lucide-react';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import BrandTagline from '@/components/brand/BrandTagline';
+import { usePublicSettings } from '@/hooks/usePublicSettings';
 
-const LOGO_URL = "https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png";
+const DEFAULT_LOGO_URL = "https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png";
 
 export default function Footer() {
+  const { siteName, contactEmail, contactPhone, address, logoUrl } = usePublicSettings();
+  const logo = logoUrl || DEFAULT_LOGO_URL;
   return (
     <footer className="bg-brown-900 text-cream-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
@@ -13,9 +16,9 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img src={LOGO_URL} alt="CMSR" className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
+              <img src={logo} alt={siteName} className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
               <div>
-                <div className="font-heading font-bold text-xl text-white">CMSR</div>
+                <div className="font-heading font-bold text-xl text-white">{siteName}</div>
                 <BrandTagline className="text-xs text-brown-400 [&_span:first-child]:text-brown-400 [&_span:last-child]:text-primary" />
               </div>
             </div>
@@ -93,15 +96,15 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-cream-200 mt-0.5 flex-shrink-0" />
-                <span className="text-brown-400">India — Nationwide Coverage</span>
+                <span className="text-brown-400">{address}</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-cream-200 flex-shrink-0" />
-                <a href="mailto:contact@CMSR.in" className="hover:text-white transition-colors">contact@CMSR.in</a>
+                <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors">{contactEmail}</a>
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-cream-200 flex-shrink-0" />
-                <a href="tel:+919999999999" className="hover:text-white transition-colors">+91 99999 99999</a>
+                <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">{contactPhone}</a>
               </li>
             </ul>
             <div className="mt-6">
@@ -116,7 +119,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brown-400">
-          <p>© {new Date().getFullYear()} CMSR — Village Development & School Empowerment Platform. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {siteName} — Village Development & School Empowerment Platform. All rights reserved.</p>
           <div className="flex items-center gap-1">
             <span>Made with</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />

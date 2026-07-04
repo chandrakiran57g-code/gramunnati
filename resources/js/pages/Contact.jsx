@@ -7,8 +7,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { usePublicSettings } from '@/hooks/usePublicSettings';
 
 export default function Contact() {
+  const { contactEmail, contactPhone, address } = usePublicSettings();
   const [form, setForm] = useState({ name: '', email: '', mobile: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -45,9 +47,9 @@ export default function Contact() {
           <div className="lg:col-span-2 space-y-5">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               {[
-                { icon: MapPin, title: 'Address', value: 'India — Nationwide Coverage' },
-                { icon: Mail, title: 'Email', value: 'contact@CMSR.in' },
-                { icon: Phone, title: 'Phone', value: '+91 99999 99999' },
+                { icon: MapPin, title: 'Address', value: address },
+                { icon: Mail, title: 'Email', value: contactEmail },
+                { icon: Phone, title: 'Phone', value: contactPhone },
               ].map((item, i) => (
                 <div key={item.title} className="flex items-start gap-4 bg-white rounded-xl border border-border p-5">
                   <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">

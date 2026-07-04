@@ -10,14 +10,15 @@ import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useVillageOptions, slugifyName } from '@/hooks/useGeoPickers';
+import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 
 const EMPTY_FORM = {
-  school_name: '', slug: '', village_id: '', school_type: 'government', udise_code: '', principal_name: '', contact_number: '',
+  school_name: '', school_name_te: '', slug: '', village_id: '', school_type: 'government', udise_code: '', principal_name: '', contact_number: '',
   email: '', website: '', student_count: 0, teacher_count: 0, classroom_count: 0,
   library_available: false, computer_lab_available: false, playground_available: false,
   drinking_water_available: false, toilet_available: false, electricity_available: false,
   digital_classroom_available: false, boundary_wall_available: false,
-  cover_image: '', logo: '', short_description: '', is_featured: false, is_active: true,
+  cover_image: '', logo: '', short_description: '', short_description_te: '', is_featured: false, is_active: true,
 };
 
 export default function AdminSchools() {
@@ -47,6 +48,8 @@ export default function AdminSchools() {
     if (!form.village_id) return toast.error('Select a village');
     const payload = {
       school_name: form.school_name,
+      school_name_te: form.school_name_te || null,
+      short_description_te: form.short_description_te || null,
       slug: form.slug || slugifyName(form.school_name),
       village_id: Number(form.village_id),
       school_type: form.school_type,
@@ -170,10 +173,8 @@ export default function AdminSchools() {
               <button onClick={() => setShowForm(false)} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-5 h-5" /></button>
             </div>
             <form onSubmit={handleSave} className="p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div><Label>School Name *</Label><Input value={form.school_name} onChange={e => setForm(f => ({...f, school_name: e.target.value}))} required className="mt-1" /></div>
-                <div><Label>Slug</Label><Input value={form.slug} onChange={e => setForm(f => ({...f, slug: e.target.value}))} placeholder="auto-generated" className="mt-1" /></div>
-              </div>
+              <BilingualInput name="school_name" label="School Name" form={form} setForm={setForm} required />
+              <div><Label>Slug</Label><Input value={form.slug} onChange={e => setForm(f => ({...f, slug: e.target.value}))} placeholder="auto-generated" className="mt-1" /></div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Village *</Label>
@@ -197,7 +198,7 @@ export default function AdminSchools() {
                 <div><Label>Principal Name</Label><Input value={form.principal_name} onChange={e => setForm(f => ({...f, principal_name: e.target.value}))} className="mt-1" /></div>
                 <div><Label>UDISE Code</Label><Input value={form.udise_code} onChange={e => setForm(f => ({...f, udise_code: e.target.value}))} className="mt-1" /></div>
               </div>
-              <div><Label>Short Description</Label><Textarea value={form.short_description} onChange={e => setForm(f => ({...f, short_description: e.target.value}))} className="mt-1 h-20" /></div>
+              <BilingualTextarea name="short_description" label="Short Description" form={form} setForm={setForm} rows={3} />
               <div><Label>Cover Image URL</Label><Input value={form.cover_image} onChange={e => setForm(f => ({...f, cover_image: e.target.value}))} className="mt-1" /></div>
               <div>
                 <Label className="mb-3 block font-semibold">Infrastructure</Label>

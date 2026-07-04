@@ -4,25 +4,27 @@ import { cmsService } from '@/api/cms';
 import { Newspaper, Calendar, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 const CATEGORIES = ['All', 'general', 'village', 'school', 'project', 'event'];
 
-const fallbackNews = [
-  { id: '1', title: 'CMSR Launches Mega Tree Plantation Drive in Telangana', summary: 'Over 10,000 trees to be planted across 50 villages in Nalgonda and Warangal districts this season.', featured_image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=80', category: 'village', published_at: '2026-06-01' },
-  { id: '2', title: 'Digital Classrooms Installed in 12 Government Schools', summary: 'Thanks to donor support, 12 government schools across Andhra Pradesh now have fully equipped digital classrooms.', featured_image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80', category: 'school', published_at: '2026-05-25' },
-];
-
-function formatNewsItem(item) {
+function formatNewsItem(item, lang = 'en') {
   const published = item.published_at || item.created_at;
+  const title = localize(item, 'title', lang);
+  const content = localize(item, 'content', lang);
+  const summary = localize(item, 'summary', lang);
   return {
     ...item,
-    summary: item.summary || item.content?.slice(0, 180) || '',
+    title,
+    summary: summary || content?.slice(0, 180) || '',
     published_at: published ? new Date(published).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
     category: item.category || 'general',
   };
 }
 
 export default function News() {
+  const { lang } = useLanguage();
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('All');
@@ -31,12 +33,11 @@ export default function News() {
   useEffect(() => {
     cmsService.listNews({ limit: 50, publishedOnly: true })
       .then(({ data }) => {
-        const items = (data || []).map(formatNewsItem);
-        setNews(items.length ? items : fallbackNews.map(formatNewsItem));
+        setNews((data || []).map((item) => formatNewsItem(item, lang)));
       })
-      .catch(() => setNews(fallbackNews.map(formatNewsItem)))
+      .catch(() => setNews([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [lang]);
 
   const displayed = news.filter((n) => {
     const matchCat = activeCategory === 'All' || n.category === activeCategory;

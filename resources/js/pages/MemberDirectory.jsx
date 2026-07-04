@@ -5,7 +5,11 @@ import { Users, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
 function formatArea(user) {
-  const parts = [user.village_name, user.district, user.state].filter(Boolean);
+  const parts = [
+    user.village_name,
+    user.districts?.name || user.district,
+    user.states?.name || user.state,
+  ].filter(Boolean);
   return parts.length > 0 ? parts.join(', ') : '—';
 }
 
@@ -28,6 +32,9 @@ export default function MemberDirectory() {
           memberNo: index + 1,
           id: u.id,
           name: u.full_name || 'Member',
+          joined: (u.created_at || u.created_date)
+            ? new Date(u.created_at || u.created_date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+            : '—',
           area: formatArea(u),
           profession: u.occupation || u.profession || '',
         }));
@@ -92,6 +99,7 @@ export default function MemberDirectory() {
                   <tr className="bg-cream-100 border-b border-brown-300">
                     <th className="text-left py-3.5 px-4 font-semibold text-brown-900 w-24">S.No.</th>
                     <th className="text-left py-3.5 px-4 font-semibold text-brown-900">Name</th>
+                    <th className="text-left py-3.5 px-4 font-semibold text-brown-900 hidden sm:table-cell">Joined</th>
                     <th className="text-left py-3.5 px-4 font-semibold text-brown-900">Area</th>
                     <th className="text-left py-3.5 px-4 font-semibold text-brown-900 hidden sm:table-cell">Profession</th>
                   </tr>
@@ -102,6 +110,7 @@ export default function MemberDirectory() {
                       <tr key={i} className="border-b border-cream-200 animate-pulse">
                         <td className="py-4 px-4"><div className="h-4 bg-cream-200 rounded w-8" /></td>
                         <td className="py-4 px-4"><div className="h-4 bg-cream-200 rounded w-32" /></td>
+                        <td className="py-4 px-4 hidden sm:table-cell"><div className="h-4 bg-cream-200 rounded w-20" /></td>
                         <td className="py-4 px-4"><div className="h-4 bg-cream-200 rounded w-40" /></td>
                         <td className="py-4 px-4 hidden sm:table-cell"><div className="h-4 bg-cream-200 rounded w-24" /></td>
                       </tr>
@@ -120,6 +129,7 @@ export default function MemberDirectory() {
                           {String(member.memberNo).padStart(4, '0')}
                         </td>
                         <td className="py-3.5 px-4 font-medium text-foreground">{member.name}</td>
+                        <td className="py-3.5 px-4 text-muted-foreground hidden sm:table-cell">{member.joined}</td>
                         <td className="py-3.5 px-4 text-muted-foreground">{member.area}</td>
                         <td className="py-3.5 px-4 text-muted-foreground hidden sm:table-cell">
                           {member.profession || '—'}

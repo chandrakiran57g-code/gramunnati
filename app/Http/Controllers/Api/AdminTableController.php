@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class AdminTableController extends Controller
 {
@@ -88,6 +89,11 @@ class AdminTableController extends Controller
         $model = $this->resolveModel($table);
         $query = $model::query();
 
+        // Never expose payment secrets / bank details to unauthenticated callers.
+        if ($table === 'settings' && ! $request->user()) {
+            $query->whereNotIn('key', ['rzp_key', 'rzp_secret', 'bank_name', 'bank_account', 'ifsc']);
+        }
+
         if ($with = self::WITH[$table] ?? null) {
             $query->with($with);
         }
@@ -141,7 +147,7 @@ class AdminTableController extends Controller
         }
 
         $model = $this->resolveModel($table);
-        $payload = $request->except(['filters', 'order', 'limit', 'offset']);
+        $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
         $row = $model::query()->create($payload);
 
         return response()->json(['data' => $row->fresh(), 'error' => null], 201);
@@ -151,9 +157,27 @@ class AdminTableController extends Controller
     {
         $model = $this->resolveModel($table);
         $row = $model::query()->findOrFail($id);
-        $row->fill($request->except(['filters', 'order', 'limit', 'offset']))->save();
+        $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
+        $row->fill($payload)->save();
 
         return response()->json(['data' => $row->fresh(), 'error' => null]);
+    }
+
+    /**
+     * Keep only keys that are real columns on the table so admin forms with
+     * extra/UI-only fields never crash with "Unknown column".
+     *
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function columnsOnly(string $table, array $payload): array
+    {
+        $columns = Schema::getColumnListing($table);
+        if (empty($columns)) {
+            return $payload;
+        }
+
+        return array_intersect_key($payload, array_flip($columns));
     }
 
     public function destroy(string $table, int $id): JsonResponse
@@ -263,6 +287,15 @@ class AdminTableController extends Controller
                         'role_id' => $r->id,
                         'roles' => ['id' => $r->id, 'name' => $r->name],
                     ]));
+                }
+                if ($p->relationLoaded('state') && $p->state) {
+                    $p->setRelation('states', $p->state);
+                }
+                if ($p->relationLoaded('district') && $p->district) {
+                    $p->setRelation('districts', $p->district);
+                }
+                if ($p->relationLoaded('village') && $p->village) {
+                    $p->setAttribute('village_name', $p->village->village_name);
                 }
             });
         }

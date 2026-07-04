@@ -16,7 +16,7 @@ export default function PartnerDetail() {
 
   useEffect(() => {
     if (!slug) return;
-    base44.entities.Partner.filter({ slug, status: 'active' }, undefined, 1)
+    base44.entities.Partner.filter({ slug, is_active: true }, undefined, 1)
       .then(r => setPartner(r[0] || null))
       .catch(() => {}).finally(() => setLoading(false));
   }, [slug]);

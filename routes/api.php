@@ -39,6 +39,7 @@ Route::prefix('geo')->group(function () {
 
 Route::get('/home/page-data', [HomeController::class, 'pageData']);
 Route::get('/home/stats', [HomeController::class, 'stats']);
+Route::get('/home/impact', [HomeController::class, 'impact']);
 
 Route::prefix('villages')->group(function () {
     Route::get('/', [VillageController::class, 'index']);

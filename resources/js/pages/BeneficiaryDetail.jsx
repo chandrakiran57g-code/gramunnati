@@ -16,7 +16,7 @@ export default function BeneficiaryDetail() {
 
   useEffect(() => {
     if (!slug) return;
-    base44.entities.Beneficiary.filter({ slug, status: 'active' }, undefined, 1)
+    base44.entities.Beneficiary.filter({ slug, is_active: true }, undefined, 1)
       .then(r => setBeneficiary(r[0] || null))
       .catch(() => {}).finally(() => setLoading(false));
   }, [slug]);

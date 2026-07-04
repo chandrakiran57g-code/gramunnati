@@ -10,6 +10,7 @@ export default function AdminProjectCategories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState('');
+  const [nameTe, setNameTe] = useState('');
   const [saving, setSaving] = useState(false);
 
   const load = () => {
@@ -27,8 +28,9 @@ export default function AdminProjectCategories() {
     if (!name.trim()) return;
     setSaving(true);
     try {
-      await adminService.upsertProjectCategory({ name: name.trim(), slug: name.trim().toLowerCase().replace(/\s+/g, '-') });
+      await adminService.upsertProjectCategory({ name: name.trim(), name_te: nameTe.trim() || null, slug: name.trim().toLowerCase().replace(/\s+/g, '-') });
       setName('');
+      setNameTe('');
       load();
     } finally {
       setSaving(false);
@@ -47,8 +49,9 @@ export default function AdminProjectCategories() {
         <AdminPageHeader title="Project Categories" subtitle="Organize projects by type" gradient="bg-projects text-white" />
       </HeroScrollSection>
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
-        <form onSubmit={handleAdd} className="bg-white rounded-2xl border border-border p-5 flex gap-3">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category name" className="rounded-xl flex-1" />
+        <form onSubmit={handleAdd} className="bg-white rounded-2xl border border-border p-5 flex flex-col sm:flex-row gap-3">
+          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Category name (English)" className="rounded-xl flex-1" />
+          <Input value={nameTe} onChange={(e) => setNameTe(e.target.value)} placeholder="వర్గం పేరు (తెలుగు)" className="rounded-xl flex-1 font-[system-ui]" />
           <Button type="submit" disabled={saving} className="rounded-xl"><Plus className="w-4 h-4 mr-1" />Add</Button>
         </form>
         <div className="bg-white rounded-2xl border border-border overflow-hidden">

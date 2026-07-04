@@ -139,7 +139,16 @@ class CmsController extends Controller
 
     public function settings(): JsonResponse
     {
-        $rows = Setting::query()->get(['key', 'value']);
+        // Only expose non-sensitive keys publicly (never payment secrets/bank details).
+        $publicKeys = [
+            'site_name', 'site_name_te', 'contact_email', 'contact_phone',
+            'address', 'address_te', 'logo_url', 'favicon_url',
+            'meta_title', 'meta_title_te', 'meta_desc', 'meta_desc_te',
+            'meta_keywords', 'ga_id', 'cms_nav_groups', 'nav_config',
+            'upi_id',
+        ];
+
+        $rows = Setting::query()->whereIn('key', $publicKeys)->get(['key', 'value']);
         $out = [];
         foreach ($rows as $row) {
             $decoded = json_decode($row->value, true);

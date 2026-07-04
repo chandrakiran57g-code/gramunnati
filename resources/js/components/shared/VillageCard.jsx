@@ -3,8 +3,13 @@ import { motion } from 'framer-motion';
 import { MapPin, School, FolderOpen, Heart, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SafeImage from '@/components/shared/SafeImage';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 export default function VillageCard({ village, index = 0 }) {
+  const { lang } = useLanguage();
+  const villageName = localize(village, 'village_name', lang);
+  const shortDescription = localize(village, 'short_description', lang);
   const slug = village.slug || village.village_name?.toLowerCase().replace(/\s+/g, '-') || village.id;
 
   return (
@@ -18,7 +23,7 @@ export default function VillageCard({ village, index = 0 }) {
       <div className="relative h-44 overflow-hidden">
         <SafeImage
           src={village.cover_image}
-          alt={village.village_name}
+          alt={villageName}
           fallbackIndex={index}
           width={600}
           className="cs-hover-img w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -28,7 +33,7 @@ export default function VillageCard({ village, index = 0 }) {
           <span className="absolute top-3 left-3 bg-brown-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">Featured</span>
         )}
         <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end">
-          <h3 className="font-heading font-bold text-white text-lg leading-tight">{village.village_name}</h3>
+          <h3 className="font-heading font-bold text-white text-lg leading-tight">{villageName}</h3>
           <div className="flex items-center gap-1 bg-service-village/90 text-white text-xs px-2 py-1 rounded-full">
             <MapPin className="w-3 h-3" />
             {village.state}
@@ -42,8 +47,8 @@ export default function VillageCard({ village, index = 0 }) {
           <span>{village.district}{village.mandal ? `, ${village.mandal}` : ''}</span>
         </div>
 
-        {village.short_description && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{village.short_description}</p>
+        {shortDescription && (
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{shortDescription}</p>
         )}
 
         <div className="grid grid-cols-3 gap-2 mb-4">

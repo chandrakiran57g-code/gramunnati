@@ -84,10 +84,10 @@ export default function AdminMemberDirectory() {
                 <tr className="border-b bg-muted/30">
                   <th className="text-left px-4 py-3 font-semibold w-16">S.No</th>
                   <th className="text-left px-4 py-3 font-semibold">Name</th>
+                  <th className="text-left px-4 py-3 font-semibold">Joined</th>
                   <th className="text-left px-4 py-3 font-semibold">Area</th>
                   <th className="text-left px-4 py-3 font-semibold">Profession</th>
                   <th className="text-left px-4 py-3 font-semibold">Mobile</th>
-                  <th className="text-left px-4 py-3 font-semibold">Joined</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -95,10 +95,10 @@ export default function AdminMemberDirectory() {
                   <motion.tr key={m.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.015 }} className="hover:bg-muted/20">
                     <td className="px-4 py-3 text-muted-foreground">{m.memberNo}</td>
                     <td className="px-4 py-3 font-medium">{m.name}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{m.joined}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.area}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.profession}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.mobile}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{m.joined}</td>
                   </motion.tr>
                 ))}
               </tbody>

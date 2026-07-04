@@ -5,24 +5,18 @@ import { Quote, MapPin, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
-
-const fallbackStories = [
-  { id: '1', title: 'Digital Classroom Transforms School in Kondapur', summary: 'With CMSR support, Government High School in Kondapur now has a state-of-the-art digital classroom, benefiting 320 students.', featured_image: 'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=600&q=80', village_name: 'Kondapur', is_featured: true },
-  { id: '2', title: 'Water Harvest Project Saves Farming Season', summary: 'A check dam built through CMSR donations saved the entire kharif season for 85 families in Nalgonda.', featured_image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80', village_name: 'Nalgonda', is_featured: true },
-  { id: '3', title: 'Women SHG Achieves Financial Independence', summary: '45 women in Warangal\'s Rajapet village now run their own micro-enterprises thanks to CMSR skill training.', featured_image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=600&q=80', village_name: 'Warangal', is_featured: false },
-  { id: '4', title: '5,000 Trees Planted in a Single Day', summary: 'Record-breaking plantation drive across 12 villages in Chittoor district brings green cover to arid land.', featured_image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=80', village_name: 'Chittoor', is_featured: false },
-  { id: '5', title: 'First Computer Lab in Rampur Village School', summary: '200 students experience computers for the first time. The digital divide is being bridged one school at a time.', featured_image: 'https://images.unsplash.com/photo-1509392069948-8b7b3d3d2d3c?w=600&q=80', village_name: 'Rampur', is_featured: true },
-  { id: '6', title: 'Farmer Collective Doubles Income Through FPO', summary: 'CMSR helped 120 farmers in Kurnool form a Farmer Producer Organization, doubling their collective income.', featured_image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=600&q=80', village_name: 'Kurnool', is_featured: false },
-];
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 export default function Stories() {
+  const { lang } = useLanguage();
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     base44.entities.SuccessStory.list('-created_date', 20)
-      .then(data => setStories(data.length > 0 ? data : fallbackStories))
-      .catch(() => setStories(fallbackStories))
+      .then(data => setStories(Array.isArray(data) ? data : []))
+      .catch(() => setStories([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -75,8 +69,8 @@ export default function Stories() {
                   )}
                 </div>
                 <div className="p-5">
-                  <h3 className="font-heading font-bold text-base mb-2 leading-tight line-clamp-2">{story.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{story.summary}</p>
+                  <h3 className="font-heading font-bold text-base mb-2 leading-tight line-clamp-2">{localize(story, 'title', lang)}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed line-clamp-3">{localize(story, 'summary', lang)}</p>
                   <div className="mt-4 flex items-center gap-1 text-primary font-medium text-sm group-hover:gap-2 transition-all">
                     Read Story <ArrowRight className="w-4 h-4" />
                   </div>
@@ -84,6 +78,9 @@ export default function Stories() {
               </motion.div>
             ))}
           </div>
+        )}
+        {!loading && stories.length === 0 && (
+          <div className="text-center py-20"><p className="text-muted-foreground">Success stories will appear here soon.</p></div>
         )}
       </div>
     </div>

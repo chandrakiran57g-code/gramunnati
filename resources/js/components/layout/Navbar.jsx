@@ -9,6 +9,7 @@ import LanguageToggle from '@/components/layout/LanguageToggle';
 import BrandTagline from '@/components/brand/BrandTagline';
 import { usePlatformNavData } from '@/hooks/usePlatformNavData';
 import { FALLBACK_ABOUT_KEYS, FALLBACK_PROGRAM_ITEMS, LOGO_URL } from '@/lib/navFallbacks';
+import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { localize } from '@/lib/localizedContent';
 
 
@@ -16,6 +17,8 @@ import { localize } from '@/lib/localizedContent';
 export default function Navbar() {
 
   const { t, lang } = useLanguage();
+  const { siteName, siteNameTe, logoUrl } = usePublicSettings();
+  const brandName = (lang === 'te' && siteNameTe) ? siteNameTe : siteName;
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -165,9 +168,9 @@ export default function Navbar() {
 
   const brandBlock = (
     <>
-      <img src={LOGO_URL} alt="CMSR Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
+      <img src={logoUrl || LOGO_URL} alt={`${brandName} Logo`} className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
       <div className="hidden lg:block leading-tight min-w-0">
-        <div className="font-heading font-bold text-sm xl:text-base text-foreground">CMSR</div>
+        <div className="font-heading font-bold text-sm xl:text-base text-foreground">{brandName}</div>
         <BrandTagline className="text-[9px] xl:text-[10px] 2xl:text-xs max-w-[10.5rem] xl:max-w-[12rem] 2xl:max-w-[14rem]" />
       </div>
     </>
