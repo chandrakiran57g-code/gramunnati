@@ -68,6 +68,16 @@ class QueryBuilder {
     return this;
   }
 
+  in(col, vals) {
+    this.filters.push({ column: col, op: 'in', value: vals });
+    return this;
+  }
+
+  ilike(col, val) {
+    this.filters.push({ column: col, op: 'like', value: val });
+    return this;
+  }
+
   or(expr) {
     this.orFilters = expr;
     return this;
