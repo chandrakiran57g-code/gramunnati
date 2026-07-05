@@ -205,8 +205,10 @@ export const cmsService = {
         key,
         value: typeof value === 'object' ? JSON.stringify(value) : String(value ?? ''),
       }));
-      const { error } = await supabase.from('settings').upsert(rows, { onConflict: 'key' });
-      if (error) throw error;
+      for (const row of rows) {
+        const { error } = await supabase.from('settings').upsert(row, { onConflict: 'key' });
+        if (error) throw error;
+      }
     });
   },
 
@@ -276,13 +278,14 @@ export const cmsService = {
   },
 
   // ─── Success Stories ───────────────────
-  async listStories({ limit = 20, offset = 0, featured } = {}) {
+  async listStories({ limit = 20, offset = 0, featured, publishedOnly = false } = {}) {
     let query = supabase
       .from('success_stories')
       .select('*, villages(village_name), schools(school_name)', { count: 'exact' })
       .is('deleted_at', null);
 
     if (featured) query = query.eq('is_featured', true);
+    if (publishedOnly) query = query.eq('status', 'published');
 
     query = query.order('published_at', { ascending: false }).range(offset, offset + limit - 1);
 

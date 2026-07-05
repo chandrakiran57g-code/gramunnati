@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
 import { cmsService } from '@/api/cms';
 import { supabase } from '@/api/supabaseClient';
+import { adminDbMutation } from '@/lib/adminDb';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { Button } from '@/components/ui/button';
@@ -16,14 +16,21 @@ import { Loader2, Plus, Pencil, Search, UserPlus } from 'lucide-react';
 
 async function generateVolunteerCode() {
   const year = new Date().getFullYear();
-  const start = `${year}-01-01T00:00:00`;
-  const { count, error } = await supabase
+  const prefix = String(year);
+  const { data, error } = await supabase
     .from('volunteers')
-    .select('*', { count: 'exact', head: true })
-    .gte('created_at', start);
+    .select('volunteer_code')
+    .like('volunteer_code', `${prefix}%`)
+    .order('volunteer_code', { ascending: false })
+    .limit(1);
   if (error) throw error;
-  const order = (count || 0) + 1;
-  return `${year}${order}`;
+  let nextSeq = 1;
+  if (data?.[0]?.volunteer_code?.startsWith(prefix)) {
+    const suffix = data[0].volunteer_code.slice(prefix.length);
+    const num = parseInt(suffix, 10);
+    if (!Number.isNaN(num)) nextSeq = num + 1;
+  }
+  return `${prefix}${String(nextSeq).padStart(2, '0')}`;
 }
 
 const emptyForm = () => ({
@@ -55,7 +62,7 @@ export default function AdminVolunteers() {
   const load = async () => {
     setLoading(true);
     const [vols, progs] = await Promise.all([
-      base44.entities.Volunteer.list('-created_date', 200).catch(() => []),
+      supabase.from('volunteers').select('*').order('created_at', { ascending: false }).limit(200).then(({ data }) => data || []).catch(() => []),
       cmsService.listPrograms().catch(() => []),
     ]);
     setVolunteers(vols || []);
@@ -90,11 +97,17 @@ export default function AdminVolunteers() {
         source: 'admin',
       };
       if (editId) {
-        await base44.entities.Volunteer.update(editId, payload);
+        await adminDbMutation(async () => {
+          const { error } = await supabase.from('volunteers').update(payload).eq('id', editId);
+          if (error) throw error;
+        });
         toast.success('Volunteer updated');
       } else {
         const volunteer_code = await generateVolunteerCode();
-        await base44.entities.Volunteer.create({ ...payload, volunteer_code });
+        await adminDbMutation(async () => {
+          const { error } = await supabase.from('volunteers').insert({ ...payload, volunteer_code });
+          if (error) throw error;
+        });
         toast.success(`Volunteer created — ID ${volunteer_code}`);
       }
       setShowForm(false);

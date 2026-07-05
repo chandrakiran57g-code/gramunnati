@@ -9,11 +9,25 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const COLORS = ['#2D6A4F', '#2563EB', '#7C3AED', '#F59E0B', '#22C55E', '#EF4444', '#06B6D4'];
 
+function downloadCsv(filename, headers, rows) {
+  const csv = [headers, ...rows]
+    .map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(','))
+    .join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function AdminReports() {
   const [stats, setStats] = useState({ villages: 0, schools: 0, projects: 0, donations: 0, volunteers: 0, totalDonated: 0 });
   const [chartData, setChartData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState('');
 
   useEffect(() => {
     Promise.all([
@@ -53,6 +67,83 @@ export default function AdminReports() {
     }).catch(() => setLoading(false));
   }, []);
 
+  const exportSummaryCsv = () => {
+    downloadCsv('platform-summary.csv', ['Metric', 'Value'], [
+      ['Villages', stats.villages],
+      ['Schools', stats.schools],
+      ['Projects', stats.projects],
+      ['Donations (count)', stats.donations],
+      ['Volunteers', stats.volunteers],
+      ['Total Donated (₹)', stats.totalDonated],
+    ]);
+  };
+
+  const generateVillageReport = async () => {
+    setGenerating('village');
+    try {
+      const { data } = await supabase
+        .from('villages')
+        .select('village_name, slug, population, is_active, created_at, states(name), districts(name)')
+        .is('deleted_at', null)
+        .order('village_name');
+      downloadCsv('village-report.csv', ['Village', 'Slug', 'State', 'District', 'Population', 'Active', 'Created'], (data || []).map((v) => [
+        v.village_name,
+        v.slug,
+        v.states?.name || '',
+        v.districts?.name || '',
+        v.population ?? '',
+        v.is_active !== false ? 'yes' : 'no',
+        v.created_at || '',
+      ]));
+    } finally {
+      setGenerating('');
+    }
+  };
+
+  const generateDonationReport = async () => {
+    setGenerating('donation');
+    try {
+      const { data } = await supabase
+        .from('donations')
+        .select('donor_name, email, amount, payment_status, target_type, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5000);
+      downloadCsv('donation-summary.csv', ['Donor', 'Email', 'Amount', 'Status', 'Target', 'Date'], (data || []).map((d) => [
+        d.donor_name,
+        d.email || '',
+        d.amount,
+        d.payment_status,
+        d.target_type,
+        d.created_at || '',
+      ]));
+    } finally {
+      setGenerating('');
+    }
+  };
+
+  const generateVolunteerReport = async () => {
+    setGenerating('volunteer');
+    try {
+      const { data } = await supabase
+        .from('volunteers')
+        .select('volunteer_code, full_name, email, mobile, state, district, status, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5000);
+      downloadCsv('volunteer-report.csv', ['ID', 'Name', 'Email', 'Mobile', 'State', 'District', 'Status', 'Joined'], (data || []).map((v) => [
+        v.volunteer_code,
+        v.full_name,
+        v.email || '',
+        v.mobile || '',
+        v.state || '',
+        v.district || '',
+        v.status,
+        v.created_at || '',
+      ]));
+    } finally {
+      setGenerating('');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="compact">
@@ -62,7 +153,7 @@ export default function AdminReports() {
               <h1 className="font-heading text-3xl font-bold text-white">Reports & Analytics</h1>
               <p className="text-white/70 text-sm mt-1">Exportable summaries and platform insights</p>
             </div>
-            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20">
+            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={exportSummaryCsv}>
               <Download className="w-4 h-4 mr-2" />Export CSV
             </Button>
           </div>
@@ -119,15 +210,17 @@ export default function AdminReports() {
 
         <div className="grid sm:grid-cols-3 gap-4">
           {[
-            { title: 'Village Report', desc: 'Detailed village-wise impact and development summary', icon: '🏘️' },
-            { title: 'Donation Summary', desc: 'Monthly donation reports with donor breakdown', icon: '💰' },
-            { title: 'Volunteer Report', desc: 'Volunteer hours, projects, and retention metrics', icon: '🤝' },
+            { title: 'Village Report', desc: 'Detailed village-wise impact and development summary', icon: '🏘️', key: 'village', action: generateVillageReport },
+            { title: 'Donation Summary', desc: 'Monthly donation reports with donor breakdown', icon: '💰', key: 'donation', action: generateDonationReport },
+            { title: 'Volunteer Report', desc: 'Volunteer hours, projects, and retention metrics', icon: '🤝', key: 'volunteer', action: generateVolunteerReport },
           ].map(r => (
             <div key={r.title} className="bg-white rounded-xl border border-border p-5 hover:shadow-md transition-all">
               <div className="text-2xl mb-2">{r.icon}</div>
               <h4 className="font-semibold text-sm mb-1">{r.title}</h4>
               <p className="text-xs text-muted-foreground mb-3">{r.desc}</p>
-              <Button size="sm" variant="outline" className="text-xs"><Download className="w-3 h-3 mr-1" />Generate</Button>
+              <Button size="sm" variant="outline" className="text-xs" onClick={r.action} disabled={generating === r.key}>
+                <Download className="w-3 h-3 mr-1" />{generating === r.key ? 'Generating…' : 'Generate'}
+              </Button>
             </div>
           ))}
         </div>

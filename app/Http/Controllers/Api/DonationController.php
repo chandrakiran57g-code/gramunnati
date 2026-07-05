@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Donation;
+use App\Models\DonationReceipt;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,7 +37,25 @@ class DonationController extends Controller
 
         $donation = Donation::query()->create($data);
 
-        return response()->json($donation, 201);
+        if ($donation->payment_status === 'success') {
+            $this->ensureReceipt($donation);
+        }
+
+        return response()->json($donation->load('receipts'), 201);
+    }
+
+    private function ensureReceipt(Donation $donation): DonationReceipt
+    {
+        $number = $donation->receipt_number ?: ('RCP-'.now()->format('Y').'-'.str_pad((string) $donation->id, 5, '0', STR_PAD_LEFT));
+
+        if (! $donation->receipt_number) {
+            $donation->update(['receipt_number' => $number]);
+        }
+
+        return DonationReceipt::query()->firstOrCreate(
+            ['donation_id' => $donation->id],
+            ['receipt_number' => $number]
+        );
     }
 
     public function mine(Request $request): JsonResponse

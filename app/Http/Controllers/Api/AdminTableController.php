@@ -62,6 +62,7 @@ class AdminTableController extends Controller
         'beneficiaries' => ['village:id,village_name,slug', 'school:id,school_name,slug'],
         'success_stories' => ['village:id,village_name,slug', 'school:id,school_name,slug'],
         'donations' => ['village:id,village_name', 'school:id,school_name', 'project:id,project_name', 'receipts'],
+        'donation_receipts' => ['donation:id,amount,donor_name,payment_status,created_at,email'],
         'volunteers' => ['user.profile'],
         'profiles' => ['state:id,name', 'district:id,name', 'mandal:id,name', 'village:id,village_name', 'user.roles'],
     ];
@@ -153,7 +154,19 @@ class AdminTableController extends Controller
         $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
         $row = $model::query()->create($payload);
 
-        return response()->json(['data' => $row->fresh(), 'error' => null], 201);
+        if ($table === 'donations' && ($row->payment_status ?? '') === 'success') {
+            $number = $row->receipt_number ?: ('RCP-'.now()->format('Y').'-'.str_pad((string) $row->id, 5, '0', STR_PAD_LEFT));
+            if (! $row->receipt_number) {
+                $row->update(['receipt_number' => $number]);
+            }
+            \App\Models\DonationReceipt::query()->firstOrCreate(
+                ['donation_id' => $row->id],
+                ['receipt_number' => $number]
+            );
+            $row = $row->fresh(['receipts']);
+        }
+
+        return response()->json(['data' => $row, 'error' => null], 201);
     }
 
     public function update(Request $request, string $table, int $id): JsonResponse
@@ -274,6 +287,26 @@ class AdminTableController extends Controller
             $rows->each(function ($v) {
                 if ($v->relationLoaded('user') && $v->user?->profile) {
                     $v->setRelation('profiles', $v->user->profile);
+                }
+            });
+        }
+        if ($table === 'donations') {
+            $rows->each(function ($d) {
+                if ($d->relationLoaded('village') && $d->village) {
+                    $d->setAttribute('village_name', $d->village->village_name);
+                }
+                if ($d->relationLoaded('school') && $d->school) {
+                    $d->setAttribute('school_name', $d->school->school_name);
+                }
+                if ($d->relationLoaded('project') && $d->project) {
+                    $d->setAttribute('project_name', $d->project->project_name);
+                }
+            });
+        }
+        if ($table === 'donation_receipts') {
+            $rows->each(function ($r) {
+                if ($r->relationLoaded('donation') && $r->donation) {
+                    $r->setAttribute('donations', $r->donation);
                 }
             });
         }

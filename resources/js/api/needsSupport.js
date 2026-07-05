@@ -2,11 +2,11 @@ import { supabase } from './supabaseClient';
 import { adminDbMutation } from '@/lib/adminDb';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { parseSettingsValue, serializeSettingsValue } from '@/lib/settingsStore';
-import { PROGRAM_CATEGORY_OPTIONS } from '@/lib/activeWorkTemplates';
+import { PROGRAM_CATEGORY_OPTIONS, loadProgramCategoryOptions, clearProgramCategoryCache } from '@/lib/programCategoryOptions';
 
 const STORE_KEY = 'needs_support_store';
 
-export { PROGRAM_CATEGORY_OPTIONS };
+export { PROGRAM_CATEGORY_OPTIONS, loadProgramCategoryOptions, clearProgramCategoryCache };
 
 function slugify(text) {
   return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');

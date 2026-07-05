@@ -14,6 +14,9 @@ import AdminUrlField from '@/components/admin/AdminUrlField';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+import { clearProgramCategoryCache } from '@/lib/programCategoryOptions';
+import { Link } from 'react-router-dom';
+import { adminRoutes } from '@/lib/adminRoutes';
 
 const EMPTY = { title: '', title_te: '', slug: '', description: '', description_te: '', icon: '', cover_image: '', status: 'active', sort_order: 0 };
 
@@ -44,6 +47,7 @@ export default function AdminPrograms() {
     try {
       await cmsService.deleteProgram(id);
       toast.success('Program deleted');
+      clearProgramCategoryCache();
       notifyPlatformDataChanged({ type: 'programs' });
       load();
     } catch (err) {
@@ -66,6 +70,7 @@ export default function AdminPrograms() {
         await cmsService.createProgram(data);
         toast.success('Program created — appears in What We Do dropdown');
       }
+      clearProgramCategoryCache();
       notifyPlatformDataChanged({ type: 'programs' });
       setShowForm(false);
       setEditing(null);
@@ -80,14 +85,19 @@ export default function AdminPrograms() {
 
   return (
     <AdminShell
-      title="What We Do"
+      title="What We Do — Cards"
       section={ADMIN_SECTIONS.programs.label}
-      description={ADMIN_SECTIONS.programs.description}
-      breadcrumbs={[{ label: 'Navbar Manager' }, { label: 'What We Do' }]}
+      description="Program cards shown on the public What We Do page. Use Detail Pages to build Learn More content."
+      breadcrumbs={[{ label: 'Navbar Manager' }, { label: 'What We Do' }, { label: 'Cards' }]}
       actions={
-        <Button onClick={() => { setEditing(null); setForm(EMPTY); setShowForm(true); }} className="brand-gradient border-0 text-white">
-          <Plus className="mr-2 h-4 w-4" />Add Program
-        </Button>
+        <div className="flex gap-2">
+          <Link to={adminRoutes.programPages}>
+            <Button variant="outline" size="sm">Detail Pages</Button>
+          </Link>
+          <Button onClick={() => { setEditing(null); setForm(EMPTY); setShowForm(true); }} className="brand-gradient border-0 text-white">
+            <Plus className="mr-2 h-4 w-4" />Add Program Card
+          </Button>
+        </div>
       }
     >
       {loading ? (
@@ -135,7 +145,7 @@ export default function AdminPrograms() {
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowForm(false)} aria-hidden="true" />
           <div className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white shadow-2xl">
             <div className="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-6 py-4">
-              <h3 className="font-heading text-lg font-bold">{editing ? 'Edit' : 'Add'} Program</h3>
+              <h3 className="font-heading text-lg font-bold">{editing ? 'Edit' : 'Add'} Program Card</h3>
               <button type="button" onClick={() => setShowForm(false)}><X className="h-5 w-5" /></button>
             </div>
             <form onSubmit={save} className="space-y-4 p-6">

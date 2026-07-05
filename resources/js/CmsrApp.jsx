@@ -89,6 +89,7 @@ import AdminPartners from '@/pages/admin/AdminPartners';
 import AdminHomepage from '@/pages/admin/AdminHomepage';
 import AdminBeneficiaries from '@/pages/admin/AdminBeneficiaries';
 import AdminPrograms from '@/pages/admin/AdminPrograms';
+import AdminProgramPages from '@/pages/admin/AdminProgramPages';
 import AdminStories from '@/pages/admin/AdminStories';
 import AdminEvents from '@/pages/admin/AdminEvents';
 import AdminNews from '@/pages/admin/AdminNews';
@@ -234,6 +235,7 @@ const AuthenticatedApp = () => {
           <Route path="nav/teams" element={<AdminTeams />} />
           <Route path="nav/member-list" element={<AdminMemberDirectory />} />
           <Route path="nav/programs" element={<AdminPrograms />} />
+          <Route path="nav/program-pages" element={<AdminProgramPages />} />
           <Route path="nav/partners" element={<AdminPartners />} />
           <Route path="nav/gallery" element={<AdminGallery />} />
 

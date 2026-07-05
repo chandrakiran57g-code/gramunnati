@@ -13,7 +13,7 @@ class UploadController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            'file' => 'required|file|max:10240',
+            'file' => 'required|file|max:102400',
             'bucket' => 'nullable|string|max:50',
             'path' => 'nullable|string|max:200',
         ]);

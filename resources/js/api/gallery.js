@@ -1,5 +1,6 @@
 import { cmsService } from '@/api/cms';
 import { adminDbMutation, ensureAdminDbAccess } from '@/lib/adminDb';
+import { galleryService } from '@/api/admin';
 import { supabase } from '@/api/supabaseClient';
 import { galleryCollections as defaultCollections, GALLERY_CATEGORIES } from '@/lib/galleryData';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
@@ -87,23 +88,10 @@ async function uploadGalleryFile(file, category) {
     throw new Error('File must be an image (JPEG, PNG, WebP, GIF) or video (MP4, WebM, MOV)');
   }
 
-  const ext = file.name.split('.').pop() || (isVideo ? 'mp4' : 'jpg');
-  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const folder = isVideo ? 'videos' : 'images';
-  const filePath = `${CATEGORY_TO_TYPE[category] || 'general'}/${folder}/${fileName}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from('gallery')
-    .upload(filePath, file, { cacheControl: '3600', upsert: false });
-
-  if (uploadError) {
-    throw new Error(
-      `Storage upload failed: ${uploadError.message}. Run supabase/gallery-storage.sql in Supabase SQL Editor to create the gallery bucket, or paste a direct URL instead of uploading a file.`
-    );
-  }
-
-  const { data: urlData } = supabase.storage.from('gallery').getPublicUrl(filePath);
-  return urlData.publicUrl;
+  const subPath = `${CATEGORY_TO_TYPE[category] || 'general'}/${folder}`;
+  const { url } = await galleryService.uploadFile('gallery', file, subPath);
+  return url;
 }
 
 /**

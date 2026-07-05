@@ -21,7 +21,14 @@ export const adminSidebarSections = [
       { label: 'About Us', icon: FileText, path: adminRoutes.aboutUs },
       { label: 'Teams', icon: Users, path: adminRoutes.teams },
       { label: 'Member List', icon: Users, path: adminRoutes.memberDirectory },
-      { label: 'What We Do', icon: BookOpen, path: adminRoutes.programs },
+      {
+        label: 'What We Do',
+        icon: BookOpen,
+        children: [
+          { label: 'Cards', icon: Layers, path: adminRoutes.programs },
+          { label: 'Detail Pages', icon: FileText, path: adminRoutes.programPages },
+        ],
+      },
       { label: 'Partner Organisations', icon: Building2, path: adminRoutes.partners },
       { label: 'Gallery', icon: Image, path: adminRoutes.gallery },
     ],

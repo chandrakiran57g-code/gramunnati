@@ -61,24 +61,42 @@ export default function AdminActiveWorksPages() {
     }
   }, [preselectCard, items.length]);
 
+  const cardTemplateLabel = (item) => {
+    if (item._source === 'village') return 'Village';
+    if (item._source === 'school') return 'School';
+    const type = item.template_type || 'village';
+    const match = templateTypes.find((t) => t.id === type);
+    return match?.label || type.replace(/-/g, ' ');
+  };
+
   const selectItem = async (key) => {
     setSelectedKey(key);
+    const card = items.find((i) => (i._adminKey || String(i.id)) === key);
     const page = await activeWorkService.getAdminDetailPage(key);
-    if (!page) return;
-    const type = page.template_type || 'village';
-    setForm({
-      ...emptyActiveWorkPage(type),
-      ...page,
+    const type = page?.template_type || card?.template_type || 'village';
+    const base = emptyActiveWorkPage(type);
+    const merged = {
+      ...base,
+      ...(page || {}),
+      name: page?.name || card?.name || '',
+      name_te: page?.name_te || card?.name_te || '',
+      slug: page?.slug || card?.slug || (card?.name ? slugifyTitle(card.name) : ''),
       template_type: type,
-      overview: { ...emptyActiveWorkPage(type).overview, ...(page.overview || {}) },
-      impact: { ...emptyActiveWorkPage(type).impact, ...(page.impact || {}) },
-      development_score: { ...emptyActiveWorkPage(type).development_score, ...(page.development_score || {}) },
-      statistics: { ...(emptyActiveWorkPage(type).statistics || {}), ...(page.statistics || {}) },
-      location: { district: '', state: '', pincode: '', ...(page.location || {}) },
-      donations: { goal: 0, raised: 0, ...(page.donations || {}) },
-      program_details: { objectives: '', activities: '', impact_highlights: '', ...(page.program_details || {}) },
-      card: { enable_donate: true, enable_details: true, enable_follow: true, enable_compare: false, ...(page.card || {}) },
-    });
+      cover_image: page?.cover_image || card?.cover_image || '',
+      description: page?.description || card?.description || '',
+      _adminKey: key,
+      _source: page?._source || card?._source,
+      entity_id: page?.entity_id || card?.entity_id || card?.id,
+      overview: { ...base.overview, ...(page?.overview || {}) },
+      impact: { ...base.impact, ...(page?.impact || {}) },
+      development_score: { ...base.development_score, ...(page?.development_score || {}) },
+      statistics: { ...(base.statistics || {}), ...(page?.statistics || {}) },
+      location: { district: '', state: '', pincode: '', ...(page?.location || {}) },
+      donations: { goal: 0, raised: 0, ...(page?.donations || {}) },
+      program_details: { objectives: '', activities: '', impact_highlights: '', ...(page?.program_details || {}) },
+      card: { enable_donate: true, enable_details: true, enable_follow: true, enable_compare: false, ...(page?.card || {}) },
+    };
+    setForm(merged);
   };
 
   const setNested = (key, subKey, value) => {
@@ -144,7 +162,7 @@ export default function AdminActiveWorksPages() {
                   }`}
                 >
                   {item.name}
-                  <span className="ml-1 text-xs text-muted-foreground capitalize">({item._source || item.template_type || 'village'})</span>
+                  <span className="ml-1 text-xs text-muted-foreground">({cardTemplateLabel(item)})</span>
                 </button>
               ))}
               {!items.length && <p className="py-4 text-sm text-muted-foreground">Create a card first.</p>}
@@ -173,7 +191,21 @@ export default function AdminActiveWorksPages() {
                   <Label>Template</Label>
                   <select
                     value={form.template_type}
-                    onChange={(e) => setForm({ ...emptyActiveWorkPage(e.target.value), ...form, template_type: e.target.value })}
+                    onChange={(e) => {
+                      const nextType = e.target.value;
+                      setForm((f) => {
+                        const base = emptyActiveWorkPage(nextType);
+                        return {
+                          ...base,
+                          ...f,
+                          template_type: nextType,
+                          overview: { ...base.overview, ...(f.overview || {}) },
+                          impact: { ...base.impact, ...(f.impact || {}) },
+                          development_score: { ...base.development_score, ...(f.development_score || {}) },
+                          statistics: { ...(base.statistics || {}), ...(f.statistics || {}) },
+                        };
+                      });
+                    }}
                     className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
                   >
                     <optgroup label="Entity">

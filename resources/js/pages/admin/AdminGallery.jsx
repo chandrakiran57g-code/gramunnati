@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Image, Video, Upload, Grid3X3, List, Trash2, Loader2, RefreshCw, Database, Plus } from 'lucide-react';
+import { Image, Video, Upload, Grid3X3, List, Trash2, Loader2, RefreshCw, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,6 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { toast } from 'sonner';
 import {
   getGalleryCollections,
-  seedGalleryCollections,
   addGalleryMedia,
   deleteGalleryCollection,
   GALLERY_CATEGORIES,
@@ -35,8 +34,22 @@ export default function AdminGallery() {
   const [selectedCat, setSelectedCat] = useState('All');
   const [viewMode, setViewMode] = useState('grid');
   const [uploading, setUploading] = useState(false);
-  const [seeding, setSeeding] = useState(false);
   const [uploadForm, setUploadForm] = useState(emptyForm);
+  const [filePreview, setFilePreview] = useState('');
+  const [showUrlFields, setShowUrlFields] = useState(false);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (filePreview.startsWith('blob:')) URL.revokeObjectURL(filePreview);
+    };
+  }, [filePreview]);
+
+  const pickFile = (file) => {
+    if (filePreview.startsWith('blob:')) URL.revokeObjectURL(filePreview);
+    setFilePreview(file ? URL.createObjectURL(file) : '');
+    setUploadForm((f) => ({ ...f, file: file || null }));
+  };
 
   const loadGallery = async () => {
     setLoading(true);
@@ -83,19 +96,6 @@ export default function AdminGallery() {
     [collections]
   );
 
-  const handleSeed = async () => {
-    setSeeding(true);
-    try {
-      const data = await seedGalleryCollections();
-      setCollections(data);
-      toast.success('Imported 12 default gallery collections to database');
-    } catch (err) {
-      toast.error(err.message || 'Import failed');
-    } finally {
-      setSeeding(false);
-    }
-  };
-
   const handleUpload = async (e) => {
     e.preventDefault();
     const isVideo = uploadForm.mediaType === 'video';
@@ -132,6 +132,10 @@ export default function AdminGallery() {
       });
       toast.success(`${isVideo ? 'Video' : 'Photo'} added — visible on public /gallery now`);
       setUploadForm(emptyForm);
+      if (filePreview.startsWith('blob:')) URL.revokeObjectURL(filePreview);
+      setFilePreview('');
+      setShowUrlFields(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
       await loadGallery();
     } catch (err) {
       toast.error(err.message || 'Upload failed');
@@ -166,15 +170,6 @@ export default function AdminGallery() {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-                onClick={handleSeed}
-                disabled={seeding}
-              >
-                {seeding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Database className="w-4 h-4 mr-2" />}
-                Sync to database
-              </Button>
               <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={loadGallery}>
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Refresh
@@ -185,11 +180,6 @@ export default function AdminGallery() {
       </HeroScrollSection>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
-          <strong>File uploads:</strong> run <code className="bg-white/60 px-1 rounded">supabase/gallery-storage.sql</code> once in Supabase SQL Editor.
-          Without it, use image/video URLs or YouTube links instead of uploading files.
-        </div>
-
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
           {['All', ...CATEGORY_OPTIONS].map((cat) => (
             <button
@@ -218,7 +208,11 @@ export default function AdminGallery() {
                 <button
                   key={value}
                   type="button"
-                  onClick={() => setUploadForm((f) => ({ ...f, mediaType: value, file: null }))}
+                  onClick={() => {
+                    pickFile(null);
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                    setUploadForm((f) => ({ ...f, mediaType: value, file: null }));
+                  }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
                     uploadForm.mediaType === value
                       ? 'border-purple-500 bg-purple-50 text-purple-700'
@@ -277,41 +271,81 @@ export default function AdminGallery() {
               </div>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <Label>{uploadForm.mediaType === 'video' ? 'Video URL (optional)' : 'Image URL (optional)'}</Label>
-                <Input
-                  value={uploadForm.mediaUrl}
-                  onChange={(e) => setUploadForm((f) => ({ ...f, mediaUrl: e.target.value }))}
-                  className="mt-1 rounded-xl"
-                  placeholder="https://..."
-                />
-              </div>
-              {uploadForm.mediaType === 'video' && (
-                <div>
-                  <Label>YouTube link (optional)</Label>
-                  <Input
-                    value={uploadForm.youtubeUrl}
-                    onChange={(e) => setUploadForm((f) => ({ ...f, youtubeUrl: e.target.value }))}
-                    className="mt-1 rounded-xl"
-                    placeholder="https://youtube.com/watch?v=..."
-                  />
+            <div>
+              <Label>{uploadForm.mediaType === 'video' ? 'Video file (MP4, WebM, MOV)' : 'Image file'}</Label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={uploadForm.mediaType === 'video' ? 'video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov' : 'image/*'}
+                className="hidden"
+                onChange={(e) => pickFile(e.target.files?.[0])}
+              />
+              {filePreview ? (
+                <div className="relative mt-2 inline-block">
+                  {uploadForm.mediaType === 'video' ? (
+                    <video src={filePreview} controls className="max-h-48 max-w-sm rounded-xl border" />
+                  ) : (
+                    <img src={filePreview} alt="Preview" className="max-h-48 rounded-xl border object-cover" />
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      pickFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = '';
+                    }}
+                    className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 text-white shadow"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                  <div className="mt-1 text-xs text-muted-foreground truncate max-w-sm">{uploadForm.file?.name}</div>
                 </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="mt-2 flex w-full max-w-md flex-col items-center gap-2 rounded-xl border-2 border-dashed border-purple-300 bg-purple-50/50 px-6 py-8 text-sm text-purple-700 transition-colors hover:border-purple-500 hover:bg-purple-50"
+                >
+                  <Upload className="h-6 w-6" />
+                  Click to choose {uploadForm.mediaType === 'video' ? 'a video' : 'an image'} from your computer
+                </button>
+              )}
+              {!showUrlFields && (
+                <button
+                  type="button"
+                  onClick={() => setShowUrlFields(true)}
+                  className="mt-2 block text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                >
+                  {uploadForm.mediaType === 'video' ? 'or paste a video / YouTube URL instead' : 'or paste an image URL instead'}
+                </button>
               )}
             </div>
 
-            <div className="flex flex-wrap items-end gap-4">
-              <div className="flex-1 min-w-[200px]">
-                <Label>
-                  {uploadForm.mediaType === 'video' ? 'Upload video file (MP4, WebM, MOV)' : 'Upload image file'}
-                </Label>
-                <Input
-                  type="file"
-                  accept={uploadForm.mediaType === 'video' ? 'video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov' : 'image/*'}
-                  onChange={(e) => setUploadForm((f) => ({ ...f, file: e.target.files?.[0] || null }))}
-                  className="mt-1 rounded-xl"
-                />
+            {showUrlFields && (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <Label>{uploadForm.mediaType === 'video' ? 'Video URL (optional)' : 'Image URL (optional)'}</Label>
+                  <Input
+                    value={uploadForm.mediaUrl}
+                    onChange={(e) => setUploadForm((f) => ({ ...f, mediaUrl: e.target.value }))}
+                    className="mt-1 rounded-xl"
+                    placeholder="https://..."
+                  />
+                </div>
+                {uploadForm.mediaType === 'video' && (
+                  <div>
+                    <Label>YouTube link (optional)</Label>
+                    <Input
+                      value={uploadForm.youtubeUrl}
+                      onChange={(e) => setUploadForm((f) => ({ ...f, youtubeUrl: e.target.value }))}
+                      className="mt-1 rounded-xl"
+                      placeholder="https://youtube.com/watch?v=..."
+                    />
+                  </div>
+                )}
               </div>
+            )}
+
+            <div>
               <Button type="submit" disabled={uploading} className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl">
                 {uploading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -337,12 +371,7 @@ export default function AdminGallery() {
           <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-purple-600" /></div>
         ) : filtered.length === 0 ? (
           <div className="bg-white rounded-2xl border border-border p-12 text-center text-muted-foreground">
-            No gallery collections{selectedCat !== 'All' ? ` in ${selectedCat}` : ''}.
-            <div className="mt-4">
-              <Button onClick={handleSeed} disabled={seeding} variant="outline">
-                <Database className="w-4 h-4 mr-2" />Sync existing site gallery to database
-              </Button>
-            </div>
+            No gallery collections{selectedCat !== 'All' ? ` in ${selectedCat}` : ''}. Use the form above to add photos or videos.
           </div>
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">

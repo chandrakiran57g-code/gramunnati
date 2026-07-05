@@ -1,28 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { cmsService } from '@/api/cms';
 import { ArrowLeft, Calendar, MapPin, School, Heart, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
+
+function slugifyTitle(text) {
+  return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
 
 export default function StoryDetail() {
   const { slug } = useParams();
+  const { lang } = useLanguage();
   const [story, setStory] = useState(null);
   const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const stories = await base44.entities.SuccessStory.list('-created_date', 50).catch(() => []);
-      const found = stories.find(s => s.slug === slug || s.id === slug || s.title?.toLowerCase().replace(/\s+/g, '-') === slug);
-      setStory(found || null);
-      setRelated(found ? stories.filter(s => s.id !== found.id).slice(0, 3) : []);
-      setLoading(false);
+      setLoading(true);
+      try {
+        let found = null;
+        try {
+          found = await cmsService.getStory(slug);
+        } catch {
+          /* try by id below */
+        }
+        const { data: stories } = await cmsService.listStories({ limit: 50 });
+        const list = stories || [];
+        if (!found) {
+          found = list.find(
+            (s) => s.slug === slug
+              || String(s.id) === String(slug)
+              || slugifyTitle(s.title) === slug
+          ) || null;
+        }
+        setStory(found);
+        setRelated(found ? list.filter((s) => String(s.id) !== String(found.id)).slice(0, 3) : []);
+      } catch {
+        setStory(null);
+        setRelated([]);
+      } finally {
+        setLoading(false);
+      }
     };
     load();
-  }, [slug]);
+  }, [slug, lang]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
@@ -40,21 +67,27 @@ export default function StoryDetail() {
     </div>
   );
 
+  const title = localize(story, 'title', lang) || story.title;
+  const summary = localize(story, 'summary', lang) || story.summary;
+  const content = localize(story, 'content', lang) || story.content;
+  const villageName = story.village_name || story.villages?.village_name;
+  const schoolName = story.school_name || story.schools?.school_name;
+  const storySlug = story.slug || story.id;
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
       <HeroScrollSection size="detail">
         <div className="relative h-64 sm:h-96 overflow-hidden">
-          <img src={story.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80'} alt={story.title} className="w-full h-full object-cover" />
+          <img src={story.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80'} alt={title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6 max-w-3xl">
             <Link to="/stories" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ArrowLeft className="w-4 h-4" /> Back to Stories</Link>
-            <h1 className="font-heading text-2xl sm:text-4xl font-bold text-white mb-3">{story.title}</h1>
-            {story.summary && <p className="text-white/80 text-sm max-w-2xl">{story.summary}</p>}
+            <h1 className="font-heading text-2xl sm:text-4xl font-bold text-white mb-3">{title}</h1>
+            {summary && <p className="text-white/80 text-sm max-w-2xl">{summary}</p>}
             <div className="flex flex-wrap items-center gap-3 mt-3 text-white/70 text-sm">
               {story.published_at && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{new Date(story.published_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
-              {story.village_name && <Badge className="bg-white/20 text-white border-0"><MapPin className="w-3 h-3 mr-1" />{story.village_name}</Badge>}
-              {story.school_name && <Badge className="bg-white/20 text-white border-0"><School className="w-3 h-3 mr-1" />{story.school_name}</Badge>}
+              {villageName && <Badge className="bg-white/20 text-white border-0"><MapPin className="w-3 h-3 mr-1" />{villageName}</Badge>}
+              {schoolName && <Badge className="bg-white/20 text-white border-0"><School className="w-3 h-3 mr-1" />{schoolName}</Badge>}
             </div>
           </div>
         </div>
@@ -62,21 +95,19 @@ export default function StoryDetail() {
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl border border-border p-6 sm:p-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                 <div className="prose prose-slate max-w-none text-sm leading-relaxed whitespace-pre-wrap">
-                  {story.content || 'Story content coming soon.'}
+                  {content || 'Story content coming soon.'}
                 </div>
               </motion.div>
             </div>
 
-            {/* Impact Numbers */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-6">
               {[
-                { label: 'Village', value: story.village_name || 'N/A', icon: MapPin, color: 'text-primary', bg: 'bg-primary/5' },
-                { label: 'School', value: story.school_name || 'N/A', icon: School, color: 'text-school', bg: 'bg-school/5' },
+                { label: 'Village', value: villageName || 'N/A', icon: MapPin, color: 'text-primary', bg: 'bg-primary/5' },
+                { label: 'School', value: schoolName || 'N/A', icon: School, color: 'text-school', bg: 'bg-school/5' },
                 { label: 'Published', value: story.published_at ? new Date(story.published_at).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : 'N/A', icon: Calendar, color: 'text-donation', bg: 'bg-donation/5' },
               ].map(item => (
                 <div key={item.label} className={`${item.bg} rounded-xl p-3 text-center`}>
@@ -88,18 +119,15 @@ export default function StoryDetail() {
             </div>
           </div>
 
-          {/* Sidebar */}
           <div className="space-y-6">
-            {/* Share */}
             <div className="bg-white rounded-2xl border border-border p-5">
               <h4 className="font-heading font-bold mb-3">Share This Story</h4>
               <div className="flex gap-2">
                 <Button size="sm" variant="outline" className="flex-1 text-xs"><Share2 className="w-3 h-3 mr-1" /> Share</Button>
-                <Button size="sm" variant="outline" className="flex-1 text-xs">Copy Link</Button>
+                <Button size="sm" variant="outline" className="flex-1 text-xs" onClick={() => navigator.clipboard?.writeText(window.location.href)}>Copy Link</Button>
               </div>
             </div>
 
-            {/* Support CTA */}
             <div className="bg-white rounded-2xl border border-border p-5 text-center">
               <Heart className="w-10 h-10 text-donation/40 mx-auto mb-3" />
               <h4 className="font-heading font-bold mb-2">Make a Difference</h4>
@@ -107,7 +135,6 @@ export default function StoryDetail() {
               <Link to="/donate"><Button className="donation-gradient text-white border-0 w-full">Donate Now</Button></Link>
             </div>
 
-            {/* Related Stories */}
             {related.length > 0 && (
               <div className="bg-white rounded-2xl border border-border p-5">
                 <h4 className="font-heading font-bold mb-4">Related Stories</h4>
@@ -116,8 +143,8 @@ export default function StoryDetail() {
                     <Link key={r.id} to={`/stories/${r.slug || r.id}`} className="flex gap-3 group">
                       <img src={r.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=200&q=60'} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
                       <div>
-                        <h5 className="text-sm font-semibold group-hover:text-primary transition-colors line-clamp-2">{r.title}</h5>
-                        <p className="text-xs text-muted-foreground mt-0.5">{r.village_name || 'CMSR'}</p>
+                        <h5 className="text-sm font-semibold group-hover:text-primary transition-colors line-clamp-2">{localize(r, 'title', lang) || r.title}</h5>
+                        <p className="text-xs text-muted-foreground mt-0.5">{r.village_name || r.villages?.village_name || 'CMSR'}</p>
                       </div>
                     </Link>
                   ))}

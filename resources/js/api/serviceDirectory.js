@@ -36,6 +36,7 @@ function mapVolunteerRow(v) {
   return {
     id: v.id,
     name: v.full_name,
+    state: v.state || '',
     mandal: '',
     district: v.district || '',
     date_of_entry: v.created_at,
@@ -88,7 +89,7 @@ export const serviceDirectoryApi = {
     if (config.type === 'volunteers') {
       const { data } = await supabase
         .from('volunteers')
-        .select('id, full_name, district, created_at, status')
+        .select('id, full_name, state, district, created_at, status')
         .eq('status', 'active')
         .order('full_name');
       const rows = (data || []).map(mapVolunteerRow);

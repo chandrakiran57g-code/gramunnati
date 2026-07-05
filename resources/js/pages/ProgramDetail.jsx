@@ -1,13 +1,100 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Heart, MapPin, School, Users, FolderOpen, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { getProgramBySlug } from '@/lib/programs';
+import { cmsService } from '@/api/cms';
+import { programPagesService } from '@/api/programPages';
+import { getProgramBySlug, PROGRAMS as STATIC_PROGRAMS } from '@/lib/programs';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
+
+function linesToList(text) {
+  return String(text || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function mergeProgram(cmsRow, detailPage, staticFallback) {
+  const slug = cmsRow?.slug || staticFallback?.slug;
+  const title = cmsRow?.title || staticFallback?.title || slug;
+  const description = cmsRow?.description || staticFallback?.description || '';
+  const cover = detailPage?.hero_image || cmsRow?.cover_image || staticFallback?.cover || '/hero/village.jpg';
+  const longDescription = localize(detailPage, 'long_description') || detailPage?.long_description || staticFallback?.longDescription || description;
+  const objectives = linesToList(localize(detailPage, 'objectives') || detailPage?.objectives).length
+    ? linesToList(localize(detailPage, 'objectives') || detailPage?.objectives)
+    : staticFallback?.objectives || [];
+  const activities = linesToList(localize(detailPage, 'activities') || detailPage?.activities).length
+    ? linesToList(localize(detailPage, 'activities') || detailPage?.activities)
+    : staticFallback?.activities || [];
+  const impact = linesToList(localize(detailPage, 'impact_highlights') || detailPage?.impact_highlights).length
+    ? linesToList(localize(detailPage, 'impact_highlights') || detailPage?.impact_highlights)
+    : staticFallback?.impact || [];
+  const stats = {
+    villages: detailPage?.stats?.villages ?? staticFallback?.stats?.villages ?? 0,
+    schools: detailPage?.stats?.schools ?? staticFallback?.stats?.schools ?? 0,
+    volunteers: detailPage?.stats?.volunteers ?? staticFallback?.stats?.volunteers ?? 0,
+    donations: detailPage?.stats?.donations ?? staticFallback?.stats?.donations ?? 0,
+  };
+  const gallery = linesToList(detailPage?.gallery_images);
+  const stories = gallery.length
+    ? gallery.map((src, i) => ({ title: `Gallery ${i + 1}`, desc: '', img: src }))
+    : staticFallback?.stories || [{ title, desc: description, img: cover }];
+
+  return {
+    slug,
+    title: localize(cmsRow, 'title') || title,
+    description: localize(cmsRow, 'description') || description,
+    icon: cmsRow?.icon || staticFallback?.icon || '🌾',
+    cover,
+    longDescription,
+    objectives,
+    activities,
+    impact,
+    stats,
+    stories,
+    color: staticFallback?.color || 'bg-service-agriculture',
+    lightColor: staticFallback?.lightColor || 'bg-cream-100',
+    textColor: staticFallback?.textColor || 'text-service-agriculture',
+  };
+}
 
 export default function ProgramDetail() {
   const { slug } = useParams();
-  const program = getProgramBySlug(slug);
+  const { lang } = useLanguage();
+  const [program, setProgram] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    Promise.all([
+      cmsService.listPrograms({ activeOnly: true }).catch(() => []),
+      programPagesService.getPage(slug).catch(() => null),
+    ]).then(([programs, detailPage]) => {
+      if (cancelled) return;
+      const cmsRow = (programs || []).find((p) => p.slug === slug);
+      const staticFallback = getProgramBySlug(slug);
+      if (cmsRow || staticFallback) {
+        setProgram(mergeProgram(cmsRow, detailPage, staticFallback));
+      } else {
+        setProgram(null);
+      }
+    }).finally(() => {
+      if (!cancelled) setLoading(false);
+    });
+    return () => { cancelled = true; };
+  }, [slug, lang]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!program) {
     return (
@@ -51,7 +138,7 @@ export default function ProgramDetail() {
             { label: 'Villages Impacted', value: program.stats.villages, icon: MapPin, color: program.textColor },
             { label: 'Schools Impacted', value: program.stats.schools, icon: School, color: 'text-service-school' },
             { label: 'Volunteers', value: program.stats.volunteers, icon: Users, color: 'text-service-tree' },
-            { label: 'Donations Raised', value: `₹${(program.stats.donations / 100000).toFixed(1)}L`, icon: Heart, color: 'text-service-agriculture' },
+            { label: 'Donations Raised', value: program.stats.donations >= 100000 ? `₹${(program.stats.donations / 100000).toFixed(1)}L` : `₹${Number(program.stats.donations).toLocaleString('en-IN')}`, icon: Heart, color: 'text-service-agriculture' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white rounded-xl border border-brown-300 p-4 text-center">
               <stat.icon className={`w-5 h-5 ${stat.color} mx-auto mb-1`} />
@@ -61,13 +148,15 @@ export default function ProgramDetail() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-6">
-          {program.impact.map((item) => (
-            <span key={item} className={`text-xs font-medium px-3 py-1.5 rounded-full ${program.lightColor} ${program.textColor}`}>
-              {item}
-            </span>
-          ))}
-        </div>
+        {program.impact.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            {program.impact.map((item) => (
+              <span key={item} className={`text-xs font-medium px-3 py-1.5 rounded-full ${program.lightColor} ${program.textColor}`}>
+                {item}
+              </span>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mb-10">
           <Link to={`/donate?program=${program.slug}`}>
@@ -89,59 +178,63 @@ export default function ProgramDetail() {
           <TabsContent value="overview">
             <div className="bg-white rounded-xl border border-brown-300 p-6">
               <h3 className="font-heading font-bold text-lg mb-3">About This Program</h3>
-              <p className="text-muted-foreground leading-relaxed">{program.longDescription}</p>
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{program.longDescription}</p>
             </div>
           </TabsContent>
 
           <TabsContent value="objectives">
             <div className="bg-white rounded-xl border border-brown-300 p-6">
               <h3 className="font-heading font-bold text-lg mb-4">Program Objectives</h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {program.objectives.map((obj) => (
-                  <div key={obj} className={`flex items-start gap-3 ${program.lightColor} rounded-xl p-4`}>
-                    <Target className={`w-5 h-5 ${program.textColor} flex-shrink-0 mt-0.5`} />
-                    <span className="text-sm">{obj}</span>
-                  </div>
-                ))}
-              </div>
+              {program.objectives.length ? (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {program.objectives.map((obj) => (
+                    <div key={obj} className={`flex items-start gap-3 ${program.lightColor} rounded-xl p-4`}>
+                      <Target className={`w-5 h-5 ${program.textColor} flex-shrink-0 mt-0.5`} />
+                      <span className="text-sm">{obj}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">Objectives will appear here once added in Admin → What We Do → Detail Pages.</p>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="activities">
             <div className="bg-white rounded-xl border border-brown-300 p-6">
               <h3 className="font-heading font-bold text-lg mb-4">Key Activities</h3>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {program.activities.map((act) => (
-                  <div key={act} className="bg-cream-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-cream-300">
-                    <FolderOpen className={`w-4 h-4 ${program.textColor} flex-shrink-0`} />
-                    {act}
-                  </div>
-                ))}
-              </div>
+              {program.activities.length ? (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {program.activities.map((act) => (
+                    <div key={act} className="bg-cream-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-cream-300">
+                      <FolderOpen className={`w-4 h-4 ${program.textColor} flex-shrink-0`} />
+                      {act}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">Activities will appear here once added in Admin.</p>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="impact">
             <div className="bg-white rounded-xl border border-brown-300 p-6">
-              <h3 className="font-heading font-bold text-lg mb-4">Success Stories</h3>
-              <div className="space-y-4">
-                {program.stories.map((story) => (
-                  <div key={story.title} className="flex flex-col sm:flex-row gap-4 bg-cream-50 rounded-xl p-4 border border-cream-300">
-                    <img src={story.img} alt={story.title} className="w-full sm:w-40 h-28 object-cover rounded-lg" />
-                    <div>
-                      <h4 className="font-semibold mb-1">{story.title}</h4>
-                      <p className="text-sm text-muted-foreground">{story.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <h3 className="font-heading font-bold text-lg mb-4">Impact Highlights</h3>
+              {program.impact.length ? (
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {program.impact.map((item) => <li key={item}>• {item}</li>)}
+                </ul>
+              ) : (
+                <p className="text-muted-foreground text-sm">Impact highlights coming soon.</p>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="gallery">
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {[program.cover, ...program.stories.map((s) => s.img)].map((img, i) => (
-                <div key={img + i} className="aspect-square rounded-xl overflow-hidden border border-brown-300">
+              {[program.cover, ...program.stories.map((s) => s.img)].filter(Boolean).map((img, i) => (
+                <div key={`${img}-${i}`} className="aspect-square rounded-xl overflow-hidden border border-brown-300">
                   <img src={img} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                 </div>
               ))}

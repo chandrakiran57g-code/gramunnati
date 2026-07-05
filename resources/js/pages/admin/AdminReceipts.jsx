@@ -43,9 +43,12 @@ export default function AdminReceipts() {
                 {receipts.map((r) => (
                   <tr key={r.id} className="hover:bg-muted/20">
                     <td className="px-4 py-3 font-mono text-xs">{r.receipt_number || r.id?.slice(0, 8)}</td>
-                    <td className="px-4 py-3">{r.donations?.donor_name || '—'}</td>
-                    <td className="px-4 py-3">₹{Number(r.donations?.amount || 0).toLocaleString('en-IN')}</td>
-                    <td className="px-4 py-3 capitalize">{r.donations?.payment_status || '—'}</td>
+                    <td className="px-4 py-3">{(() => {
+                      const d = r.donation || r.donations;
+                      return d?.donor_name || '—';
+                    })()}</td>
+                    <td className="px-4 py-3">₹{Number((r.donation || r.donations)?.amount || 0).toLocaleString('en-IN')}</td>
+                    <td className="px-4 py-3 capitalize">{(r.donation || r.donations)?.payment_status || '—'}</td>
                     <td className="px-4 py-3 text-muted-foreground">
                       {r.created_at ? new Date(r.created_at).toLocaleDateString('en-IN') : '—'}
                     </td>

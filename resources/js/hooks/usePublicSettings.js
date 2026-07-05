@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/api/apiClient';
+import { PLATFORM_DATA_CHANGED } from '@/lib/platformRefresh';
 
 const DEFAULTS = {
   site_name: 'CMSR',
@@ -10,6 +11,11 @@ const DEFAULTS = {
 
 let cache = null;
 let inflight = null;
+
+export function invalidatePublicSettingsCache() {
+  cache = null;
+  inflight = null;
+}
 
 async function loadSettings() {
   if (cache) return cache;
@@ -27,17 +33,24 @@ async function loadSettings() {
   return inflight;
 }
 
-/**
- * Public, non-sensitive site settings (name, email, phone, address, logo).
- * Falls back to sensible defaults when a value is not set in Admin → Settings.
- */
 export function usePublicSettings() {
   const [values, setValues] = useState(cache || {});
 
   useEffect(() => {
     let active = true;
-    loadSettings().then((data) => { if (active) setValues(data); });
-    return () => { active = false; };
+    const refresh = () => {
+      invalidatePublicSettingsCache();
+      loadSettings().then((data) => { if (active) setValues(data); });
+    };
+    refresh();
+    const onChange = (e) => {
+      if (!e?.detail?.type || e.detail.type === 'settings') refresh();
+    };
+    window.addEventListener(PLATFORM_DATA_CHANGED, onChange);
+    return () => {
+      active = false;
+      window.removeEventListener(PLATFORM_DATA_CHANGED, onChange);
+    };
   }, []);
 
   return {

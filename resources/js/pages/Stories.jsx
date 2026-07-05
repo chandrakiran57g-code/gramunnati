@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
+import { cmsService } from '@/api/cms';
 import { Quote, MapPin, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,8 +14,8 @@ export default function Stories() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.SuccessStory.list('-created_date', 20)
-      .then(data => setStories(Array.isArray(data) ? data : []))
+    cmsService.listStories({ limit: 20, publishedOnly: true })
+      .then(({ data }) => setStories(data || []))
       .catch(() => setStories([]))
       .finally(() => setLoading(false));
   }, []);
@@ -51,8 +51,10 @@ export default function Stories() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {stories.map((story, i) => (
-              <motion.div key={story.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}
-                className="group bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              <motion.div key={story.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+              <Link
+                to={`/stories/${story.slug || story.id}`}
+                className="group block bg-white rounded-2xl border border-border overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="relative h-48 overflow-hidden">
                   <img src={story.featured_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80'} alt={story.title}
@@ -62,9 +64,9 @@ export default function Stories() {
                   {story.is_featured && (
                     <span className="absolute top-3 left-3 bg-donation text-white text-xs font-semibold px-2.5 py-1 rounded-full">Featured</span>
                   )}
-                  {story.village_name && (
+                  {(story.village_name || story.villages?.village_name) && (
                     <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-primary/80 text-white text-xs px-2 py-1 rounded-full">
-                      <MapPin className="w-3 h-3" />{story.village_name}
+                      <MapPin className="w-3 h-3" />{story.village_name || story.villages?.village_name}
                     </div>
                   )}
                 </div>
@@ -75,6 +77,7 @@ export default function Stories() {
                     Read Story <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
+              </Link>
               </motion.div>
             ))}
           </div>

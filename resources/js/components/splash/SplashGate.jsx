@@ -4,11 +4,10 @@ import SplashScreen from '@/components/splash/SplashScreen';
 const SESSION_KEY = 'cmsr_splash_shown';
 
 /**
- * Decide whether to play the brand splash for this document load.
- * - First visit in the tab  → show (then remember)
- * - Hard refresh (F5)        → show (reload always replays it)
- * - Back/forward navigation  → skip
- * - In-app (SPA) navigation  → never remounts this gate, so it never replays
+ * Splash plays only when:
+ * - Hard refresh (F5) on any page
+ * - First full document load of the homepage (/) in this tab
+ * Never on: browser back/forward, SPA route changes, revisiting / via in-app links
  */
 function shouldPlaySplash() {
   if (typeof window === 'undefined') return false;
@@ -20,20 +19,19 @@ function shouldPlaySplash() {
     navType = undefined;
   }
 
-  if (navType === 'reload') return true;
   if (navType === 'back_forward') return false;
+  if (navType === 'reload') return true;
 
-  // First 'navigate' load in this tab shows it; subsequent full loads don't.
-  let alreadyShown = false;
+  const path = window.location.pathname.replace(/\/+$/, '') || '/';
+  if (path !== '/') return false;
+
   try {
-    alreadyShown = sessionStorage.getItem(SESSION_KEY) === '1';
+    return sessionStorage.getItem(SESSION_KEY) !== '1';
   } catch {
-    alreadyShown = false;
+    return true;
   }
-  return !alreadyShown;
 }
 
-/** Shows brand splash on refresh / first load only — not on route changes. */
 export default function SplashGate({ children }) {
   const [splashDone, setSplashDone] = useState(() => !shouldPlaySplash());
 
@@ -41,7 +39,7 @@ export default function SplashGate({ children }) {
     try {
       sessionStorage.setItem(SESSION_KEY, '1');
     } catch {
-      /* ignore storage errors */
+      /* ignore */
     }
     setSplashDone(true);
   };

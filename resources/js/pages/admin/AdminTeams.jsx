@@ -56,8 +56,10 @@ export default function AdminTeams() {
         await cmsService.updateTeamGroup(editingGroup.id, payload);
         toast.success('Team category updated');
       } else {
-        await cmsService.createTeamGroup(payload);
+        const created = await cmsService.createTeamGroup(payload);
         toast.success('Team category created');
+        setExpandedGroup(created.id);
+        setForm({ ...emptyMember(), team_group_id: Number(created.id) });
       }
       setShowGroupForm(false);
       setEditingGroup(null);
@@ -81,7 +83,13 @@ export default function AdminTeams() {
     if (!form.full_name || !form.team_group_id) return toast.error('Name and team group required');
     setSaving(true);
     try {
-      const payload = { ...form, email: form.email || null, mobile: form.mobile || null, photo: form.photo || null };
+      const payload = {
+        ...form,
+        team_group_id: Number(form.team_group_id),
+        email: form.email || null,
+        mobile: form.mobile || null,
+        photo: form.photo || null,
+      };
       if (editingMember) {
         await cmsService.updateTeamMember(editingMember.id, payload);
         toast.success('Member updated');
@@ -182,7 +190,7 @@ export default function AdminTeams() {
                   </button>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="ghost" onClick={() => handleEditGroup(group)}><Pencil className="w-3.5 h-3.5" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => { setExpandedGroup(group.id); setEditingMember(null); setForm({ ...emptyMember(), team_group_id: group.id }); }}><UserPlus className="w-3.5 h-3.5 mr-1" /> Add</Button>
+                    <Button size="sm" variant="ghost" onClick={() => { setExpandedGroup(group.id); setEditingMember(null); setForm({ ...emptyMember(), team_group_id: Number(group.id) }); }}><UserPlus className="w-3.5 h-3.5 mr-1" /> Add</Button>
                     <Button size="sm" variant="ghost" className="text-red-500" onClick={async () => { if (confirm('Delete team category?')) { await cmsService.deleteTeamGroup(group.id); loadData(); } }}><Trash2 className="w-3.5 h-3.5" /></Button>
                   </div>
                 </div>

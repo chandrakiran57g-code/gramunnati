@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiFetch, ensureCsrf } from './apiClient';
 import { adminDbMutation, ensureAdminDbAccess } from '@/lib/adminDb';
 
 const PROJECT_CHART_COLORS = ['#2D6A4F', '#2563EB', '#22C55E', '#06B6D4', '#EF4444', '#6B7280', '#F59E0B', '#8B5CF6'];
@@ -24,21 +25,15 @@ export const galleryService = {
    */
   async uploadFile(bucket, file, path = '') {
     await ensureAdminDbAccess();
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = path ? `${path}/${fileName}` : fileName;
-
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-    if (error) throw error;
-
-    // Get public URL
-    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(filePath);
-    return { path: data.path, url: urlData.publicUrl };
+    await ensureCsrf();
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('bucket', bucket || 'uploads');
+    fd.append('path', path || '');
+    const json = await apiFetch('/upload', { method: 'POST', body: fd });
+    const url = json?.url || json?.publicUrl;
+    if (!url) throw new Error('Upload failed — no URL returned');
+    return { path: json.path, url };
   },
 
   /**

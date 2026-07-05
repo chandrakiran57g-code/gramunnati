@@ -76,28 +76,45 @@ export default function CmsPageView() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
-        {page.featured_image && (
-          <div className="h-48 sm:h-64 bg-muted overflow-hidden">
-            <img src={page.featured_image} alt={localized?.title || page.title} className="w-full h-full object-cover" />
-          </div>
+        {page.featured_image ? (
+          <section className="relative h-64 sm:h-80 overflow-hidden">
+            <img src={page.featured_image} alt={localized?.title || page.title} className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+            <div className="relative z-10 flex h-full items-end">
+              <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pb-8">
+                <Link to="/" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-4 transition-colors">
+                  <ArrowLeft className="w-4 h-4" /> Back to Home
+                </Link>
+                <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  className="font-heading text-3xl sm:text-4xl font-bold mb-3 text-white">
+                  {localized?.title || page.title}
+                </motion.h1>
+                {(localized?.short_description || page.short_description) && (
+                  <p className="text-lg text-white/80">
+                    {localized?.short_description || page.short_description}
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section className="hero-gradient py-16">
+            <div className="max-w-5xl mx-auto px-4 sm:px-6">
+              <Link to="/" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
+                <ArrowLeft className="w-4 h-4" /> Back to Home
+              </Link>
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                className="font-heading text-3xl sm:text-4xl font-bold mb-4 text-white">
+                {localized?.title || page.title}
+              </motion.h1>
+              {(localized?.short_description || page.short_description) && (
+                <p className="text-lg text-white/70">
+                  {localized?.short_description || page.short_description}
+                </p>
+              )}
+            </div>
+          </section>
         )}
-
-        <section className={`${page.featured_image ? '-mt-8' : 'hero-gradient py-16'}`}>
-          <div className="max-w-5xl mx-auto px-4 sm:px-6">
-            <Link to="/" className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-primary text-sm mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back to Home
-            </Link>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className={`font-heading text-3xl sm:text-4xl font-bold mb-4 ${page.featured_image ? 'text-foreground' : 'text-white'}`}>
-              {localized?.title || page.title}
-            </motion.h1>
-            {(localized?.short_description || page.short_description) && (
-              <p className={`text-lg ${page.featured_image ? 'text-muted-foreground' : 'text-white/70'}`}>
-                {localized?.short_description || page.short_description}
-              </p>
-            )}
-          </div>
-        </section>
       </HeroScrollSection>
 
       <section className="py-12">
@@ -116,6 +133,7 @@ export default function CmsPageView() {
             <ServiceDirectoryTable
               rows={directoryRows}
               getLink={(row) => dirConfig?.linkPattern?.(row)}
+              variant={slug === 'about-volunteers' ? 'volunteers' : 'default'}
             />
           ) : (
             !adminContent && (

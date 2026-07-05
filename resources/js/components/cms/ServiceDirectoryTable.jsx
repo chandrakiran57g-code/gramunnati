@@ -11,7 +11,7 @@ function formatDate(value) {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-export default function ServiceDirectoryTable({ rows = [], getLink }) {
+export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'default' }) {
   const [search, setSearch] = useState('');
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -23,7 +23,7 @@ export default function ServiceDirectoryTable({ rows = [], getLink }) {
     let list = [...rows];
     if (q) {
       list = list.filter((r) =>
-        [r.name, r.mandal, r.district].some((v) => String(v || '').toLowerCase().includes(q))
+        [r.name, r.mandal, r.district, r.state].some((v) => String(v || '').toLowerCase().includes(q))
       );
     }
     list.sort((a, b) => {
@@ -52,6 +52,9 @@ export default function ServiceDirectoryTable({ rows = [], getLink }) {
       {label} <ChevronsUpDown className="w-3.5 h-3.5 opacity-70" />
     </button>
   );
+
+  const isVolunteers = variant === 'volunteers';
+  const colSpan = 5;
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
@@ -85,14 +88,18 @@ export default function ServiceDirectoryTable({ rows = [], getLink }) {
             <tr className="bg-[#337ab7] text-white">
               <th className="text-left font-semibold px-4 py-3 w-16">S.No</th>
               <th className="text-left font-semibold px-4 py-3"><SortBtn col="name" label="Name" /></th>
-              <th className="text-left font-semibold px-4 py-3"><SortBtn col="mandal" label="Mandal" /></th>
+              {isVolunteers ? (
+                <th className="text-left font-semibold px-4 py-3"><SortBtn col="state" label="State" /></th>
+              ) : (
+                <th className="text-left font-semibold px-4 py-3"><SortBtn col="mandal" label="Mandal" /></th>
+              )}
               <th className="text-left font-semibold px-4 py-3"><SortBtn col="district" label="District" /></th>
               <th className="text-left font-semibold px-4 py-3"><SortBtn col="date_of_entry" label="Date of Entry" /></th>
             </tr>
           </thead>
           <tbody>
             {pageRows.length === 0 ? (
-              <tr><td colSpan={5} className="px-4 py-10 text-center text-gray-500">No records found.</td></tr>
+              <tr><td colSpan={colSpan} className="px-4 py-10 text-center text-gray-500">No records found.</td></tr>
             ) : pageRows.map((row, i) => {
               const href = getLink(row);
               return (
@@ -105,7 +112,7 @@ export default function ServiceDirectoryTable({ rows = [], getLink }) {
                       <span className="text-gray-800">{row.name}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-700">{row.mandal || '—'}</td>
+                  <td className="px-4 py-3 text-gray-700">{isVolunteers ? (row.state || '—') : (row.mandal || '—')}</td>
                   <td className="px-4 py-3 text-gray-700">{row.district || '—'}</td>
                   <td className="px-4 py-3 text-gray-700">{formatDate(row.date_of_entry)}</td>
                 </tr>

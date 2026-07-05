@@ -25,7 +25,7 @@ export default function AdminStories() {
   useEffect(() => { load(); }, []);
   const load = () => { setLoading(true); base44.entities.SuccessStory.list('-created_date',100).then(setItems).catch(()=>[]).finally(()=>setLoading(false)); };
   const del = async(id) => { if(!confirm('Delete?'))return; try{await base44.entities.SuccessStory.delete(id);toast.success('Deleted');load();}catch{toast.error('Error');} };
-  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-')}; try{ if(editing){await base44.entities.SuccessStory.update(editing.id,d);toast.success('Updated');}else{await base44.entities.SuccessStory.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
+  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),published_at:form.status==='published'?(form.published_at||new Date().toISOString()):form.published_at||null}; try{ if(editing){await base44.entities.SuccessStory.update(editing.id,d);toast.success('Updated');}else{await base44.entities.SuccessStory.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
 
   return (
     <div className="min-h-screen bg-background">

@@ -10,6 +10,7 @@ export const adminRoutes = {
   teams: `${ADMIN_BASE}/nav/teams`,
   memberDirectory: `${ADMIN_BASE}/nav/member-list`,
   programs: `${ADMIN_BASE}/nav/programs`,
+  programPages: `${ADMIN_BASE}/nav/program-pages`,
   partners: `${ADMIN_BASE}/nav/partners`,
   gallery: `${ADMIN_BASE}/nav/gallery`,
 

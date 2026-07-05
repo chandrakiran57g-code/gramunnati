@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { needsSupportService, PROGRAM_CATEGORY_OPTIONS } from '@/api/needsSupport';
+import { needsSupportService, loadProgramCategoryOptions } from '@/api/needsSupport';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
@@ -31,6 +31,7 @@ const EMPTY = {
 
 export default function AdminNeedSupport() {
   const [items, setItems] = useState([]);
+  const [categoryOptions, setCategoryOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [editId, setEditId] = useState(null);
@@ -40,9 +41,15 @@ export default function AdminNeedSupport() {
   const load = async () => {
     setLoading(true);
     try {
-      setItems(await needsSupportService.listAllAdminItems());
+      const [rows, cats] = await Promise.all([
+        needsSupportService.listAllAdminItems(),
+        loadProgramCategoryOptions(),
+      ]);
+      setItems(rows);
+      setCategoryOptions(cats);
     } catch {
       setItems([]);
+      setCategoryOptions([]);
     } finally {
       setLoading(false);
     }
@@ -105,7 +112,7 @@ export default function AdminNeedSupport() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const categoryLabel = (slug) => PROGRAM_CATEGORY_OPTIONS.find((p) => p.id === slug)?.label || slug || 'Uncategorized';
+  const categoryLabel = (slug) => categoryOptions.find((p) => p.value === slug)?.label || slug || 'Uncategorized';
   const filteredItems = filterCategory === 'all'
     ? items
     : items.filter((i) => i.program_category === filterCategory);
@@ -140,8 +147,8 @@ export default function AdminNeedSupport() {
               required
             >
               <option value="">Select program</option>
-              {PROGRAM_CATEGORY_OPTIONS.map((p) => (
-                <option key={p.id} value={p.id}>{p.icon} {p.label}</option>
+              {categoryOptions.map((p) => (
+                <option key={p.value} value={p.value}>{p.icon ? `${p.icon} ` : ''}{p.label}</option>
               ))}
             </select>
           </div>
@@ -198,9 +205,9 @@ export default function AdminNeedSupport() {
         <>
           <div className="mb-4 flex flex-wrap gap-2">
             <Button size="sm" variant={filterCategory === 'all' ? 'default' : 'outline'} onClick={() => setFilterCategory('all')}>All</Button>
-            {PROGRAM_CATEGORY_OPTIONS.map((p) => (
-              <Button key={p.id} size="sm" variant={filterCategory === p.id ? 'default' : 'outline'} onClick={() => setFilterCategory(p.id)}>
-                {p.icon} {p.label}
+            {categoryOptions.map((p) => (
+              <Button key={p.value} size="sm" variant={filterCategory === p.value ? 'default' : 'outline'} onClick={() => setFilterCategory(p.value)}>
+                {p.icon ? `${p.icon} ` : ''}{p.label}
               </Button>
             ))}
           </div>
