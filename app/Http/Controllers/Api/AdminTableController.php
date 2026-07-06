@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -152,6 +153,13 @@ class AdminTableController extends Controller
 
         $model = $this->resolveModel($table);
         $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
+
+        // Slugs must be unique even against soft-deleted rows — append -2, -3, …
+        // instead of crashing with a duplicate-key error.
+        if (! empty($payload['slug']) && Schema::hasColumn($table, 'slug')) {
+            $payload['slug'] = $this->uniqueSlug($table, (string) $payload['slug']);
+        }
+
         $row = $model::query()->create($payload);
 
         if ($table === 'donations' && ($row->payment_status ?? '') === 'success') {
@@ -189,11 +197,46 @@ class AdminTableController extends Controller
     private function columnsOnly(string $table, array $payload): array
     {
         $columns = Schema::getColumnListing($table);
-        if (empty($columns)) {
-            return $payload;
+        if (! empty($columns)) {
+            $payload = array_intersect_key($payload, array_flip($columns));
         }
 
-        return array_intersect_key($payload, array_flip($columns));
+        // JS clients send ISO 8601 dates (2026-07-06T17:00:00.000Z) which MySQL
+        // rejects for timestamp columns — normalize them to Y-m-d H:i:s.
+        foreach ($payload as $key => $value) {
+            $payload[$key] = $this->normalizeDateValue($value);
+        }
+
+        return $payload;
+    }
+
+    private function uniqueSlug(string $table, string $slug): string
+    {
+        $exists = fn (string $candidate) => DB::table($table)->where('slug', $candidate)->exists();
+        if (! $exists($slug)) {
+            return $slug;
+        }
+        for ($i = 2; $i <= 100; $i++) {
+            if (! $exists("{$slug}-{$i}")) {
+                return "{$slug}-{$i}";
+            }
+        }
+
+        return $slug.'-'.now()->timestamp;
+    }
+
+    /** Convert ISO 8601 datetime strings (with T/Z) to MySQL-friendly Y-m-d H:i:s. */
+    private function normalizeDateValue(mixed $value): mixed
+    {
+        if (is_string($value) && preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:?\d{2})?$/', $value)) {
+            try {
+                return Carbon::parse($value)->format('Y-m-d H:i:s');
+            } catch (\Throwable) {
+                return $value;
+            }
+        }
+
+        return $value;
     }
 
     /** Built-in About Us pages that must never be deleted (only edited). */
@@ -278,6 +321,7 @@ class AdminTableController extends Controller
             if (! $col) {
                 continue;
             }
+            $val = $this->normalizeDateValue($val);
 
             match ($op) {
                 'eq' => $query->where($col, $val),

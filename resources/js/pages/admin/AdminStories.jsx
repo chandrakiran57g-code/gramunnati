@@ -18,6 +18,9 @@ const EMPTY = { title: '', title_te: '', slug: '', summary: '', summary_te: '', 
 // The table has no `status` column — published_at decides visibility on the public /stories page.
 const storyStatus = (item) => (item.published_at ? 'published' : 'draft');
 
+// MySQL rejects ISO strings like 2026-07-06T17:00:00.000Z — always send "YYYY-MM-DD HH:MM:SS".
+const toDbDateTime = (value) => new Date(value || Date.now()).toISOString().slice(0, 19).replace('T', ' ');
+
 export default function AdminStories() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,7 +31,7 @@ export default function AdminStories() {
   useEffect(() => { load(); }, []);
   const load = () => { setLoading(true); base44.entities.SuccessStory.list('-created_date',100).then(setItems).catch(()=>[]).finally(()=>setLoading(false)); };
   const del = async(id) => { if(!confirm('Delete?'))return; try{await base44.entities.SuccessStory.delete(id);toast.success('Deleted');load();}catch{toast.error('Error');} };
-  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),published_at:form.status==='published'?(form.published_at||new Date().toISOString()):null}; delete d.status; try{ if(editing){await base44.entities.SuccessStory.update(editing.id,d);toast.success('Updated');}else{await base44.entities.SuccessStory.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
+  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),published_at:form.status==='published'?toDbDateTime(form.published_at):null}; delete d.status; try{ if(editing){await base44.entities.SuccessStory.update(editing.id,d);toast.success('Updated');}else{await base44.entities.SuccessStory.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch(err){toast.error(err.message||'Error');} };
 
   return (
     <div className="min-h-screen bg-background">

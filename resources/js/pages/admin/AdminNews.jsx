@@ -25,10 +25,12 @@ export default function AdminNews() {
   useEffect(() => { load(); }, []);
   const load = () => { setLoading(true); base44.entities.NewsItem.list('-created_date',100).then(setItems).catch(()=>[]).finally(()=>setLoading(false)); };
   const del = async(id) => { if(!confirm('Delete?'))return; try{await base44.entities.NewsItem.delete(id);toast.success('Deleted');load();}catch{toast.error('Error');} };
+  // MySQL rejects ISO strings like 2026-07-06T17:00:00.000Z — always send "YYYY-MM-DD HH:MM:SS".
+  const toDbDateTime = (value) => new Date(value || Date.now()).toISOString().slice(0, 19).replace('T', ' ');
   const save = async(e) => { e.preventDefault(); const d={
     ...form,
     slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),
-    published_at: form.is_published ? (form.published_at || new Date().toISOString()) : null,
+    published_at: form.is_published ? toDbDateTime(form.published_at) : null,
   }; try{ if(editing){await base44.entities.NewsItem.update(editing.id,d);toast.success('Updated');}else{await base44.entities.NewsItem.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch(err){toast.error(err.message||'Error');} };
 
   return (
