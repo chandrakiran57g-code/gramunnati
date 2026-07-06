@@ -285,7 +285,8 @@ export const cmsService = {
       .is('deleted_at', null);
 
     if (featured) query = query.eq('is_featured', true);
-    if (publishedOnly) query = query.eq('status', 'published');
+    // The table has no `status` column — a story is "published" when published_at is set.
+    if (publishedOnly) query = query.not('published_at', 'is', null);
 
     query = query.order('published_at', { ascending: false }).range(offset, offset + limit - 1);
 

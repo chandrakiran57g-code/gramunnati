@@ -13,7 +13,10 @@ import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
 import AdminUrlField from '@/components/admin/AdminUrlField';
 
-const EMPTY = { title: '', title_te: '', slug: '', summary: '', summary_te: '', content: '', content_te: '', featured_image: '', village_name: '', school_name: '', is_featured: false, status: 'draft' };
+const EMPTY = { title: '', title_te: '', slug: '', summary: '', summary_te: '', content: '', content_te: '', featured_image: '', village_name: '', school_name: '', is_featured: false, status: 'published' };
+
+// The table has no `status` column — published_at decides visibility on the public /stories page.
+const storyStatus = (item) => (item.published_at ? 'published' : 'draft');
 
 export default function AdminStories() {
   const [items, setItems] = useState([]);
@@ -25,7 +28,7 @@ export default function AdminStories() {
   useEffect(() => { load(); }, []);
   const load = () => { setLoading(true); base44.entities.SuccessStory.list('-created_date',100).then(setItems).catch(()=>[]).finally(()=>setLoading(false)); };
   const del = async(id) => { if(!confirm('Delete?'))return; try{await base44.entities.SuccessStory.delete(id);toast.success('Deleted');load();}catch{toast.error('Error');} };
-  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),published_at:form.status==='published'?(form.published_at||new Date().toISOString()):form.published_at||null}; try{ if(editing){await base44.entities.SuccessStory.update(editing.id,d);toast.success('Updated');}else{await base44.entities.SuccessStory.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
+  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-'),published_at:form.status==='published'?(form.published_at||new Date().toISOString()):null}; delete d.status; try{ if(editing){await base44.entities.SuccessStory.update(editing.id,d);toast.success('Updated');}else{await base44.entities.SuccessStory.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,9 +45,9 @@ export default function AdminStories() {
           <motion.div key={item.id} initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} transition={{delay:i*0.05}} className="bg-white rounded-2xl border border-border overflow-hidden hover:shadow-md">
             {item.featured_image&&<img src={item.featured_image} alt="" className="w-full h-40 object-cover"/>}
             <div className="p-5">
-              <div className="flex justify-between items-start mb-2"><h3 className="font-semibold line-clamp-1">{item.title}</h3><div className="flex gap-1"><button onClick={()=>{setEditing(item);setForm(item);setShowForm(true);}} className="p-1 rounded hover:bg-primary/10 text-primary"><Pencil className="w-3.5 h-3.5"/></button><button onClick={()=>del(item.id)} className="p-1 rounded hover:bg-red-50 text-red-500"><Trash2 className="w-3.5 h-3.5"/></button></div></div>
+              <div className="flex justify-between items-start mb-2"><h3 className="font-semibold line-clamp-1">{item.title}</h3><div className="flex gap-1"><button onClick={()=>{setEditing(item);setForm({...item,status:storyStatus(item)});setShowForm(true);}} className="p-1 rounded hover:bg-primary/10 text-primary"><Pencil className="w-3.5 h-3.5"/></button><button onClick={()=>del(item.id)} className="p-1 rounded hover:bg-red-50 text-red-500"><Trash2 className="w-3.5 h-3.5"/></button></div></div>
               <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{item.summary||'No summary'}</p>
-              <div className="flex items-center gap-2"><span className={`text-xs px-2 py-0.5 rounded-full ${item.status==='published'?'bg-green-100 text-green-700':'bg-yellow-100 text-yellow-700'}`}>{item.status||'draft'}</span>{item.is_featured&&<span className="text-xs px-2 py-0.5 rounded-full bg-donation/10 text-donation">Featured</span>}</div>
+              <div className="flex items-center gap-2"><span className={`text-xs px-2 py-0.5 rounded-full ${storyStatus(item)==='published'?'bg-green-100 text-green-700':'bg-yellow-100 text-yellow-700'}`}>{storyStatus(item)}</span>{item.is_featured&&<span className="text-xs px-2 py-0.5 rounded-full bg-donation/10 text-donation">Featured</span>}</div>
             </div>
           </motion.div>
         )}</div>}

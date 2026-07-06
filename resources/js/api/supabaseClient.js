@@ -78,6 +78,11 @@ class QueryBuilder {
     return this;
   }
 
+  like(col, val) {
+    this.filters.push({ column: col, op: 'like', value: val });
+    return this;
+  }
+
   or(expr) {
     this.orFilters = expr;
     return this;

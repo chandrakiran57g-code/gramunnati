@@ -225,6 +225,7 @@ export const homeService = {
       .from('success_stories')
       .select('*, villages(village_name), schools(school_name)')
       .eq('is_featured', true)
+      .not('published_at', 'is', null)
       .is('deleted_at', null)
       .order('published_at', { ascending: false })
       .limit(6);
