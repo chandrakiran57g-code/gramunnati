@@ -4,7 +4,7 @@
     "name": "supabaseClient"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DnTY91UA.css",
+    "file": "assets/app-XM8j7Vk6.css",
     "name": "app",
     "names": [
       "app.css"
@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/js/api/home.js": {
-    "file": "assets/home-oL9dMfO2.js",
+    "file": "assets/home-CWKj0mN-.js",
     "name": "home",
     "src": "resources/js/api/home.js",
     "isDynamicEntry": true,
@@ -22,7 +22,7 @@
     ]
   },
   "resources/js/api/needsSupport.js": {
-    "file": "assets/needsSupport-DTE0PBKa.js",
+    "file": "assets/needsSupport-BSx9-6jz.js",
     "name": "needsSupport",
     "src": "resources/js/api/needsSupport.js",
     "isDynamicEntry": true,
@@ -31,7 +31,7 @@
     ]
   },
   "resources/js/inertia.jsx": {
-    "file": "assets/inertia-GBFqY4cU.js",
+    "file": "assets/inertia-Du3J6lei.js",
     "name": "inertia",
     "src": "resources/js/inertia.jsx",
     "isEntry": true,
@@ -40,7 +40,7 @@
     ]
   },
   "resources/js/pages/Root.jsx": {
-    "file": "assets/Root-pZWdvTuq.js",
+    "file": "assets/Root-CyvLFF4_.js",
     "name": "Root",
     "src": "resources/js/pages/Root.jsx",
     "isDynamicEntry": true,

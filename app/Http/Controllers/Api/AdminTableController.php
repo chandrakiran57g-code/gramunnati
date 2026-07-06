@@ -196,10 +196,21 @@ class AdminTableController extends Controller
         return array_intersect_key($payload, array_flip($columns));
     }
 
+    /** Built-in About Us pages that must never be deleted (only edited). */
+    private const PROTECTED_CMS_SLUGS = ['about-villages', 'about-schools', 'about-volunteers'];
+
     public function destroy(string $table, int $id): JsonResponse
     {
         $model = $this->resolveModel($table);
         $row = $model::query()->findOrFail($id);
+
+        if ($table === 'cms_pages' && in_array($row->slug, self::PROTECTED_CMS_SLUGS, true)) {
+            return response()->json([
+                'message' => 'This built-in page cannot be deleted. You can edit its content instead.',
+                'data' => null,
+                'error' => ['message' => 'This built-in page cannot be deleted.'],
+            ], 422);
+        }
 
         $user = $table === 'profiles' ? $row->user : null;
 

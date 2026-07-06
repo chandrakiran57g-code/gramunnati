@@ -1,6 +1,8 @@
 import { supabase } from './supabaseClient';
 import { adminDbMutation } from '@/lib/adminDb';
 import { DEFAULT_NAV_CONFIG } from '@/lib/navConfig';
+import { PROTECTED_ABOUT_PAGES, isProtectedAboutSlug } from '@/lib/protectedAboutPages';
+import { CMS_STATUS } from '@/lib/cmsStatus';
 
 /**
  * CMS Service — Pages, Programs, News, Events, Stories, FAQs, Testimonials
@@ -45,11 +47,44 @@ export const cmsService = {
     });
   },
 
-  async deletePage(id) {
+  async deletePage(id, slug = null) {
+    if (slug && isProtectedAboutSlug(slug)) {
+      throw new Error('This built-in page cannot be deleted. You can edit its content instead.');
+    }
     return adminDbMutation(async () => {
       const { error } = await supabase.from('cms_pages').delete().eq('id', id);
       if (error) throw error;
     });
+  },
+
+  /**
+   * Guarantees the built-in About Villages / Schools / Volunteers pages exist
+   * and are assigned to the About Us nav group. Re-creates them if deleted.
+   */
+  async ensureProtectedAboutPages() {
+    const pages = await this.listPages();
+    const bySlug = new Map(pages.map((p) => [p.slug, p]));
+    const missing = PROTECTED_ABOUT_PAGES.filter((p) => !bySlug.has(p.slug));
+    if (!missing.length) {
+      // Make sure existing rows are grouped under About Us
+      const groups = await this.getCmsNavGroups();
+      for (const def of PROTECTED_ABOUT_PAGES) {
+        const row = bySlug.get(def.slug);
+        if (row && groups[row.id] && groups[row.id] !== 'about_us') {
+          await this.setPageNavGroup(row.id, 'about_us');
+        }
+      }
+      return pages;
+    }
+    for (const def of missing) {
+      try {
+        const created = await this.createPage({ ...def, status: CMS_STATUS.ACTIVE });
+        if (created?.id) await this.setPageNavGroup(created.id, 'about_us');
+      } catch {
+        // row may already exist (race) — ignore and continue
+      }
+    }
+    return this.listPages();
   },
 
   async getCmsNavGroups() {

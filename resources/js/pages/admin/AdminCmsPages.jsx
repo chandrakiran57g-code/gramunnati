@@ -14,6 +14,7 @@ import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualF
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 import AdminImageUpload, { AdminVideoUpload } from '@/components/admin/AdminMediaUpload';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
+import { isProtectedAboutSlug } from '@/lib/protectedAboutPages';
 
 const EMPTY_FORM = {
   title: '',
@@ -43,7 +44,8 @@ export default function AdminCmsPages() {
   const loadPages = async () => {
     setLoading(true);
     try {
-      const allPages = await cmsService.listPages();
+      // Re-creates the built-in About Villages/Schools/Volunteers pages if missing
+      const allPages = await cmsService.ensureProtectedAboutPages();
       const groups = await cmsService.getCmsNavGroups();
       const aboutPages = allPages.filter((p) => (groups[p.id] || 'about_us') === 'about_us');
       setPages(aboutPages);
@@ -78,11 +80,15 @@ export default function AdminCmsPages() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (page) => {
+    if (isProtectedAboutSlug(page.slug)) {
+      toast.error('This built-in page cannot be deleted. You can edit its content instead.');
+      return;
+    }
     if (!window.confirm('Delete this page?')) return;
     try {
-      await cmsService.deletePage(id);
-      await cmsService.removePageNavGroup(id);
+      await cmsService.deletePage(page.id, page.slug);
+      await cmsService.removePageNavGroup(page.id);
       toast.success('Page deleted');
       notifyPlatformDataChanged({ type: 'cms_pages' });
       loadPages();
@@ -98,8 +104,11 @@ export default function AdminCmsPages() {
     }
     setSaving(true);
     try {
-      const slug = form.slug?.trim() || slugifyTitle(form.title);
+      // Built-in pages keep their slug so the directory list stays attached
+      const protectedPage = editing && isProtectedAboutSlug(editing.slug);
+      const slug = protectedPage ? editing.slug : (form.slug?.trim() || slugifyTitle(form.title));
       const data = { ...form, slug };
+      if (protectedPage) data.status = CMS_STATUS.ACTIVE;
 
       let saved;
       if (editing) {
@@ -165,19 +174,33 @@ export default function AdminCmsPages() {
               onChange={(url) => setForm({ ...form, video_url: url })}
             />
           </div>
-          <AdminUrlField
-            title={form.title}
-            slug={form.slug}
-            onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))}
-            publicBase={ADMIN_SECTIONS.about_us.publicBase}
-          />
+          {editing && isProtectedAboutSlug(editing.slug) ? (
+            <div className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+              URL: <span className="font-mono">/page/{editing.slug}</span> — built-in page, the link cannot change. It also shows the live {editing.slug.replace('about-', '')} list below your content.
+            </div>
+          ) : (
+            <AdminUrlField
+              title={form.title}
+              slug={form.slug}
+              onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))}
+              publicBase={ADMIN_SECTIONS.about_us.publicBase}
+            />
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label>Status</Label>
-              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="mt-1 w-full rounded-lg border px-3 py-2 text-sm">
+              <select
+                value={editing && isProtectedAboutSlug(editing.slug) ? CMS_STATUS.ACTIVE : form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+                disabled={editing && isProtectedAboutSlug(editing.slug)}
+                className="mt-1 w-full rounded-lg border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:bg-muted/40"
+              >
                 <option value={CMS_STATUS.ACTIVE}>Active (visible in About Us dropdown)</option>
                 <option value={CMS_STATUS.INACTIVE}>Inactive (hidden)</option>
               </select>
+              {editing && isProtectedAboutSlug(editing.slug) && (
+                <p className="mt-1 text-xs text-muted-foreground">Built-in pages always stay visible.</p>
+              )}
             </div>
             <div>
               <Label>Order in dropdown</Label>
@@ -214,13 +237,20 @@ export default function AdminCmsPages() {
                   <div className="flex min-w-0 items-center gap-3">
                     <FileText className="h-4 w-4 shrink-0 text-primary" />
                     <div className="min-w-0">
-                      <div className="truncate text-sm font-medium">{page.title}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="truncate text-sm font-medium">{page.title}</span>
+                        {isProtectedAboutSlug(page.slug) && (
+                          <span className="shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">Built-in</span>
+                        )}
+                      </div>
                       <div className="text-xs text-muted-foreground">/page/{page.slug} · About Us dropdown</div>
                     </div>
                   </div>
                   <div className="flex gap-1">
                     <Button size="sm" variant="ghost" onClick={() => handleEdit(page)}><Pencil className="h-3.5 w-3.5" /></Button>
-                    <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDelete(page.id)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    {!isProtectedAboutSlug(page.slug) && (
+                      <Button size="sm" variant="ghost" className="text-red-500" onClick={() => handleDelete(page)}><Trash2 className="h-3.5 w-3.5" /></Button>
+                    )}
                   </div>
                 </div>
               ))}
