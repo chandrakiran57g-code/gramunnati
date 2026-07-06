@@ -8,6 +8,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import { Heart, MapPin, ChevronLeft } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
+import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 
 export default function ActiveWorkDetail() {
@@ -154,12 +155,7 @@ export default function ActiveWorkDetail() {
             </div>
           </TabsContent>
           <TabsContent value="gallery">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {(item.gallery || []).map((g, i) => (
-                <img key={i} src={g.image} alt={g.caption || ''} className="rounded-xl aspect-square object-cover" />
-              ))}
-              {!item.gallery?.length && <p className="text-muted-foreground col-span-full">No gallery images yet.</p>}
-            </div>
+            <BeforeAfterGallery gallery={item.gallery} />
           </TabsContent>
           <TabsContent value="donations">
             <div className="bg-white rounded-xl border p-6 text-center">

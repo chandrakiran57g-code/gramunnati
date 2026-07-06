@@ -25,7 +25,17 @@ export default function Projects() {
 
   useEffect(() => {
     base44.entities.Project.list('-created_date', 50)
-      .then(data => { setProjects(data); setFiltered(data); })
+      .then(data => {
+        // Flatten relation objects so filters/renders always deal with strings
+        const mapped = (data || []).map(p => ({
+          ...p,
+          categoryName: typeof p.category === 'string' ? p.category : p.project_categories?.name || p.category?.name || '',
+          village_name: p.village_name || p.villages?.village_name || '',
+          state: p.state || p.villages?.states?.name || '',
+        }));
+        setProjects(mapped);
+        setFiltered(mapped);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -36,7 +46,7 @@ export default function Projects() {
       const q = search.toLowerCase();
       result = result.filter(p => p.project_name?.toLowerCase().includes(q) || p.village_name?.toLowerCase().includes(q) || p.district?.toLowerCase().includes(q));
     }
-    if (categoryFilter && categoryFilter !== 'all') result = result.filter(p => p.category === categoryFilter);
+    if (categoryFilter && categoryFilter !== 'all') result = result.filter(p => p.categoryName === categoryFilter);
     if (statusFilter && statusFilter !== 'all') result = result.filter(p => p.status === statusFilter);
     if (stateFilter && stateFilter !== 'all') result = result.filter(p => p.state === stateFilter);
     setFiltered(result);

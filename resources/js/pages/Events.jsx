@@ -4,6 +4,7 @@ import { cmsService } from '@/api/cms';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { Button } from '@/components/ui/button';
+import { normalizeExternalUrl } from '@/lib/externalUrl';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700',
@@ -102,7 +103,7 @@ export default function Events() {
                   </div>
                   {tab === 'upcoming' && event.registration_link && (
                     <div className="mt-4">
-                      <a href={event.registration_link} target="_blank" rel="noreferrer">
+                      <a href={normalizeExternalUrl(event.registration_link)} target="_blank" rel="noreferrer">
                         <Button className="bg-projects text-white border-0 rounded-xl">Register to Attend <ArrowRight className="w-4 h-4 ml-1" /></Button>
                       </a>
                     </div>

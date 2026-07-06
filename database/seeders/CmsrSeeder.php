@@ -3,20 +3,15 @@
 namespace Database\Seeders;
 
 use App\Models\CmsPage;
-use App\Models\Donation;
 use App\Models\Faq;
 use App\Models\Program;
-use App\Models\Project;
 use App\Models\ProjectCategory;
 use App\Models\Role;
-use App\Models\School;
 use App\Models\Setting;
 use App\Models\State;
 use App\Models\TeamGroup;
 use App\Models\User;
 use App\Models\UserCategory;
-use App\Models\Village;
-use App\Models\Volunteer;
 use App\Models\District;
 use App\Models\Mandal;
 use Illuminate\Database\Seeder;
@@ -58,167 +53,20 @@ class CmsrSeeder extends Seeder
             ['code' => 'AMP', 'is_active' => true]
         );
 
-        $geo = ['state_id' => $state->id, 'district_id' => $district->id, 'mandal_id' => $mandal->id];
-
-        $village = Village::query()->firstOrCreate(
-            ['slug' => 'kondapur'],
-            array_merge($geo, [
-                'village_name' => 'Kondapur',
-                'short_description' => 'Digital classroom and water supply.',
-                'cover_image' => 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80',
-                'is_featured' => true,
-                'is_active' => true,
-            ])
-        );
-
-        Village::query()->firstOrCreate(
-            ['slug' => 'rajapet'],
-            array_merge($geo, [
-                'village_name' => 'Rajapet',
-                'short_description' => 'Women SHG and tree plantation.',
-                'cover_image' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80',
-                'is_featured' => true,
-                'is_active' => true,
-            ])
-        );
-
-        $rampur = Village::query()->firstOrCreate(
-            ['slug' => 'rampur'],
-            array_merge($geo, [
-                'village_name' => 'Rampur',
-                'short_description' => 'Model primary school and computer lab initiative.',
-                'cover_image' => 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80',
-                'is_featured' => true,
-                'is_active' => true,
-            ])
-        );
-
-        $rajapet = Village::query()->where('slug', 'rajapet')->first();
-
-        School::query()->firstOrCreate(
-            ['slug' => 'zphs-kondapur'],
-            [
-                'village_id' => $village->id,
-                'school_name' => 'ZPHS Kondapur',
-                'school_type' => 'government',
-                'student_count' => 320,
-                'teacher_count' => 12,
-                'cover_image' => 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
-                'is_featured' => true,
-                'is_active' => true,
-            ]
-        );
-
-        $rampurSchool = School::query()->firstOrCreate(
-            ['slug' => 'model-primary-rampur'],
-            [
-                'village_id' => $rampur->id,
-                'school_name' => 'Model Primary School Rampur',
-                'school_type' => 'model',
-                'student_count' => 200,
-                'teacher_count' => 8,
-                'cover_image' => 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
-                'is_featured' => true,
-                'is_active' => true,
-            ]
-        );
-
-        $waterCat = ProjectCategory::query()->firstOrCreate(
+        // Structural project categories only — no demo villages, schools,
+        // projects, volunteers, or donations. Real content is created in the admin panel.
+        ProjectCategory::query()->firstOrCreate(
             ['slug' => 'water-conservation'],
             ['name' => 'Water Conservation', 'icon' => '💧']
         );
-        $schoolCat = ProjectCategory::query()->firstOrCreate(
+        ProjectCategory::query()->firstOrCreate(
             ['slug' => 'school-development'],
             ['name' => 'School Development', 'icon' => '🏫']
         );
-        $treeCat = ProjectCategory::query()->firstOrCreate(
+        ProjectCategory::query()->firstOrCreate(
             ['slug' => 'tree-plantation'],
             ['name' => 'Tree Plantation', 'icon' => '🌳']
         );
-
-        $waterProject = Project::query()->firstOrCreate(
-            ['slug' => 'water-harvest-kondapur'],
-            [
-                'project_category_id' => $waterCat->id,
-                'village_id' => $village->id,
-                'project_name' => 'Water Harvest — Kondapur',
-                'short_description' => 'Rainwater harvesting for farming families.',
-                'budget_amount' => 500000,
-                'raised_amount' => 320000,
-                'status' => 'active',
-                'cover_image' => 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80',
-            ]
-        );
-
-        $digitalProject = Project::query()->firstOrCreate(
-            ['slug' => 'digital-classroom-kondapur'],
-            [
-                'project_category_id' => $schoolCat->id,
-                'village_id' => $village->id,
-                'project_name' => 'Digital Classroom — Kondapur',
-                'short_description' => 'Smart board, tablets and internet for ZPHS Kondapur.',
-                'budget_amount' => 350000,
-                'raised_amount' => 210000,
-                'status' => 'active',
-                'cover_image' => 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
-            ]
-        );
-
-        $greenProject = Project::query()->firstOrCreate(
-            ['slug' => 'green-drive-chittoor'],
-            [
-                'project_category_id' => $treeCat->id,
-                'village_id' => $rajapet?->id,
-                'project_name' => 'Green Drive — Chittoor Belt',
-                'short_description' => 'Large-scale tree plantation across Rajapet villages.',
-                'budget_amount' => 200000,
-                'raised_amount' => 145000,
-                'status' => 'active',
-                'cover_image' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80',
-            ]
-        );
-
-        Project::query()->firstOrCreate(
-            ['slug' => 'computer-lab-rampur'],
-            [
-                'project_category_id' => $schoolCat->id,
-                'village_id' => $rampur->id,
-                'school_id' => $rampurSchool->id,
-                'project_name' => 'Computer Lab — Rampur School',
-                'short_description' => 'First computer lab for 200 students at Model Primary School Rampur.',
-                'budget_amount' => 180000,
-                'raised_amount' => 45000,
-                'status' => 'active',
-                'cover_image' => 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80',
-            ]
-        );
-
-        foreach ([
-            ['full_name' => 'Priya Sharma', 'email' => 'priya@example.com', 'mobile' => '9876543210', 'state' => 'Telangana', 'status' => 'active'],
-            ['full_name' => 'Ravi Kumar', 'email' => 'ravi@example.com', 'mobile' => '9876543211', 'state' => 'Telangana', 'status' => 'active'],
-            ['full_name' => 'Anitha Reddy', 'email' => 'anitha@example.com', 'mobile' => '9876543212', 'state' => 'Telangana', 'status' => 'active'],
-        ] as $vol) {
-            Volunteer::query()->firstOrCreate(
-                ['email' => $vol['email']],
-                $vol
-            );
-        }
-
-        foreach ([
-            ['donor_name' => 'Anonymous Donor', 'amount' => 5000, 'target_type' => 'project', 'project_id' => $waterProject->id, 'payment_status' => 'success', 'is_anonymous' => true],
-            ['donor_name' => 'Suresh Patel', 'amount' => 10000, 'target_type' => 'project', 'project_id' => $digitalProject->id, 'payment_status' => 'success', 'email' => 'suresh@example.com'],
-            ['donor_name' => 'Meena Devi', 'amount' => 2500, 'target_type' => 'village', 'village_id' => $village->id, 'payment_status' => 'success', 'email' => 'meena@example.com'],
-            ['donor_name' => 'Corporate CSR Fund', 'amount' => 50000, 'target_type' => 'project', 'project_id' => $greenProject->id, 'payment_status' => 'success', 'email' => 'csr@example.com'],
-        ] as $donation) {
-            Donation::query()->firstOrCreate(
-                [
-                    'donor_name' => $donation['donor_name'],
-                    'amount' => $donation['amount'],
-                    'project_id' => $donation['project_id'] ?? null,
-                ],
-                array_merge($donation, ['currency' => 'INR', 'donated_at' => now()])
-            );
-        }
 
         $programs = [
             ['slug' => 'village-development', 'title' => 'Village Development', 'description' => 'Comprehensive rural development initiatives focusing on infrastructure, governance, and community empowerment.', 'icon' => '🏘️', 'sort_order' => 1],

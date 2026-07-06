@@ -114,7 +114,7 @@ export function emptyActiveWorkPage(templateType = 'village') {
     statistics: {},
     program_details: { objectives: '', activities: '', impact_highlights: '' },
     timeline: [],
-    gallery: [],
+    gallery: { before: [], after: [] },
     donations: { goal: 0, raised: 0 },
     card: { enable_donate: true, enable_details: true, enable_follow: true, enable_compare: false },
     status: 'active',

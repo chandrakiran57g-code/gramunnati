@@ -146,6 +146,10 @@ class CmsController extends Controller
             'meta_title', 'meta_title_te', 'meta_desc', 'meta_desc_te',
             'meta_keywords', 'ga_id', 'cms_nav_groups', 'nav_config',
             'upi_id',
+            'footer_quote', 'footer_quote_te', 'footer_bottom_text',
+            'footer_social_facebook', 'footer_social_twitter',
+            'footer_social_instagram', 'footer_social_youtube',
+            'footer_links',
         ];
 
         $rows = Setting::query()->whereIn('key', $publicKeys)->get(['key', 'value']);

@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Calendar, MapPin, ChevronLeft, Clock, Users, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { normalizeExternalUrl } from '@/lib/externalUrl';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700', Education: 'bg-school/10 text-school', Volunteer: 'bg-volunteer/10 text-volunteer',
@@ -74,7 +75,7 @@ export default function EventDetail() {
 
         {!isPast && (
           <div className="text-center">
-            <a href={event.registration_url || '#'} target="_blank" rel="noopener noreferrer">
+            <a href={normalizeExternalUrl(event.registration_url) || '#'} target="_blank" rel="noopener noreferrer">
               <Button className="bg-projects text-white border-0 px-10 rounded-xl font-semibold"><Users className="w-4 h-4 mr-2" />Register to Attend</Button>
             </a>
           </div>

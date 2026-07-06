@@ -6,6 +6,7 @@ import { Building2, Globe, Mail, Phone, Calendar, ArrowLeft } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { normalizeExternalUrl } from '@/lib/externalUrl';
 
 const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
 
@@ -70,7 +71,7 @@ export default function PartnerDetail() {
             )}
             <div className="grid sm:grid-cols-2 gap-4">
               {partner.website && (
-                <a href={partner.website} target="_blank" rel="noopener noreferrer"
+                <a href={normalizeExternalUrl(partner.website)} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-3 p-4 rounded-xl bg-muted/50 hover:bg-primary/5 transition-colors">
                   <Globe className="w-5 h-5 text-primary" /> <span className="text-sm font-medium">{partner.website}</span>
                 </a>

@@ -2,17 +2,21 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { MapPin, Users, School, FolderOpen, Heart, TreePine, Droplets, ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
+import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
+import { groupGalleryRows } from '@/lib/beforeAfterGallery';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function VillageDetail() {
   const { slug } = useParams();
   const [village, setVillage] = useState(null);
+  const [gallery, setGallery] = useState({ before: [], after: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,6 +25,15 @@ export default function VillageDetail() {
       const found = all.find(v => v.slug === slug || v.id === slug || v.village_name?.toLowerCase().replace(/\s+/g, '-') === slug);
       setVillage(found || null);
       setLoading(false);
+      if (found?.id) {
+        const { data } = await supabase
+          .from('galleries')
+          .select('*')
+          .eq('galleryable_type', 'village')
+          .eq('galleryable_id', found.id)
+          .order('sort_order', { ascending: true });
+        setGallery(groupGalleryRows(data));
+      }
     };
     loadVillage().catch(() => setLoading(false));
   }, [slug]);
@@ -258,20 +271,7 @@ export default function VillageDetail() {
           </TabsContent>
 
           <TabsContent value="gallery">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {[
-                'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400&q=80',
-                'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&q=80',
-                'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?w=400&q=80',
-              ].map((src, i) => (
-                <div key={i} className="aspect-square rounded-xl overflow-hidden">
-                  <img src={src} alt="" className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
-                </div>
-              ))}
-              <div className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center p-4">
-                Gallery photos will appear here once uploaded by village representative
-              </div>
-            </div>
+            <BeforeAfterGallery gallery={gallery} />
           </TabsContent>
 
           <TabsContent value="donations">

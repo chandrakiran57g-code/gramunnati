@@ -23,6 +23,8 @@ import { toast } from 'sonner';
 import { Loader2, Layers, Save } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import BeforeAfterGalleryEditor from '@/components/admin/BeforeAfterGalleryEditor';
+import { normalizeBeforeAfter } from '@/lib/beforeAfterGallery';
 import { BilingualInput, BilingualTextarea, BilingualNestedTextarea } from '@/components/admin/BilingualField';
 
 export default function AdminActiveWorksPages() {
@@ -92,6 +94,7 @@ export default function AdminActiveWorksPages() {
       development_score: { ...base.development_score, ...(page?.development_score || {}) },
       statistics: { ...(base.statistics || {}), ...(page?.statistics || {}) },
       location: { district: '', state: '', pincode: '', ...(page?.location || {}) },
+      gallery: normalizeBeforeAfter(page?.gallery),
       donations: { goal: 0, raised: 0, ...(page?.donations || {}) },
       program_details: { objectives: '', activities: '', impact_highlights: '', ...(page?.program_details || {}) },
       card: { enable_donate: true, enable_details: true, enable_follow: true, enable_compare: false, ...(page?.card || {}) },
@@ -240,7 +243,7 @@ export default function AdminActiveWorksPages() {
 
               <Tabs defaultValue="overview">
                 <TabsList className="mb-4 flex h-auto flex-wrap">
-                  {['overview', 'impact', 'scores', 'statistics', ...(isProgram ? ['program'] : []), 'location', 'donations', 'settings'].map((t) => (
+                  {['overview', 'impact', 'scores', 'statistics', ...(isProgram ? ['program'] : []), 'gallery', 'location', 'donations', 'settings'].map((t) => (
                     <TabsTrigger key={t} value={t} className="capitalize">{t === 'program' ? 'Objectives' : t}</TabsTrigger>
                   ))}
                 </TabsList>
@@ -315,6 +318,17 @@ export default function AdminActiveWorksPages() {
                     </div>
                   </TabsContent>
                 )}
+
+                <TabsContent value="gallery">
+                  <p className="mb-3 text-sm text-muted-foreground">
+                    Upload photos to show the visual comparison of this place before and after CMSR's work.
+                    They appear in the Gallery tab of the public detail page.
+                  </p>
+                  <BeforeAfterGalleryEditor
+                    value={form.gallery}
+                    onChange={(gallery) => setForm((f) => ({ ...f, gallery }))}
+                  />
+                </TabsContent>
 
                 <TabsContent value="location">
                   <div className="grid gap-4 sm:grid-cols-3">

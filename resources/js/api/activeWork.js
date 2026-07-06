@@ -3,6 +3,7 @@ import { adminDbMutation } from '@/lib/adminDb';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { parseSettingsValue, serializeSettingsValue } from '@/lib/settingsStore';
 import { emptyActiveWorkPage, isProgramTemplate, PROGRAM_ACTIVE_CATEGORIES, formatActiveCategoryName } from '@/lib/activeWorkTemplates';
+import { BEFORE_CMSR_TITLE, AFTER_CMSR_TITLE, groupGalleryRows, normalizeBeforeAfter } from '@/lib/beforeAfterGallery';
 import { PROGRAMS } from '@/lib/programs';
 
 const STORE_KEY = 'active_work_store';
@@ -15,6 +16,41 @@ const DEFAULT_CATEGORIES = [
 
 function slugify(text) {
   return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+/** Before/After CMSR images for a village/school, stored in the `galleries` table */
+async function readEntityBeforeAfter(type, entityId) {
+  const { data } = await supabase
+    .from('galleries')
+    .select('*')
+    .eq('galleryable_type', type)
+    .eq('galleryable_id', entityId)
+    .order('sort_order', { ascending: true });
+  const grouped = groupGalleryRows(data);
+  return { before: grouped.before, after: grouped.after };
+}
+
+async function syncEntityBeforeAfter(type, entityId, gallery) {
+  const { before, after } = normalizeBeforeAfter(gallery);
+  const { data: existing } = await supabase
+    .from('galleries')
+    .select('id, title')
+    .eq('galleryable_type', type)
+    .eq('galleryable_id', entityId);
+
+  const stale = (existing || []).filter((r) => r.title === BEFORE_CMSR_TITLE || r.title === AFTER_CMSR_TITLE);
+  for (const row of stale) {
+    await supabase.from('galleries').delete().eq('id', row.id);
+  }
+
+  const rows = [
+    ...before.map((url, i) => ({ galleryable_type: type, galleryable_id: entityId, title: BEFORE_CMSR_TITLE, image_path: url, sort_order: i })),
+    ...after.map((url, i) => ({ galleryable_type: type, galleryable_id: entityId, title: AFTER_CMSR_TITLE, image_path: url, sort_order: 100 + i })),
+  ];
+  for (const row of rows) {
+    const { error } = await supabase.from('galleries').insert(row);
+    if (error) throw error;
+  }
 }
 
 async function readStore() {
@@ -730,6 +766,7 @@ export const activeWorkService = {
         statistics: {
           population: data.population ?? '',
         },
+        gallery: await readEntityBeforeAfter('village', data.id),
         link: `/villages/${data.slug}`,
       };
     }
@@ -755,6 +792,7 @@ export const activeWorkService = {
           teachers_count: data.teacher_count || 0,
           classrooms: data.classroom_count || 0,
         },
+        gallery: await readEntityBeforeAfter('school', data.id),
         link: `/schools/${data.slug}`,
       };
     }
@@ -777,6 +815,7 @@ export const activeWorkService = {
         };
         const { error } = await supabase.from('villages').update(payload).eq('id', form.entity_id);
         if (error) throw error;
+        await syncEntityBeforeAfter('village', form.entity_id, form.gallery);
         invalidateActiveWorkPublicCache();
         notifyPlatformDataChanged();
       });
@@ -798,6 +837,7 @@ export const activeWorkService = {
         };
         const { error } = await supabase.from('schools').update(payload).eq('id', form.entity_id);
         if (error) throw error;
+        await syncEntityBeforeAfter('school', form.entity_id, form.gallery);
         invalidateActiveWorkPublicCache();
         notifyPlatformDataChanged();
       });

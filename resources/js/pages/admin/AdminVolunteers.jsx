@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import {
   VOLUNTEER_SKILLS, VOLUNTEER_STATES, VOLUNTEER_AVAILABILITY, VOLUNTEER_STATUSES,
 } from '@/lib/adminSections';
-import { Loader2, Plus, Pencil, Search, UserPlus } from 'lucide-react';
+import { Loader2, Plus, Pencil, Search, Trash2, UserPlus } from 'lucide-react';
 
 async function generateVolunteerCode() {
   const year = new Date().getFullYear();
@@ -140,6 +140,20 @@ export default function AdminVolunteers() {
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (v) => {
+    if (!confirm(`Delete volunteer "${v.full_name}" (${v.volunteer_code || 'no ID'})? This cannot be undone.`)) return;
+    try {
+      await adminDbMutation(async () => {
+        const { error } = await supabase.from('volunteers').delete().eq('id', v.id);
+        if (error) throw error;
+      });
+      toast.success('Volunteer deleted');
+      load();
+    } catch (e) {
+      toast.error(e.message || 'Delete failed');
+    }
   };
 
   const statusBadge = (status) => VOLUNTEER_STATUSES.find((s) => s.value === status) || VOLUNTEER_STATUSES[0];
@@ -274,7 +288,7 @@ export default function AdminVolunteers() {
                 <th className="px-4 py-3 hidden sm:table-cell">Program</th>
                 <th className="px-4 py-3 hidden md:table-cell">Location</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 w-16" />
+                <th className="px-4 py-3 w-24" />
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -297,7 +311,10 @@ export default function AdminVolunteers() {
                     <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">{[v.district, v.state].filter(Boolean).join(', ') || '—'}</td>
                     <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${st.color}`}>{st.label}</span></td>
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="ghost" onClick={() => handleEdit(v)}><Pencil className="h-4 w-4" /></Button>
+                      <div className="flex items-center gap-1">
+                        <Button size="sm" variant="ghost" onClick={() => handleEdit(v)}><Pencil className="h-4 w-4" /></Button>
+                        <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(v)}><Trash2 className="h-4 w-4" /></Button>
+                      </div>
                     </td>
                   </tr>
                 );

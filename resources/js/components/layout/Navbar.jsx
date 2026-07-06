@@ -11,8 +11,19 @@ import { usePlatformNavData } from '@/hooks/usePlatformNavData';
 import { LOGO_URL } from '@/lib/navFallbacks';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { localize } from '@/lib/localizedContent';
+import { normalizeExternalUrl, isExternalUrl } from '@/lib/externalUrl';
 
-
+/** Renders <a> for external URLs (YouTube, socials, …) and a router <Link> for internal paths. */
+function SmartLink({ to, children, ...props }) {
+  if (isExternalUrl(to)) {
+    return (
+      <a href={normalizeExternalUrl(to)} target="_blank" rel="noopener noreferrer" {...props}>
+        {children}
+      </a>
+    );
+  }
+  return <Link to={to} {...props}>{children}</Link>;
+}
 
 export default function Navbar() {
 
@@ -181,7 +192,7 @@ export default function Navbar() {
           onMouseEnter={() => hasChildren && openDropdown(item.label)}
           onMouseLeave={closeDropdown}
         >
-          <Link
+          <SmartLink
             to={item.path}
             className={linkClass(item.path, pathActive)}
           >
@@ -189,7 +200,7 @@ export default function Navbar() {
             {hasChildren && (
               <ChevronDown className={`nav-chevron w-3.5 h-3.5 opacity-70 ${isOpen ? 'nav-chevron-open' : ''}`} />
             )}
-          </Link>
+          </SmartLink>
 
           <AnimatePresence>
             {hasChildren && isOpen && (
@@ -210,13 +221,13 @@ export default function Navbar() {
                     </span>
                   </div>
                   {item.children.map((child) => (
-                    <Link
+                    <SmartLink
                       key={child.path + child.label}
                       to={child.path}
                       className="nav-dropdown-item block px-4 py-2.5 text-sm text-foreground"
                     >
                       {child.label}
-                    </Link>
+                    </SmartLink>
                   ))}
                 </motion.div>
               </>
@@ -450,13 +461,13 @@ export default function Navbar() {
                                 {t('home.viewAll')}
                               </Link>
                               {item.children.map((child) => (
-                                <Link
+                                <SmartLink
                                   key={child.path + child.label}
                                   to={child.path}
                                   className="nav-dropdown-item block px-3 py-2 text-xs text-muted-foreground rounded-md"
                                 >
                                   {child.label}
-                                </Link>
+                                </SmartLink>
                               ))}
                             </div>
                           </motion.div>
@@ -464,14 +475,14 @@ export default function Navbar() {
                       </AnimatePresence>
                     </>
                   ) : (
-                    <Link
+                    <SmartLink
                       to={item.path}
                       className={`block px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                         isNavItemActive(item) ? 'text-primary bg-primary/10' : 'text-foreground hover:text-primary hover:bg-muted'
                       }`}
                     >
                       {item.label}
-                    </Link>
+                    </SmartLink>
                   )}
                 </div>
               );})}

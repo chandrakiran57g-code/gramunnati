@@ -44,10 +44,18 @@ export default function ProjectCard({ project, index = 0 }) {
   const projectName = localize(project, 'project_name', lang);
   const shortDescription = localize(project, 'short_description', lang);
   const slug = project.slug || project.project_name?.toLowerCase().replace(/\s+/g, '-') || project.id;
+  // `category` can arrive as a relation object from the API — always resolve to a string
+  const categoryName = typeof project.category === 'string'
+    ? project.category
+    : project.project_categories?.name || project.category?.name || '';
+  const location = [
+    project.village_name || project.villages?.village_name,
+    project.district || project.villages?.districts?.name,
+  ].filter(Boolean).join(', ');
   const raisedPct = project.budget_amount > 0
     ? Math.min(Math.round((project.raised_amount / project.budget_amount) * 100), 100)
     : project.progress_percentage || 0;
-  const progressClass = categoryProgress[project.category] || '[&>div]:bg-primary';
+  const progressClass = categoryProgress[categoryName] || '[&>div]:bg-primary';
 
   return (
     <motion.div
@@ -69,9 +77,11 @@ export default function ProjectCard({ project, index = 0 }) {
               Featured
             </div>
           )}
-          <Badge className={`absolute top-3 right-3 text-xs border ${categoryColors[project.category] || 'bg-cream-100 text-brown-600'}`}>
-            {project.category}
-          </Badge>
+          {categoryName && (
+            <Badge className={`absolute top-3 right-3 text-xs border ${categoryColors[categoryName] || 'bg-cream-100 text-brown-600'}`}>
+              {categoryName}
+            </Badge>
+          )}
         </div>
       </Link>
 
@@ -81,10 +91,12 @@ export default function ProjectCard({ project, index = 0 }) {
             {projectName}
           </h3>
         </Link>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
-          <MapPin className="w-3 h-3" />
-          {project.village_name}, {project.district}
-        </div>
+        {location && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
+            <MapPin className="w-3 h-3" />
+            {location}
+          </div>
+        )}
         <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
           {shortDescription}
         </p>

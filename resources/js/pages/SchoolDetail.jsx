@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { supabase } from '@/api/supabaseClient';
 import { MapPin, Users, BookOpen, Heart, ChevronLeft, CheckCircle, XCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
+import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
+import { groupGalleryRows } from '@/lib/beforeAfterGallery';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const schoolTypeLabel = { government: 'Government', private: 'Private', aided: 'Aided', model: 'Model School' };
@@ -16,13 +19,23 @@ const schoolTypeColor = { government: 'bg-primary/10 text-primary', private: 'bg
 export default function SchoolDetail() {
   const { slug } = useParams();
   const [school, setSchool] = useState(null);
+  const [gallery, setGallery] = useState({ before: [], after: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     base44.entities.School.list('-created_date', 200)
-      .then(all => {
+      .then(async (all) => {
         const found = all.find(s => s.slug === slug || s.id === slug || s.school_name?.toLowerCase().replace(/\s+/g, '-') === slug);
         setSchool(found || null);
+        if (found?.id) {
+          const { data } = await supabase
+            .from('galleries')
+            .select('*')
+            .eq('galleryable_type', 'school')
+            .eq('galleryable_id', found.id)
+            .order('sort_order', { ascending: true });
+          setGallery(groupGalleryRows(data));
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -262,12 +275,7 @@ export default function SchoolDetail() {
           </TabsContent>
 
           <TabsContent value="gallery">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {['https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=400&q=80','https://images.unsplash.com/photo-1509062522246-3755977927d7?w=400&q=80'].map((src, i) => (
-                <div key={i} className="aspect-square rounded-xl overflow-hidden"><img src={src} alt="" className="w-full h-full object-cover" /></div>
-              ))}
-              <div className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center p-4">Gallery photos appear here once added</div>
-            </div>
+            <BeforeAfterGallery gallery={gallery} />
           </TabsContent>
 
           <TabsContent value="donations">

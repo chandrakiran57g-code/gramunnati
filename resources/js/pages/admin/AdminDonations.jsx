@@ -1,7 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { adminService } from '@/api/admin';
-import { Heart, Search, Download } from 'lucide-react';
+import { adminDbMutation } from '@/lib/adminDb';
+import { toast } from 'sonner';
+import { Search, Download, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -22,12 +24,29 @@ export default function AdminDonations() {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true);
     adminService.listAllDonations({ limit: 200 })
       .then(({ data }) => setDonations(data || []))
-      .catch(() => {})
+      .catch(() => setDonations([]))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleDelete = async (d) => {
+    const name = d.is_anonymous ? 'Anonymous' : d.donor_name;
+    if (!confirm(`Delete donation of ₹${(d.amount || 0).toLocaleString('en-IN')} from "${name}"? Its receipt will also be removed. This cannot be undone.`)) return;
+    try {
+      await adminDbMutation(async () => {
+        await adminService.deleteRecord('donations', d.id);
+      });
+      toast.success('Donation deleted');
+      load();
+    } catch (e) {
+      toast.error(e.message || 'Delete failed');
+    }
+  };
 
   const filtered = donations.filter(d => {
     const matchQ = !query || d.donor_name?.toLowerCase().includes(query.toLowerCase()) || d.email?.toLowerCase().includes(query.toLowerCase());
@@ -128,6 +147,7 @@ export default function AdminDonations() {
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground hidden md:table-cell">Amount</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Status</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground hidden lg:table-cell">Date</th>
+                  <th className="w-14 px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -149,6 +169,11 @@ export default function AdminDonations() {
                     </td>
                     <td className="px-4 py-3 text-sm text-muted-foreground hidden lg:table-cell">
                       {new Date(d.created_at || d.created_date).toLocaleDateString('en-IN')}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(d)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </td>
                   </motion.tr>
                 ))}

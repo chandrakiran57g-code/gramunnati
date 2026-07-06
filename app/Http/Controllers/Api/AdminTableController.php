@@ -200,8 +200,21 @@ class AdminTableController extends Controller
     {
         $model = $this->resolveModel($table);
         $row = $model::query()->findOrFail($id);
-        if (method_exists($row, 'delete')) {
-            $row->delete();
+
+        $user = $table === 'profiles' ? $row->user : null;
+
+        if ($table === 'donations' && method_exists($row, 'receipts')) {
+            $row->receipts()->delete();
+        }
+
+        $row->delete();
+
+        if ($user) {
+            try {
+                $user->delete();
+            } catch (\Throwable) {
+                // User row may be referenced elsewhere (donations, etc.) — profile removal is enough
+            }
         }
 
         return response()->json(['data' => null, 'error' => null]);

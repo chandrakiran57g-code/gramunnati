@@ -3,12 +3,80 @@ import { Heart, MapPin, Phone, Mail } from 'lucide-react';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import BrandTagline from '@/components/brand/BrandTagline';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
+import { normalizeExternalUrl, isExternalUrl } from '@/lib/externalUrl';
 
 const DEFAULT_LOGO_URL = "https://media.base44.com/images/public/user_6a19a4df98ac03e9b75a9132/71b2ecb8f_Screenshot2026-06-10200544.png";
 
+export const DEFAULT_FOOTER_LINKS = {
+  platform: [
+    { label: 'Villages', path: '/villages' },
+    { label: 'Schools', path: '/schools' },
+    { label: 'Projects', path: '/projects' },
+    { label: 'What We Do', path: '/programs' },
+    { label: 'Impact Dashboard', path: '/impact' },
+    { label: 'Gallery', path: '/gallery' },
+    { label: 'Success Stories', path: '/stories' },
+    { label: 'News', path: '/news' },
+    { label: 'Events', path: '/events' },
+  ],
+  involved: [
+    { label: 'Donate Now', path: '/donate' },
+    { label: 'Become a Volunteer', path: '/volunteer' },
+    { label: 'Member List', path: '/members' },
+    { label: 'Our Teams', path: '/teams' },
+    { label: 'Partner Organizations', path: '/partners' },
+    { label: 'Contact Us', path: '/contact' },
+    { label: 'FAQs', path: '/faqs' },
+  ],
+};
+
+function parseFooterLinks(raw) {
+  if (!raw) return null;
+  try {
+    const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (parsed && (Array.isArray(parsed.platform) || Array.isArray(parsed.involved))) {
+      return {
+        platform: Array.isArray(parsed.platform) ? parsed.platform : [],
+        involved: Array.isArray(parsed.involved) ? parsed.involved : [],
+      };
+    }
+  } catch { /* fall back to defaults */ }
+  return null;
+}
+
+function FooterLinkList({ links }) {
+  return (
+    <ul className="space-y-2.5 text-sm">
+      {links.filter((l) => l.label && l.path).map((item) => (
+        <li key={`${item.label}-${item.path}`}>
+          {isExternalUrl(item.path) ? (
+            <a href={normalizeExternalUrl(item.path)} target="_blank" rel="noopener noreferrer" className="hover:text-cream-100 transition-colors">{item.label}</a>
+          ) : (
+            <Link to={item.path} className="hover:text-cream-100 transition-colors">{item.label}</Link>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export default function Footer() {
-  const { siteName, contactEmail, contactPhone, address, logoUrl } = usePublicSettings();
+  const { siteName, contactEmail, contactPhone, address, logoUrl, raw } = usePublicSettings();
   const logo = logoUrl || DEFAULT_LOGO_URL;
+
+  const footerLinks = parseFooterLinks(raw.footer_links) || DEFAULT_FOOTER_LINKS;
+  const quoteEn = raw.footer_quote || '"Our Village – Our Responsibility – Our Development"';
+  const quoteTe = raw.footer_quote_te || '"మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి"';
+  const bottomText = raw.footer_bottom_text
+    || `© ${new Date().getFullYear()} ${siteName} — Village Development & School Empowerment Platform. All rights reserved.`;
+
+  const socials = [
+    { IconComp: Facebook, label: 'Facebook', url: normalizeExternalUrl(raw.footer_social_facebook) },
+    { IconComp: Twitter, label: 'Twitter', url: normalizeExternalUrl(raw.footer_social_twitter) },
+    { IconComp: Instagram, label: 'Instagram', url: normalizeExternalUrl(raw.footer_social_instagram) },
+    { IconComp: Youtube, label: 'YouTube', url: normalizeExternalUrl(raw.footer_social_youtube) },
+  ].filter((s) => s.url);
+
   return (
     <footer className="bg-brown-900 text-cream-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
@@ -22,72 +90,33 @@ export default function Footer() {
                 <BrandTagline className="text-xs text-brown-400 [&_span:first-child]:text-brown-400 [&_span:last-child]:text-primary" />
               </div>
             </div>
-            <p className="text-sm text-brown-400 leading-relaxed mb-4">
-              "Our Village – Our Responsibility – Our Development"
-            </p>
-            <p className="text-xs text-brown-400 italic">
-              "మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి"
-            </p>
-            <div className="flex gap-3 mt-5">
-              {[
-              { IconComp: Facebook, label: 'Facebook' },
-              { IconComp: Twitter, label: 'Twitter' },
-              { IconComp: Instagram, label: 'Instagram' },
-              { IconComp: Youtube, label: 'YouTube' },
-            ].map(({ IconComp, label }) => (
-                <a key={label} href="#" aria-label={label} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-                  <IconComp className="w-4 h-4" />
-                </a>
-              ))}
-            </div>
+            {quoteEn && (
+              <p className="text-sm text-brown-400 leading-relaxed mb-4">{quoteEn}</p>
+            )}
+            {quoteTe && (
+              <p className="text-xs text-brown-400 italic">{quoteTe}</p>
+            )}
+            {socials.length > 0 && (
+              <div className="flex gap-3 mt-5">
+                {socials.map(({ IconComp, label, url }) => (
+                  <a key={label} href={url} target="_blank" rel="noopener noreferrer" aria-label={label} className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
+                    <IconComp className="w-4 h-4" />
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Site Links */}
           <div>
             <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Platform</h4>
-            <ul className="space-y-2.5 text-sm">
-              {[
-                { label: 'Villages', path: '/villages' },
-                { label: 'Schools', path: '/schools' },
-                { label: 'Projects', path: '/projects' },
-                { label: 'Programs', path: '/programs' },
-                { label: 'Impact Dashboard', path: '/impact' },
-                { label: 'Gallery', path: '/gallery' },
-                { label: 'Success Stories', path: '/stories' },
-                { label: 'News', path: '/news' },
-                { label: 'Events', path: '/events' },
-                { label: 'Compare Villages', path: '/compare' },
-              ].map(item => (
-                <li key={item.path}>
-                  <Link to={item.path} className="hover:text-cream-100 transition-colors">{item.label}</Link>
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.platform} />
           </div>
 
           {/* Get Involved */}
           <div>
             <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Get Involved</h4>
-            <ul className="space-y-2.5 text-sm">
-              {[
-                { label: 'Donate Now', path: '/donate' },
-                { label: 'Become a Volunteer', path: '/volunteer' },
-                { label: 'Compare Villages', path: '/compare' },
-                { label: 'Member Dashboard', path: '/dashboard' },
-                { label: 'My Villages', path: '/my-villages' },
-                { label: 'My Schools', path: '/my-schools' },
-                { label: 'My Donations', path: '/my-donations' },
-                { label: 'About Us', path: '/about' },
-                { label: 'Vision & Mission', path: '/vision' },
-                { label: 'Our Team', path: '/our-team' },
-                { label: 'Contact Us', path: '/contact' },
-                { label: 'FAQs', path: '/faqs' },
-              ].map(item => (
-                <li key={item.path}>
-                  <Link to={item.path} className="hover:text-cream-100 transition-colors">{item.label}</Link>
-                </li>
-              ))}
-            </ul>
+            <FooterLinkList links={footerLinks.involved} />
           </div>
 
           {/* Contact */}
@@ -119,7 +148,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brown-400">
-          <p>© {new Date().getFullYear()} {siteName} — Village Development & School Empowerment Platform. All rights reserved.</p>
+          <p>{bottomText}</p>
           <div className="flex items-center gap-1">
             <span>Made with</span>
             <Heart className="w-3 h-3 text-red-500 fill-red-500" />

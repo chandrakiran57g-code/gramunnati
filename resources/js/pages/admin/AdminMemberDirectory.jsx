@@ -1,8 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { adminService } from '@/api/admin';
-import { Users, Search } from 'lucide-react';
+import { adminDbMutation } from '@/lib/adminDb';
+import { toast } from 'sonner';
+import { Search, Trash2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import AdminShell from '@/components/admin/AdminShell';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 
@@ -17,7 +20,8 @@ export default function AdminMemberDirectory() {
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true);
     adminService.listUsers({ limit: 500 })
       .then(({ data }) => {
         const sorted = [...(data || [])].sort((a, b) => {
@@ -43,6 +47,21 @@ export default function AdminMemberDirectory() {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleDelete = async (m) => {
+    if (!confirm(`Delete member "${m.name}"? They will be removed from the member list. This cannot be undone.`)) return;
+    try {
+      await adminDbMutation(async () => {
+        await adminService.deleteRecord('profiles', m.id);
+      });
+      toast.success('Member deleted');
+      load();
+    } catch (e) {
+      toast.error(e.message || 'Delete failed');
+    }
+  };
 
   useEffect(() => {
     if (!search.trim()) {
@@ -88,6 +107,7 @@ export default function AdminMemberDirectory() {
                   <th className="text-left px-4 py-3 font-semibold">Area</th>
                   <th className="text-left px-4 py-3 font-semibold">Profession</th>
                   <th className="text-left px-4 py-3 font-semibold">Mobile</th>
+                  <th className="w-16 px-4 py-3" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -99,6 +119,11 @@ export default function AdminMemberDirectory() {
                     <td className="px-4 py-3 text-muted-foreground">{m.area}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.profession}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.mobile}</td>
+                    <td className="px-4 py-3">
+                      <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(m)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </td>
                   </motion.tr>
                 ))}
               </tbody>
