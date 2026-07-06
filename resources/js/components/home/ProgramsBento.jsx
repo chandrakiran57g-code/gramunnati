@@ -3,12 +3,6 @@ import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 
-const FALLBACK_PROGRAMS = [
-  { title: 'Village Development', description: 'Kuccha se pakka raasta, bijli, paani.', icon: '🏘️', tone: 'home-program-earth', span: 'lg:col-span-2 lg:row-span-2' },
-  { title: 'School Development', description: 'Kitaabein, benches, classroom.', icon: '🏫', tone: 'home-program-clay', span: 'lg:col-span-1' },
-  { title: 'Tree Plantation', description: 'Ped lagao, hariyali badhao.', icon: '🌳', tone: 'home-program-leaf', span: 'lg:col-span-1' },
-];
-
 function ProgramCard({ program, index }) {
   const ref = useRef(null);
   const x = useMotionValue(0);
@@ -58,7 +52,8 @@ function ProgramCard({ program, index }) {
 }
 
 export default function ProgramsBento({ programs = [], loading }) {
-  const display = programs.length > 0 ? programs : FALLBACK_PROGRAMS;
+  if (!loading && programs.length === 0) return null;
+  const display = programs;
 
   return (
     <section className="py-24 sm:py-28 home-programs-section relative overflow-hidden">
@@ -70,17 +65,17 @@ export default function ProgramsBento({ programs = [], loading }) {
               className="font-heading font-bold text-[#3D2914] mb-3 text-balance"
               style={{ fontSize: 'clamp(1.875rem, 4vw, 3rem)', letterSpacing: '-0.025em' }}
             >
-              Gaon ke programs — database se
+              What We Do
             </h2>
             <p className="text-[#5C4033]/75 max-w-lg text-pretty font-body">
-              {loading ? 'Loading…' : `${display.length} active programs from admin panel`}
+              {loading ? 'Loading…' : 'Programs creating lasting change across rural India'}
             </p>
           </motion.div>
           <Link
             to="/programs"
             className="inline-flex items-center gap-2 text-[#8B4513] hover:text-[#6B3410] font-semibold text-sm transition-colors group shrink-0"
           >
-            Saare programs dekhein
+            View all programs
             <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </div>

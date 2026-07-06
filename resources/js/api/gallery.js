@@ -2,7 +2,7 @@ import { cmsService } from '@/api/cms';
 import { adminDbMutation, ensureAdminDbAccess } from '@/lib/adminDb';
 import { galleryService } from '@/api/admin';
 import { supabase } from '@/api/supabaseClient';
-import { galleryCollections as defaultCollections, GALLERY_CATEGORIES } from '@/lib/galleryData';
+import { GALLERY_CATEGORIES } from '@/lib/galleryData';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 
 const SETTINGS_KEY = 'gallery_collections';
@@ -23,11 +23,9 @@ function parseGalleryValue(raw) {
   }
 }
 
-export async function getGalleryCollections({ fallback = false } = {}) {
+export async function getGalleryCollections() {
   const raw = await cmsService.getSetting(SETTINGS_KEY);
-  const parsed = parseGalleryValue(raw);
-  if (parsed?.length) return parsed;
-  return fallback ? defaultCollections : [];
+  return parseGalleryValue(raw) || [];
 }
 
 async function persistGalleryCollections(collections) {
@@ -45,11 +43,6 @@ export async function saveGalleryCollections(collections) {
     await persistGalleryCollections(collections);
   });
   return collections;
-}
-
-export async function seedGalleryCollections() {
-  await saveGalleryCollections(defaultCollections);
-  return defaultCollections;
 }
 
 /** Map UI category label → galleries.galleryable_type */
@@ -128,7 +121,7 @@ export async function addGalleryMedia({
       throw new Error('Choose a video file, paste a video URL, or paste a YouTube link');
     }
 
-    const collections = await getGalleryCollections({ fallback: true });
+    const collections = await getGalleryCollections();
     const type = CATEGORY_TO_TYPE[category] || 'village';
     const collectionTitle = title || (mediaType === 'video' ? 'Gallery Video' : 'Gallery Photo');
     const resolvedCollectionId = collectionId || slugify(collectionTitle);
@@ -196,14 +189,14 @@ export async function addGalleryPhoto(opts) {
 }
 
 export async function deleteGalleryCollection(collectionId) {
-  const collections = await getGalleryCollections({ fallback: true });
+  const collections = await getGalleryCollections();
   const next = collections.filter((c) => c.id !== collectionId);
   await saveGalleryCollections(next);
   return next;
 }
 
 export async function deleteGalleryMedia(collectionId, mediaId) {
-  const collections = await getGalleryCollections({ fallback: true });
+  const collections = await getGalleryCollections();
   const next = collections.map((c) => {
     if (c.id !== collectionId) return c;
     const media = (c.media || []).filter((m) => m.id !== mediaId);
@@ -219,7 +212,7 @@ export async function deleteGalleryMedia(collectionId, mediaId) {
 }
 
 export async function upsertGalleryCollection(collection) {
-  const collections = await getGalleryCollections({ fallback: true });
+  const collections = await getGalleryCollections();
   const idx = collections.findIndex((c) => c.id === collection.id);
   if (idx >= 0) collections[idx] = collection;
   else collections.push(collection);

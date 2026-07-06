@@ -40,28 +40,6 @@ function parseAmounts(p) {
   return { funding_goal, raised_amount };
 }
 
-function projectToAdminItem(p, index = 0) {
-  const { funding_goal, raised_amount } = parseAmounts(p);
-  return {
-    id: `project-${p.id}`,
-    _adminKey: `project:${p.id}`,
-    _source: 'project',
-    entity_id: p.id,
-    project_id: p.id,
-    name: p.project_name,
-    slug: p.slug,
-    cover_image: p.cover_image || '',
-    description: p.short_description || '',
-    village_name: p.villages?.village_name || '',
-    village_slug: p.villages?.slug || '',
-    funding_goal,
-    raised_amount,
-    status: p.status === 'active' ? 'active' : 'inactive',
-    program_category: inferProgramCategory(p),
-    display_order: index,
-  };
-}
-
 function toCard(item, project) {
   const target = parseFloat(item.funding_goal ?? project?.budget_amount ?? project?.funding_goal ?? 0);
   const raised = parseFloat(item.raised_amount ?? project?.raised_amount ?? 0);
@@ -89,57 +67,6 @@ function toCard(item, project) {
   };
 }
 
-async function fetchHomepageProjects(limit = 4) {
-  const { data } = await supabase
-    .from('projects')
-    .select('*, villages(village_name, slug), project_categories(name, icon)')
-    .eq('status', 'active')
-    .is('deleted_at', null)
-    .order('created_at', { ascending: false })
-    .limit(8);
-
-  return (data || [])
-    .map((p) => {
-      const { funding_goal, raised_amount } = parseAmounts(p);
-      const progress = funding_goal > 0 ? Math.min(100, Math.round((raised_amount / funding_goal) * 100)) : 0;
-      return { ...p, progress, funding_goal, raised_amount };
-    })
-    .sort((a, b) => (a.progress < 100 ? 0 : 1) - (b.progress < 100 ? 0 : 1) || a.progress - b.progress)
-    .slice(0, limit);
-}
-
-function inferProgramCategory(project) {
-  const name = `${project.project_name || ''} ${project.short_description || ''}`.toLowerCase();
-  if (name.includes('tree') || name.includes('plantation')) return 'tree-plantation';
-  if (name.includes('water') || name.includes('harvest')) return 'water-conservation';
-  if (name.includes('school') || name.includes('classroom') || name.includes('digital')) return 'school-empowerment';
-  if (name.includes('agri') || name.includes('farmer') || name.includes('seed')) return 'agriculture-development';
-  if (name.includes('shg') || name.includes('women')) return 'women-shgs';
-  if (name.includes('skill') || name.includes('training')) return 'skill-development';
-  if (name.includes('health') || name.includes('medical')) return 'healthcare';
-  return 'village-development';
-}
-
-function storeItemFromProject(p, index) {
-  const { funding_goal, raised_amount } = parseAmounts(p);
-  return {
-    id: uid(),
-    name: p.project_name,
-    slug: p.slug,
-    cover_image: p.cover_image || '',
-    description: p.short_description || '',
-    village_name: p.villages?.village_name || '',
-    village_slug: p.villages?.slug || '',
-    funding_goal,
-    raised_amount,
-    project_id: p.id,
-    program_category: inferProgramCategory(p),
-    status: 'active',
-    display_order: index,
-    _source: 'store',
-  };
-}
-
 export const needsSupportService = {
   async getStore() {
     return readStore();
@@ -154,41 +81,14 @@ export const needsSupportService = {
     return items.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
   },
 
-  /** Import homepage projects into admin store when empty (one-time bootstrap) */
-  async ensureSyncedFromProjects() {
-    const store = await readStore();
-    if ((store.items || []).length > 0) return store.items;
-
-    const projects = await fetchHomepageProjects(4);
-    if (!projects.length) return [];
-
-    store.items = projects.map((p, i) => storeItemFromProject(p, i));
-    await writeStore(store);
-    return store.items;
-  },
-
-  /** All cards visible on homepage — store + live projects not yet in store */
+  /** All admin cards — store is the single source of truth (no auto-import of projects) */
   async listAllAdminItems() {
-    await this.ensureSyncedFromProjects();
     const storeItems = (await this.listItems()).map((i) => ({
       ...i,
       _source: 'store',
       _adminKey: `store:${i.id}`,
     }));
-
-    const linkedProjectIds = new Set(
-      storeItems.filter((i) => i.project_id).map((i) => String(i.project_id)),
-    );
-    const projects = await fetchHomepageProjects(4);
-    const merged = [...storeItems];
-
-    for (const [index, p] of projects.entries()) {
-      if (linkedProjectIds.has(String(p.id))) continue;
-      if (storeItems.some((i) => i.slug === p.slug)) continue;
-      merged.push(projectToAdminItem(p, storeItems.length + index));
-    }
-
-    return merged.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
+    return storeItems.sort((a, b) => (a.display_order ?? 0) - (b.display_order ?? 0));
   },
 
   async saveItem(item) {
@@ -272,14 +172,10 @@ export const needsSupportService = {
     return this.deleteItem(item.id);
   },
 
-  /** Cards shown on homepage "Needs support now" section */
+  /** Cards shown on homepage "Needs support now" section — admin-curated only */
   async getHomepageItems(limit = 4) {
     const items = await this.listItems({ activeOnly: true });
-    if (!items.length) {
-      const projects = await fetchHomepageProjects(limit || 50);
-      const mapped = projects.map((p, i) => toCard(projectToAdminItem(p, i), p));
-      return limit ? mapped.slice(0, limit) : mapped;
-    }
+    if (!items.length) return [];
 
     const projectIds = items.filter((i) => i.project_id).map((i) => i.project_id);
     let projectsMap = {};

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cmsService } from '@/api/cms';
 import { programPagesService } from '@/api/programPages';
-import { getProgramBySlug, PROGRAMS as STATIC_PROGRAMS } from '@/lib/programs';
+import { getProgramBySlug } from '@/lib/programs';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
 
@@ -18,36 +18,30 @@ function linesToList(text) {
 }
 
 function mergeProgram(cmsRow, detailPage, staticFallback) {
-  const slug = cmsRow?.slug || staticFallback?.slug;
-  const title = cmsRow?.title || staticFallback?.title || slug;
-  const description = cmsRow?.description || staticFallback?.description || '';
-  const cover = detailPage?.hero_image || cmsRow?.cover_image || staticFallback?.cover || '/hero/village.jpg';
-  const longDescription = localize(detailPage, 'long_description') || detailPage?.long_description || staticFallback?.longDescription || description;
-  const objectives = linesToList(localize(detailPage, 'objectives') || detailPage?.objectives).length
-    ? linesToList(localize(detailPage, 'objectives') || detailPage?.objectives)
-    : staticFallback?.objectives || [];
-  const activities = linesToList(localize(detailPage, 'activities') || detailPage?.activities).length
-    ? linesToList(localize(detailPage, 'activities') || detailPage?.activities)
-    : staticFallback?.activities || [];
-  const impact = linesToList(localize(detailPage, 'impact_highlights') || detailPage?.impact_highlights).length
-    ? linesToList(localize(detailPage, 'impact_highlights') || detailPage?.impact_highlights)
-    : staticFallback?.impact || [];
+  const slug = cmsRow.slug;
+  const title = cmsRow.title || slug;
+  const description = cmsRow.description || '';
+  const cover = detailPage?.hero_image || cmsRow.cover_image || '/hero/village.jpg';
+  const longDescription = localize(detailPage, 'long_description') || detailPage?.long_description || description;
+  const objectives = linesToList(localize(detailPage, 'objectives') || detailPage?.objectives);
+  const activities = linesToList(localize(detailPage, 'activities') || detailPage?.activities);
+  const impact = linesToList(localize(detailPage, 'impact_highlights') || detailPage?.impact_highlights);
   const stats = {
-    villages: detailPage?.stats?.villages ?? staticFallback?.stats?.villages ?? 0,
-    schools: detailPage?.stats?.schools ?? staticFallback?.stats?.schools ?? 0,
-    volunteers: detailPage?.stats?.volunteers ?? staticFallback?.stats?.volunteers ?? 0,
-    donations: detailPage?.stats?.donations ?? staticFallback?.stats?.donations ?? 0,
+    villages: detailPage?.stats?.villages ?? 0,
+    schools: detailPage?.stats?.schools ?? 0,
+    volunteers: detailPage?.stats?.volunteers ?? 0,
+    donations: detailPage?.stats?.donations ?? 0,
   };
   const gallery = linesToList(detailPage?.gallery_images);
   const stories = gallery.length
     ? gallery.map((src, i) => ({ title: `Gallery ${i + 1}`, desc: '', img: src }))
-    : staticFallback?.stories || [{ title, desc: description, img: cover }];
+    : [];
 
   return {
     slug,
     title: localize(cmsRow, 'title') || title,
     description: localize(cmsRow, 'description') || description,
-    icon: cmsRow?.icon || staticFallback?.icon || '🌾',
+    icon: cmsRow.icon || '🌾',
     cover,
     longDescription,
     objectives,
@@ -76,12 +70,9 @@ export default function ProgramDetail() {
     ]).then(([programs, detailPage]) => {
       if (cancelled) return;
       const cmsRow = (programs || []).find((p) => p.slug === slug);
+      // Static entry only supplies theme colors — never page content
       const staticFallback = getProgramBySlug(slug);
-      if (cmsRow || staticFallback) {
-        setProgram(mergeProgram(cmsRow, detailPage, staticFallback));
-      } else {
-        setProgram(null);
-      }
+      setProgram(cmsRow ? mergeProgram(cmsRow, detailPage, staticFallback) : null);
     }).finally(() => {
       if (!cancelled) setLoading(false);
     });

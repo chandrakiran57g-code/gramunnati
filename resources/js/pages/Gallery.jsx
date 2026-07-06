@@ -95,6 +95,10 @@ export default function Gallery() {
               </AnimatePresence>
             </div>
           )
+        ) : filtered.length === 0 ? (
+          <div className="text-center py-16 text-muted-foreground">
+            No photos found for this category.
+          </div>
         ) : (
           <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
             <AnimatePresence mode="wait">

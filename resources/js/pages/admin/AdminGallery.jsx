@@ -54,7 +54,7 @@ export default function AdminGallery() {
   const loadGallery = async () => {
     setLoading(true);
     try {
-      const data = await getGalleryCollections({ fallback: true });
+      const data = await getGalleryCollections();
       setCollections(data);
     } catch (err) {
       toast.error(err.message || 'Failed to load gallery');

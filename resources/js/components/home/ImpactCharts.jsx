@@ -1,21 +1,11 @@
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
-const FALLBACK_STATE = [
-  { state: 'Telangana', villages: 42, schools: 67, projects: 28 },
-  { state: 'AP', villages: 38, schools: 52, projects: 21 },
-];
-
-const FALLBACK_DONATION = [
-  { name: 'Village', value: 38, color: '#8B6914' },
-  { name: 'School', value: 28, color: '#6B5344' },
-  { name: 'Project', value: 24, color: '#5C4033' },
-  { name: 'General', value: 10, color: '#D4A017' },
-];
-
 export default function ImpactCharts({ stateStats = [], donationBreakdown = [], loading }) {
-  const stateData = stateStats.length > 0 ? stateStats : FALLBACK_STATE;
-  const donationDist = donationBreakdown.length > 0 ? donationBreakdown : FALLBACK_DONATION;
+  const stateData = stateStats;
+  const donationDist = donationBreakdown;
+
+  if (!loading && stateData.length === 0 && donationDist.length === 0) return null;
 
   return (
     <section className="py-20 sm:py-24 bg-[#FFF8E7]">
@@ -30,14 +20,10 @@ export default function ImpactCharts({ stateStats = [], donationBreakdown = [], 
             className="font-heading font-bold text-[#3D2914] mb-3"
             style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', letterSpacing: '-0.025em' }}
           >
-            Impact dekhein — data se
+            Our Impact
           </h2>
           <p className="text-[#5C4033]/70 max-w-xl mx-auto font-body">
-            {loading
-              ? 'Charts load ho rahe hain…'
-              : stateStats.length > 0
-                ? 'State-wise breakdown seedhe database se'
-                : 'Sample data — database mein entries add karte hi update hoga'}
+            {loading ? 'Loading charts…' : 'State-wise development and donation breakdown'}
           </p>
         </motion.div>
 
@@ -46,6 +32,8 @@ export default function ImpactCharts({ stateStats = [], donationBreakdown = [], 
             <h3 className="font-heading font-bold text-[#3D2914] text-lg mb-4">State-wise development</h3>
             {loading ? (
               <div className="h-[240px] bg-[#E8DFD0]/50 rounded-lg animate-pulse" />
+            ) : stateData.length === 0 ? (
+              <p className="text-sm text-[#5C4033]/60 py-16 text-center">Data will appear once villages and schools are added.</p>
             ) : (
               <ResponsiveContainer width="100%" height={240}>
                 <BarChart data={stateData} barSize={14}>
@@ -65,6 +53,8 @@ export default function ImpactCharts({ stateStats = [], donationBreakdown = [], 
             <h3 className="font-heading font-bold text-[#3D2914] text-lg mb-2">Donation split</h3>
             {loading ? (
               <div className="h-[170px] bg-[#E8DFD0]/50 rounded-lg animate-pulse" />
+            ) : donationDist.length === 0 ? (
+              <p className="text-sm text-[#5C4033]/60 py-16 text-center">Donation data will appear once donations are received.</p>
             ) : (
               <>
                 <ResponsiveContainer width="100%" height={170}>

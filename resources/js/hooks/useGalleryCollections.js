@@ -1,19 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getGalleryCollections } from '@/api/gallery';
-import { galleryCollections as fallbackCollections } from '@/lib/galleryData';
 import { PLATFORM_DATA_CHANGED } from '@/lib/platformRefresh';
 
 export function useGalleryCollections() {
-  const [collections, setCollections] = useState(fallbackCollections);
+  const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getGalleryCollections({ fallback: true });
+      const data = await getGalleryCollections();
       setCollections(data);
     } catch {
-      setCollections(fallbackCollections);
+      setCollections([]);
     } finally {
       setLoading(false);
     }

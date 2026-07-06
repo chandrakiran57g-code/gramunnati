@@ -5,12 +5,6 @@ import { cmsService } from '@/api/cms';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
 
-const FALLBACK_FAQS = [
-  { question: 'What is CMSR?', answer: 'CMSR is a nationwide digital platform connecting villagers, students, donors, volunteers, and organizations to participate in village and school development across India.' },
-  { question: 'How can I donate?', answer: 'You can donate to a specific village, school, or project by visiting the Donate page. We accept UPI, credit/debit cards, net banking, and bank transfers.' },
-  { question: 'How do I become a volunteer?', answer: 'Visit the Volunteer page and fill in the registration form. Our team will match you with relevant projects and communities.' },
-];
-
 export default function FAQs() {
   const [open, setOpen] = useState(null);
   const [faqs, setFaqs] = useState([]);
@@ -24,7 +18,7 @@ export default function FAQs() {
       .finally(() => setLoading(false));
   }, []);
 
-  const items = faqs.length > 0 ? faqs : FALLBACK_FAQS;
+  const items = faqs;
 
   return (
     <div className="min-h-screen bg-background">
@@ -41,6 +35,8 @@ export default function FAQs() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12">
         {loading ? (
           <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+        ) : items.length === 0 ? (
+          <p className="text-center text-muted-foreground py-16">FAQs will appear here once added in the admin panel.</p>
         ) : (
           <div className="space-y-3">
             {items.map((faq, i) => {

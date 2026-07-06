@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { cmsService } from '@/api/cms';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
-import { PROGRAMS as STATIC_PROGRAMS } from '@/lib/programs';
 
 export default function Programs() {
   const { lang } = useLanguage();
@@ -15,21 +14,8 @@ export default function Programs() {
 
   useEffect(() => {
     cmsService.listPrograms({ activeOnly: true })
-      .then((rows) => {
-        if (rows?.length) {
-          setPrograms(rows.filter((p) => p.status === 'active'));
-        } else {
-          setPrograms(STATIC_PROGRAMS.map((p) => ({
-            title: p.title,
-            slug: p.slug,
-            description: p.description,
-            icon: p.icon,
-            cover_image: p.cover,
-            status: 'active',
-          })));
-        }
-      })
-      .catch(() => setPrograms(STATIC_PROGRAMS))
+      .then((rows) => setPrograms((rows || []).filter((p) => p.status === 'active')))
+      .catch(() => setPrograms([]))
       .finally(() => setLoading(false));
   }, []);
 

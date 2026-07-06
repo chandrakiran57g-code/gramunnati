@@ -8,7 +8,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import LanguageToggle from '@/components/layout/LanguageToggle';
 import BrandTagline from '@/components/brand/BrandTagline';
 import { usePlatformNavData } from '@/hooks/usePlatformNavData';
-import { FALLBACK_ABOUT_KEYS, FALLBACK_PROGRAM_ITEMS, LOGO_URL } from '@/lib/navFallbacks';
+import { LOGO_URL } from '@/lib/navFallbacks';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { localize } from '@/lib/localizedContent';
 
@@ -111,30 +111,22 @@ export default function Navbar() {
       { label: t('nav.faqs'), path: '/faqs' },
     ];
 
-    let cms;
-    if (aboutPages.length > 0) {
-      cms = aboutPages.map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
-    } else {
-      cms = FALLBACK_ABOUT_KEYS.map((item) => ({ label: t(`nav.${item.key}`), path: item.path }));
-    }
+    const cms = aboutPages.map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
 
     const paths = new Set(cms.map((c) => c.path));
     const extras = staticExtras.filter((l) => !paths.has(l.path));
     return [...cms, ...extras];
   }, [aboutPages, t, lang]);
 
-  const programChildren = useMemo(() => {
-    if (programs.length > 0) {
-      return programs.map((p) => ({ label: localize(p, 'title', lang), path: `/programs/${p.slug}` }));
-    }
-    return FALLBACK_PROGRAM_ITEMS;
-  }, [programs, lang]);
+  const programChildren = useMemo(
+    () => programs.map((p) => ({ label: localize(p, 'title', lang), path: `/programs/${p.slug}` })),
+    [programs, lang],
+  );
 
-  const teamChildren = useMemo(() => (
-    teamGroups.length > 0
-      ? teamGroups.map((g) => ({ label: localize(g, 'name', lang), path: `/teams/${g.slug}` }))
-      : [{ label: t('nav.ourTeam'), path: '/our-team' }]
-  ), [teamGroups, t, lang]);
+  const teamChildren = useMemo(
+    () => teamGroups.map((g) => ({ label: localize(g, 'name', lang), path: `/teams/${g.slug}` })),
+    [teamGroups, lang],
+  );
 
   const navItems = useMemo(() => {
     const enabled = [...(navConfig.items || [])]

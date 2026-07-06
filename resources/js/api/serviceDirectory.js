@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { getServiceDirectoryConfig, SAMPLE_DIRECTORY_ROWS } from '@/lib/serviceDirectory';
+import { getServiceDirectoryConfig } from '@/lib/serviceDirectory';
 
 /** API may return a plain string or a nested { name } relation object. */
 function relationName(value) {
@@ -72,8 +72,7 @@ export const serviceDirectoryApi = {
         .select('id, slug, village_name, mandal, district, created_at, mandals(name), districts(name)')
         .is('deleted_at', null)
         .order('village_name');
-      const rows = (data || []).map(mapVillageRow);
-      return rows.length ? rows : SAMPLE_DIRECTORY_ROWS.villages;
+      return (data || []).map(mapVillageRow);
     }
 
     if (config.type === 'schools') {
@@ -82,8 +81,7 @@ export const serviceDirectoryApi = {
         .select('id, slug, school_name, mandal, district, created_at, villages(mandal, district, mandals(name), districts(name))')
         .is('deleted_at', null)
         .order('school_name');
-      const rows = (data || []).map(mapSchoolRow);
-      return rows.length ? rows : SAMPLE_DIRECTORY_ROWS.schools;
+      return (data || []).map(mapSchoolRow);
     }
 
     if (config.type === 'volunteers') {
@@ -92,8 +90,7 @@ export const serviceDirectoryApi = {
         .select('id, full_name, state, district, created_at, status')
         .eq('status', 'active')
         .order('full_name');
-      const rows = (data || []).map(mapVolunteerRow);
-      return rows.length ? rows : SAMPLE_DIRECTORY_ROWS.volunteers;
+      return (data || []).map(mapVolunteerRow);
     }
 
     if (config.type === 'projects') {
@@ -107,7 +104,7 @@ export const serviceDirectoryApi = {
       if (config.categoryMatch?.length) {
         rows = rows.filter((r) => matchesCategory(r, config.categoryMatch));
       }
-      return rows.length ? rows : SAMPLE_DIRECTORY_ROWS.projects;
+      return rows;
     }
 
     return [];
