@@ -641,6 +641,18 @@ export const activeWorkService = {
   },
 
   async saveAdminCard(item) {
+    // New cards built on the village/school template become real village/school
+    // records, so they automatically appear everywhere villages and schools are
+    // listed — Active Works, /page/about-villages and /page/about-schools.
+    if (
+      !item.id
+      && !item.entity_id
+      && (!item._source || item._source === 'cms')
+      && (item.template_type === 'village' || item.template_type === 'school')
+    ) {
+      item = { ...item, _source: item.template_type };
+    }
+
     if (item._source === 'village') {
       const geo = await defaultGeo();
       const payload = {

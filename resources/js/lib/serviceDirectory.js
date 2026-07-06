@@ -3,12 +3,12 @@ export const SERVICE_DIRECTORY_PAGES = {
   'about-villages': {
     type: 'villages',
     title: 'About Villages',
-    linkPattern: (row) => `/villages/${row.slug}`,
+    linkPattern: (row) => row.link || `/villages/${row.slug}`,
   },
   'about-schools': {
     type: 'schools',
     title: 'About Schools',
-    linkPattern: (row) => `/schools/${row.slug}`,
+    linkPattern: (row) => row.link || `/schools/${row.slug}`,
   },
   'about-volunteers': {
     type: 'volunteers',
