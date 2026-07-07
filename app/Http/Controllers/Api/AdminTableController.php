@@ -175,11 +175,10 @@ class AdminTableController extends Controller
             $row = $row->fresh(['receipts']);
         }
 
+        $row = $row->fresh();
         $freshWith = self::WITH[$table] ?? [];
         if (! empty($freshWith)) {
-            $row = $row->fresh($freshWith);
-        } else {
-            $row = $row->fresh();
+            $row->load($freshWith);
         }
         $this->transformRows($table, collect([$row]));
 
@@ -193,11 +192,10 @@ class AdminTableController extends Controller
         $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
         $row->fill($payload)->save();
 
+        $row = $row->fresh();
         $freshWith = self::WITH[$table] ?? [];
         if (! empty($freshWith)) {
-            $row = $row->fresh($freshWith);
-        } else {
-            $row = $row->fresh();
+            $row->load($freshWith);
         }
         $this->transformRows($table, collect([$row]));
 
@@ -385,9 +383,22 @@ class AdminTableController extends Controller
                     $village = $p->village;
                     $p->setRelation('villages', $village);
                     $p->setAttribute('village_name', $village->village_name);
-                    // Extract village's geo as plain strings
-                    $p->setAttribute('state', $village->state->name ?? ($village->state ?? null));
-                    $p->setAttribute('district', $village->district->name ?? ($village->district ?? null));
+                    $p->setAttribute('state', $village->state?->name ?? $village->state);
+                    $p->setAttribute('district', $village->district?->name ?? $village->district);
+                }
+            });
+        }
+        if ($table === 'schools') {
+            $rows->each(function ($s) {
+                if ($s->relationLoaded('village') && $s->village) {
+                    $village = $s->village;
+                    $s->setRelation('villages', $village);
+                    $s->setAttribute('village_name', $village->village_name);
+                    foreach (['state', 'district', 'mandal'] as $rel) {
+                        if ($village->relationLoaded($rel) && $village->{$rel}) {
+                            $village->setRelation("{$rel}s", $village->getRelation($rel));
+                        }
+                    }
                 }
             });
         }
@@ -401,12 +412,15 @@ class AdminTableController extends Controller
         if ($table === 'donations') {
             $rows->each(function ($d) {
                 if ($d->relationLoaded('village') && $d->village) {
+                    $d->setRelation('villages', $d->village);
                     $d->setAttribute('village_name', $d->village->village_name);
                 }
                 if ($d->relationLoaded('school') && $d->school) {
+                    $d->setRelation('schools', $d->school);
                     $d->setAttribute('school_name', $d->school->school_name);
                 }
                 if ($d->relationLoaded('project') && $d->project) {
+                    $d->setRelation('projects', $d->project);
                     $d->setAttribute('project_name', $d->project->project_name);
                 }
             });
