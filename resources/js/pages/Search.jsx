@@ -6,6 +6,7 @@ import { Search, MapPin, School, FolderOpen, TreePine } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { safeText } from '@/lib/safeText';
 
 export default function SearchPage() {
   const initParams = new URLSearchParams(window.location.search);
@@ -115,7 +116,7 @@ export default function SearchPage() {
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-foreground group-hover:text-primary transition-colors">{v.village_name}</div>
                         <div className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3" />{v.district}, {v.state}
+                          <MapPin className="w-3 h-3" />{safeText(v.district)}, {safeText(v.state)}
                         </div>
                       </div>
                       <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full font-medium">Village</span>
@@ -140,7 +141,7 @@ export default function SearchPage() {
                       <div className="flex-1 min-w-0">
                         <div className="font-semibold text-foreground group-hover:text-school transition-colors">{s.school_name}</div>
                         <div className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3" />{s.village_name}, {s.district}
+                          <MapPin className="w-3 h-3" />{safeText(s.village_name)}, {safeText(s.district)}
                         </div>
                       </div>
                       <span className="text-xs bg-school/10 text-school px-2 py-1 rounded-full font-medium capitalize">{s.school_type}</span>

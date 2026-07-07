@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { cmsService } from '@/api/cms';
 import { Users, Mail, MapPin } from 'lucide-react';
 import VolunteerRegistrationForm from '@/components/volunteer/VolunteerRegistrationForm';
+import { safeText } from '@/lib/safeText';
 
 function asSkillList(skills) {
   if (Array.isArray(skills)) return skills;
@@ -108,7 +109,7 @@ export default function Volunteer() {
                     </div>
                     <div className="mt-4 space-y-1 border-t pt-3 text-xs text-muted-foreground">
                       {(v.district || v.state) && (
-                        <p className="flex items-center gap-1"><MapPin className="h-3 w-3" />{[v.district, v.state].filter(Boolean).join(', ')}</p>
+                        <p className="flex items-center gap-1"><MapPin className="h-3 w-3" />{[safeText(v.district), safeText(v.state)].filter(Boolean).join(', ')}</p>
                       )}
                       {v.email && <p className="flex items-center gap-1"><Mail className="h-3 w-3" />{v.email}</p>}
                     </div>

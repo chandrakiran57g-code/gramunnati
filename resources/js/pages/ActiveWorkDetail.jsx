@@ -8,6 +8,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import { Heart, MapPin, ChevronLeft } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
+import { safeText } from '@/lib/safeText';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 
@@ -63,7 +64,7 @@ export default function ActiveWorkDetail() {
           <div className="absolute bottom-6 left-6 right-6">
             <Link to="/" className="text-white/70 text-sm flex items-center gap-1 mb-2"><ChevronLeft className="w-4 h-4" /> Back</Link>
             <h1 className="font-heading text-3xl font-bold text-white">{programMeta?.icon ? `${programMeta.icon} ` : ''}{item.name}</h1>
-            {item.location?.district && <p className="text-white/80 text-sm mt-1 flex items-center gap-1"><MapPin className="w-4 h-4" />{item.location.district}</p>}
+            {item.location?.district && <p className="text-white/80 text-sm mt-1 flex items-center gap-1"><MapPin className="w-4 h-4" />{safeText(item.location.district)}</p>}
           </div>
         </div>
       </HeroScrollSection>

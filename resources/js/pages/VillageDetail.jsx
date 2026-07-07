@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { safeText } from '@/lib/safeText';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
@@ -85,8 +86,8 @@ export default function VillageDetail() {
             </Link>
             <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{village.village_name}</h1>
             <div className="flex flex-wrap items-center gap-3 text-white/80 text-sm">
-              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{village.district}, {village.mandal}</span>
-              <span className="flex items-center gap-1">📍 {village.state}</span>
+              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{safeText(village.district)}, {safeText(village.mandal)}</span>
+              <span className="flex items-center gap-1">📍 {safeText(village.state)}</span>
               {village.pincode && <span>📮 {village.pincode}</span>}
             </div>
           </div>
@@ -154,9 +155,9 @@ export default function VillageDetail() {
                 <h3 className="font-heading font-bold text-lg mb-4">Location</h3>
                 <div className="space-y-2 text-sm">
                   {[
-                    { label: 'State', value: village.state },
-                    { label: 'District', value: village.district },
-                    { label: 'Mandal', value: village.mandal },
+                    { label: 'State', value: safeText(village.state) },
+                    { label: 'District', value: safeText(village.district) },
+                    { label: 'Mandal', value: safeText(village.mandal) },
                     { label: 'Pincode', value: village.pincode },
                     { label: 'Village Code', value: village.village_code },
                   ].map(item => item.value && (

@@ -135,6 +135,7 @@ class AdminTableController extends Controller
         if (! $row) {
             return response()->json(['data' => null, 'error' => ['message' => 'Not found']], 404);
         }
+        $this->transformRows($table, collect([$row]));
 
         return response()->json(['data' => $row, 'error' => null]);
     }
@@ -174,6 +175,14 @@ class AdminTableController extends Controller
             $row = $row->fresh(['receipts']);
         }
 
+        $freshWith = self::WITH[$table] ?? [];
+        if (! empty($freshWith)) {
+            $row = $row->fresh($freshWith);
+        } else {
+            $row = $row->fresh();
+        }
+        $this->transformRows($table, collect([$row]));
+
         return response()->json(['data' => $row, 'error' => null], 201);
     }
 
@@ -184,7 +193,15 @@ class AdminTableController extends Controller
         $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
         $row->fill($payload)->save();
 
-        return response()->json(['data' => $row->fresh(), 'error' => null]);
+        $freshWith = self::WITH[$table] ?? [];
+        if (! empty($freshWith)) {
+            $row = $row->fresh($freshWith);
+        } else {
+            $row = $row->fresh();
+        }
+        $this->transformRows($table, collect([$row]));
+
+        return response()->json(['data' => $row, 'error' => null]);
     }
 
     /**
@@ -333,42 +350,44 @@ class AdminTableController extends Controller
 
     private function transformRows(string $table, $rows): void
     {
-        // Flatten geo relations ({id, name} objects) to plain string attributes
-        // so the frontend never receives objects where it expects strings.
+        // ── Flatten geo relations to plain strings ──────────────────────
+        // IMPORTANT: Laravel's toArray() does array_merge(attributes, relations).
+        // Loaded relations OVERRIDE attributes with the same key.
+        // We MUST call unsetRelation() after extracting the name, otherwise
+        // the JSON output still contains the {id, name} object.
         $flattenGeo = static function ($row) {
             foreach (['state', 'district', 'mandal'] as $rel) {
                 if ($row->relationLoaded($rel) && $row->{$rel}) {
-                    $row->setAttribute($rel, $row->{$rel}->name);
+                    $obj = $row->getRelation($rel);
+                    $name = $obj->name ?? null;
+                    // Copy to plural alias FIRST (states, districts, mandals)
+                    // so old code using the plural key still works.
+                    $row->setRelation("{$rel}s", $obj);
+                    // Remove the singular relation so it won't override the string attribute
+                    $row->unsetRelation($rel);
+                    // Set the singular key as a plain string
+                    $row->setAttribute($rel, $name);
                 }
             }
         };
 
-        if (in_array($table, ['villages', 'schools'], true)) {
+        // Apply geo flattening to ALL tables that have state/district/mandal relations
+        if (in_array($table, ['villages', 'schools', 'profiles'], true)) {
             $rows->each($flattenGeo);
         }
 
-        if ($table === 'villages') {
-            $rows->each(function ($v) {
-                // Keep the full relation objects as "states", "districts" etc.
-                // for any code that uses the plural key.
-                if ($v->relationLoaded('state') && $v->getOriginal('state_id')) {
-                    $stateModel = \App\Models\State::query()->find($v->getOriginal('state_id'));
-                    if ($stateModel) $v->setRelation('states', $stateModel);
-                }
-            });
-        }
-
         if ($table === 'projects') {
-            $rows->each(function ($p) use ($flattenGeo) {
+            $rows->each(function ($p) {
                 if ($p->relationLoaded('category') && $p->category) {
                     $p->setRelation('project_categories', $p->category);
                 }
                 if ($p->relationLoaded('village') && $p->village) {
-                    $p->setRelation('villages', $p->village);
-                    $p->setAttribute('village_name', $p->village->village_name);
-                    // Flatten the village's geo too
-                    $p->setAttribute('state', $p->village->state?->name ?? $p->village->state ?? null);
-                    $p->setAttribute('district', $p->village->district?->name ?? $p->village->district ?? null);
+                    $village = $p->village;
+                    $p->setRelation('villages', $village);
+                    $p->setAttribute('village_name', $village->village_name);
+                    // Extract village's geo as plain strings
+                    $p->setAttribute('state', $village->state->name ?? ($village->state ?? null));
+                    $p->setAttribute('district', $village->district->name ?? ($village->district ?? null));
                 }
             });
         }
@@ -407,25 +426,17 @@ class AdminTableController extends Controller
             });
         }
         if ($table === 'profiles') {
-            $rows->each(function ($p) use ($flattenGeo) {
+            $rows->each(function ($p) {
                 if ($p->relationLoaded('user') && $p->user?->relationLoaded('roles')) {
                     $p->setRelation('user_roles', $p->user->roles->map(fn ($r) => [
                         'role_id' => $r->id,
                         'roles' => ['id' => $r->id, 'name' => $r->name],
                     ]));
                 }
-                // Keep full relation objects as plural aliases for backward compat
-                if ($p->relationLoaded('state') && $p->state) {
-                    $p->setRelation('states', $p->state);
-                }
-                if ($p->relationLoaded('district') && $p->district) {
-                    $p->setRelation('districts', $p->district);
-                }
                 if ($p->relationLoaded('village') && $p->village) {
                     $p->setAttribute('village_name', $p->village->village_name);
+                    $p->unsetRelation('village');
                 }
-                // Also flatten geo so plain .state/.district always work
-                $flattenGeo($p);
             });
         }
     }

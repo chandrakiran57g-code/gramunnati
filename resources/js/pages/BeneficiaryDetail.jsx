@@ -6,6 +6,7 @@ import { Heart, MapPin, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { safeText } from '@/lib/safeText';
 
 const typeLabels = { village: 'Village', school: 'School', farmer: 'Farmer', student: 'Student', women_shg: 'Women SHG', youth_group: 'Youth Group', artisan: 'Artisan', other: 'Other' };
 
@@ -49,9 +50,9 @@ export default function BeneficiaryDetail() {
               className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{beneficiary.name}</motion.h1>
             <div className="flex flex-wrap items-center gap-3">
               <Badge className="bg-white/20 text-white border-white/20">{typeLabels[beneficiary.beneficiary_type] || beneficiary.beneficiary_type}</Badge>
-              {[beneficiary.village_name, beneficiary.district, beneficiary.state].filter(Boolean).length > 0 && (
+              {[safeText(beneficiary.village_name), safeText(beneficiary.district), safeText(beneficiary.state)].filter(Boolean).length > 0 && (
                 <span className="text-white/70 text-sm flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5" /> {[beneficiary.village_name, beneficiary.district, beneficiary.state].filter(Boolean).join(', ')}
+                  <MapPin className="w-3.5 h-3.5" /> {[safeText(beneficiary.village_name), safeText(beneficiary.district), safeText(beneficiary.state)].filter(Boolean).join(', ')}
                 </span>
               )}
             </div>

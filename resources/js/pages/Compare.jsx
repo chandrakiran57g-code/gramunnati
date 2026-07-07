@@ -5,6 +5,7 @@ import { Search, X, ArrowLeftRight, MapPin, Users, BookOpen, FolderOpen, TreePin
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { safeText } from '@/lib/safeText';
 
 export default function Compare() {
   const [villages, setVillages] = useState([]);
@@ -67,7 +68,7 @@ export default function Compare() {
                   <div className="bg-white rounded-xl border border-border p-4 flex items-center justify-between">
                     <div>
                       <div className="font-heading font-bold text-lg text-primary">{sel.village_name}</div>
-                      <div className="text-xs text-muted-foreground">{sel.district}, {sel.state}</div>
+                      <div className="text-xs text-muted-foreground">{safeText(sel.district)}, {safeText(sel.state)}</div>
                     </div>
                     <button onClick={() => { setSel(null); setS(''); }} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-4 h-4 text-muted-foreground" /></button>
                   </div>
@@ -80,7 +81,7 @@ export default function Compare() {
                           <button key={v.id} onClick={() => { setSel(v); setS(v.village_name); setShow(false); }}
                             className="w-full text-left px-4 py-2.5 text-sm hover:bg-muted transition-colors">
                             <span className="font-medium">{v.village_name}</span>
-                            <span className="text-muted-foreground ml-2 text-xs">{v.district}</span>
+                            <span className="text-muted-foreground ml-2 text-xs">{safeText(v.district)}</span>
                           </button>
                         ))}
                       </div>

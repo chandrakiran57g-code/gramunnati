@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { School, Users, Heart, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { safeText } from '@/lib/safeText';
 
 export default function MySchools() {
   const [follows, setFollows] = useState([]);
@@ -66,7 +67,7 @@ export default function MySchools() {
                       <Link to={`/schools/${s.slug || s.id}`} className="font-heading font-bold text-lg hover:text-school transition-colors flex items-center gap-1">
                         {s.school_name} <ExternalLink className="w-3.5 h-3.5" />
                       </Link>
-                      <div className="text-sm text-muted-foreground mt-1">{s.village_name}, {s.district}</div>
+                      <div className="text-sm text-muted-foreground mt-1">{safeText(s.village_name)}, {safeText(s.district)}</div>
                       <div className="flex flex-wrap gap-2 mt-3">
                         <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{s.student_count || 0} Students</span>
                         <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{s.teacher_count || 0} Teachers</span>

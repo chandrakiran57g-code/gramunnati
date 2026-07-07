@@ -5,6 +5,7 @@ import { base44 } from '@/api/base44Client';
 import { Award, Clock, FolderOpen, MapPin, Download, UserCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { safeText } from '@/lib/safeText';
 
 const ACHIEVEMENTS = [
   { tier: 'bronze', label: 'Bronze Volunteer', icon: '🥉', hours: 10, color: 'from-amber-600 to-amber-700', textColor: 'text-amber-600', bg: 'bg-amber-50' },
@@ -62,7 +63,7 @@ export default function VolunteerProfile() {
               </div>
               <div className="flex-grow">
                 <h1 className="font-heading text-2xl font-bold">{volunteer.full_name}</h1>
-                <p className="text-muted-foreground text-sm">{volunteer.state}, {volunteer.district}</p>
+                <p className="text-muted-foreground text-sm">{safeText(volunteer.state)}, {safeText(volunteer.district)}</p>
                 {currentAchievement && (
                   <span className={`inline-block mt-2 text-xs font-semibold px-3 py-1 rounded-full ${currentAchievement.bg} ${currentAchievement.textColor}`}>
                     {currentAchievement.icon} {currentAchievement.label}

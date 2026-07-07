@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { TrendingUp, TreePine, School, Heart, Users, Droplets, Wheat, MapPin } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { apiFetch } from '@/api/apiClient';
+import { safeText } from '@/lib/safeText';
 
 function formatINRShort(amount) {
   const n = Number(amount) || 0;
@@ -137,10 +138,10 @@ export default function Impact() {
               <div className="px-5 py-10 text-center text-muted-foreground text-sm">No state data yet.</div>
             )}
             {stateStats.map((s, i) => (
-              <motion.div key={s.state} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+              <motion.div key={safeText(s.state)} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                 className="grid grid-cols-4 px-5 py-4 border-b border-border last:border-0 hover:bg-muted/30 transition-colors items-center"
               >
-                <span className="font-medium text-sm">{s.state}</span>
+                <span className="font-medium text-sm">{safeText(s.state)}</span>
                 <span className="text-center text-primary font-semibold text-sm">{s.villages}</span>
                 <span className="text-center text-school font-semibold text-sm">{s.schools}</span>
                 <span className="text-right text-donation font-semibold text-sm">{formatINRShort(s.donations)}</span>

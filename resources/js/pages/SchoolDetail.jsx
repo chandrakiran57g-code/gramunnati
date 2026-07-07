@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { safeText } from '@/lib/safeText';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
@@ -77,7 +78,7 @@ export default function SchoolDetail() {
               <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${schoolTypeColor[school.school_type]}`}>{schoolTypeLabel[school.school_type]}</span>
             </div>
             <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">{school.school_name}</h1>
-            <div className="text-white/80 text-sm flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{school.village_name}, {school.district}, {school.state}</div>
+            <div className="text-white/80 text-sm flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{safeText(school.village_name)}, {safeText(school.district)}, {safeText(school.state)}</div>
           </div>
         </div>
       </HeroScrollSection>
@@ -146,8 +147,8 @@ export default function SchoolDetail() {
                     { label: 'Type', value: schoolTypeLabel[school.school_type] },
                     { label: 'UDISE Code', value: school.udise_code },
                     { label: 'Village', value: school.village_name },
-                    { label: 'District', value: school.district },
-                    { label: 'State', value: school.state },
+                    { label: 'District', value: safeText(school.district) },
+                    { label: 'State', value: safeText(school.state) },
                   ].map(item => item.value && (
                     <div key={item.label} className="flex justify-between py-1.5 border-b border-border/50">
                       <span className="text-muted-foreground">{item.label}</span>

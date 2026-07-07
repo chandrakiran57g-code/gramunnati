@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { MapPin, Users, Heart, TrendingUp, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { safeText } from '@/lib/safeText';
 
 export default function MyVillages() {
   const [follows, setFollows] = useState([]);
@@ -59,7 +60,7 @@ export default function MyVillages() {
                         {v.village_name} <ExternalLink className="w-3.5 h-3.5" />
                       </Link>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
-                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{v.district}, {v.state}</span>
+                        <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{safeText(v.district)}, {safeText(v.state)}</span>
                         {v.population > 0 && <span className="flex items-center gap-1"><Users className="w-3.5 h-3.5" />{v.population.toLocaleString('en-IN')}</span>}
                       </div>
                       <div className="flex gap-3 mt-3">
