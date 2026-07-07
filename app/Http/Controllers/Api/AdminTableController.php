@@ -273,6 +273,16 @@ class AdminTableController extends Controller
 
         $user = $table === 'profiles' ? $row->user : null;
 
+        // Deleting a profile cascade-deletes its user account. Never allow that
+        // for admin accounts — it would lock everyone out of /admin.
+        if ($user && $user->roles()->whereIn('name', ['Super Admin', 'SuperAdmin'])->exists()) {
+            return response()->json([
+                'message' => 'Admin accounts cannot be deleted from the member list.',
+                'data' => null,
+                'error' => ['message' => 'Admin accounts cannot be deleted from the member list.'],
+            ], 422);
+        }
+
         if ($table === 'donations' && method_exists($row, 'receipts')) {
             $row->receipts()->delete();
         }

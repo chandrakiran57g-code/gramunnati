@@ -14,6 +14,10 @@ function formatArea(user) {
   return parts.length ? parts.join(', ') : '—';
 }
 
+function isAdminMember(user) {
+  return (user.user_roles || []).some((r) => ['Super Admin', 'SuperAdmin'].includes(r?.roles?.name));
+}
+
 export default function AdminMemberDirectory() {
   const [members, setMembers] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -37,6 +41,7 @@ export default function AdminMemberDirectory() {
           profession: u.occupation || u.profession || '—',
           mobile: u.mobile || '—',
           joined: u.created_at ? new Date(u.created_at).toLocaleDateString('en-IN') : '—',
+          isAdmin: isAdminMember(u),
         }));
         setMembers(mapped);
         setFiltered(mapped);
@@ -51,6 +56,10 @@ export default function AdminMemberDirectory() {
   useEffect(() => { load(); }, [load]);
 
   const handleDelete = async (m) => {
+    if (m.isAdmin) {
+      toast.error('Admin accounts cannot be deleted from the member list.');
+      return;
+    }
     if (!confirm(`Delete member "${m.name}"? They will be removed from the member list. This cannot be undone.`)) return;
     try {
       await adminDbMutation(async () => {
@@ -120,9 +129,13 @@ export default function AdminMemberDirectory() {
                     <td className="px-4 py-3 text-muted-foreground">{m.profession}</td>
                     <td className="px-4 py-3 text-muted-foreground">{m.mobile}</td>
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(m)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      {m.isAdmin ? (
+                        <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">Admin</span>
+                      ) : (
+                        <Button size="sm" variant="ghost" className="text-red-500 hover:bg-red-50 hover:text-red-600" onClick={() => handleDelete(m)}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
                     </td>
                   </motion.tr>
                 ))}
