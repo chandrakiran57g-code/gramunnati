@@ -150,6 +150,24 @@ export default function VillageDetail() {
                     <p className="text-muted-foreground text-sm leading-relaxed">{village.history}</p>
                   </div>
                 )}
+                {village.vision && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <h4 className="font-semibold text-sm mb-2">Vision</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{village.vision}</p>
+                  </div>
+                )}
+                {village.challenges && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <h4 className="font-semibold text-sm mb-2">Challenges</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{village.challenges}</p>
+                  </div>
+                )}
+                {village.achievements && (
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <h4 className="font-semibold text-sm mb-2">Achievements</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{village.achievements}</p>
+                  </div>
+                )}
               </div>
               <div className="bg-white rounded-xl border border-border p-6">
                 <h3 className="font-heading font-bold text-lg mb-4">Location</h3>

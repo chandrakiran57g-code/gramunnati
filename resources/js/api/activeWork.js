@@ -768,8 +768,12 @@ export const activeWorkService = {
         cover_image: data.cover_image,
         description: data.short_description,
         status: data.is_active !== false ? 'active' : 'inactive',
-        featured: Boolean(data.is_featured),
-        overview: { about: data.description || '', vision: '', challenges: '', achievements: '' },
+        overview: {
+          about: data.description || '',
+          vision: data.vision || '',
+          challenges: data.challenges || '',
+          achievements: data.achievements || '',
+        },
         location: {
           district: data.districts?.name || '',
           state: data.states?.name || '',
@@ -797,8 +801,12 @@ export const activeWorkService = {
         cover_image: data.cover_image,
         description: data.short_description,
         status: data.is_active !== false ? 'active' : 'inactive',
-        featured: Boolean(data.is_featured),
-        overview: { about: data.description || '', vision: '', challenges: '', achievements: '' },
+        overview: {
+          about: data.description || '',
+          vision: data.vision || '',
+          challenges: data.challenges || '',
+          achievements: data.achievements || '',
+        },
         impact: {
           students_count: data.student_count || 0,
           teachers_count: data.teacher_count || 0,
@@ -822,6 +830,9 @@ export const activeWorkService = {
           description: form.overview?.about || null,
           cover_image: form.cover_image || null,
           population: form.statistics?.population ? Number(form.statistics.population) : 0,
+          vision: form.overview?.vision || null,
+          challenges: form.overview?.challenges || null,
+          achievements: form.overview?.achievements || null,
           is_featured: form.featured !== false,
           is_active: form.status !== 'inactive',
         };
@@ -844,6 +855,9 @@ export const activeWorkService = {
           student_count: Number(form.impact?.students_count) || 0,
           teacher_count: Number(form.impact?.teachers_count) || 0,
           classroom_count: Number(form.impact?.classrooms) || 0,
+          vision: form.overview?.vision || null,
+          challenges: form.overview?.challenges || null,
+          achievements: form.overview?.achievements || null,
           is_featured: form.featured !== false,
           is_active: form.status !== 'inactive',
         };

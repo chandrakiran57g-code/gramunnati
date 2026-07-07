@@ -138,7 +138,7 @@ export default function SchoolDetail() {
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid sm:grid-cols-2 gap-5">
+            <div className="grid sm:grid-cols-2 gap-5 mb-6">
               <div className="bg-white rounded-xl border border-border p-5">
                 <h3 className="font-heading font-bold mb-3">School Information</h3>
                 <div className="space-y-2 text-sm">
@@ -175,6 +175,34 @@ export default function SchoolDetail() {
                 </div>
               </div>
             </div>
+            {(school.description || school.vision || school.challenges || school.achievements) && (
+              <div className="bg-white rounded-xl border border-border p-6 space-y-4">
+                {school.description && (
+                  <div>
+                    <h3 className="font-heading font-bold text-lg mb-2">About {school.school_name}</h3>
+                    <p className="text-muted-foreground leading-relaxed text-sm">{school.description}</p>
+                  </div>
+                )}
+                {school.vision && (
+                  <div className="pt-4 border-t border-border">
+                    <h4 className="font-semibold text-sm mb-2">Vision</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{school.vision}</p>
+                  </div>
+                )}
+                {school.challenges && (
+                  <div className="pt-4 border-t border-border">
+                    <h4 className="font-semibold text-sm mb-2">Challenges</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{school.challenges}</p>
+                  </div>
+                )}
+                {school.achievements && (
+                  <div className="pt-4 border-t border-border">
+                    <h4 className="font-semibold text-sm mb-2">Achievements</h4>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{school.achievements}</p>
+                  </div>
+                )}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="infrastructure">
