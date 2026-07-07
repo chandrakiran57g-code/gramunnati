@@ -239,21 +239,10 @@ class AdminTableController extends Controller
         return $value;
     }
 
-    /** Built-in About Us pages that must never be deleted (only edited). */
-    private const PROTECTED_CMS_SLUGS = ['about-villages', 'about-schools', 'about-volunteers'];
-
     public function destroy(string $table, int $id): JsonResponse
     {
         $model = $this->resolveModel($table);
         $row = $model::query()->findOrFail($id);
-
-        if ($table === 'cms_pages' && in_array($row->slug, self::PROTECTED_CMS_SLUGS, true)) {
-            return response()->json([
-                'message' => 'This built-in page cannot be deleted. You can edit its content instead.',
-                'data' => null,
-                'error' => ['message' => 'This built-in page cannot be deleted.'],
-            ], 422);
-        }
 
         $user = $table === 'profiles' ? $row->user : null;
 
@@ -323,6 +312,9 @@ class AdminTableController extends Controller
             }
             $val = $this->normalizeDateValue($val);
 
+            // Treat "null" string (from JSON query params) the same as PHP null.
+            $isNull = $val === null || $val === 'null';
+
             match ($op) {
                 'eq' => $query->where($col, $val),
                 'neq' => $query->where($col, '!=', $val),
@@ -330,8 +322,8 @@ class AdminTableController extends Controller
                 'gte' => $query->where($col, '>=', $val),
                 'lt' => $query->where($col, '<', $val),
                 'lte' => $query->where($col, '<=', $val),
-                'is' => $val === null ? $query->whereNull($col) : $query->whereNotNull($col),
-                'not.is' => $val === null ? $query->whereNotNull($col) : $query->whereNull($col),
+                'is' => $isNull ? $query->whereNull($col) : $query->whereNotNull($col),
+                'not.is' => $isNull ? $query->whereNotNull($col) : $query->whereNull($col),
                 'like' => $query->where($col, 'like', $val),
                 'in' => $query->whereIn($col, (array) $val),
                 default => null,

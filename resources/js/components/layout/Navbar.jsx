@@ -12,7 +12,6 @@ import { LOGO_URL } from '@/lib/navFallbacks';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { localize } from '@/lib/localizedContent';
 import { normalizeExternalUrl, isExternalUrl } from '@/lib/externalUrl';
-import { PROTECTED_ABOUT_PAGES } from '@/lib/protectedAboutPages';
 
 /** Renders <a> for external URLs (YouTube, socials, …) and a router <Link> for internal paths. */
 function SmartLink({ to, children, ...props }) {
@@ -117,24 +116,9 @@ export default function Navbar() {
 
 
   const aboutChildren = useMemo(() => {
-    const staticExtras = [
-      { label: t('nav.impactDashboard'), path: '/impact' },
-      { label: t('nav.successStories'), path: '/stories' },
-      { label: t('nav.faqs'), path: '/faqs' },
-    ];
-
-    const cms = aboutPages.map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
-
-    const paths = new Set(cms.map((c) => c.path));
-    // Built-in directory pages (villages/schools/volunteers) always appear,
-    // even if their CMS rows were removed from the database.
-    const builtIns = PROTECTED_ABOUT_PAGES
-      .map((p) => ({ label: p.title, path: `/page/${p.slug}` }))
-      .filter((l) => !paths.has(l.path));
-    builtIns.forEach((l) => paths.add(l.path));
-    const extras = staticExtras.filter((l) => !paths.has(l.path));
-    return [...cms, ...builtIns, ...extras];
-  }, [aboutPages, t, lang]);
+    // Purely data-driven — only shows CMS pages that exist in DB with status=active
+    return aboutPages.map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
+  }, [aboutPages, lang]);
 
   const programChildren = useMemo(
     () => programs.map((p) => ({ label: localize(p, 'title', lang), path: `/programs/${p.slug}` })),

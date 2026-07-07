@@ -13,26 +13,52 @@ import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLocalizedRecord } from '@/lib/localizedContent';
 
+/** Map page_type values to the service directory slug used by serviceDirectoryApi */
+const PAGE_TYPE_TO_DIR_SLUG = {
+  about_villages: 'about-villages',
+  about_schools: 'about-schools',
+  about_volunteers: 'about-volunteers',
+};
+
 export default function CmsPageView() {
   const { slug } = useParams();
   const [page, setPage] = useState(null);
   const [directoryRows, setDirectoryRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const isDirectory = isServiceDirectorySlug(slug);
-  const dirConfig = getServiceDirectoryConfig(slug);
 
   const loadPage = async () => {
     if (!slug) return;
     setLoading(true);
     try {
       const row = await cmsService.getPage(slug);
-      setPage(row && isCmsPagePublic(row.status) ? row : (isDirectory ? { title: dirConfig?.title || slug, slug } : null));
-      if (isDirectory) {
-        const rows = await serviceDirectoryApi.loadRows(slug);
+
+      // Determine if this page should show a directory listing.
+      // Check both: the new page_type column AND the legacy slug-based detection.
+      const dirSlug = row?.page_type ? PAGE_TYPE_TO_DIR_SLUG[row.page_type] : null;
+      const legacyDir = isServiceDirectorySlug(slug);
+      const isDirectory = !!dirSlug || legacyDir;
+      const effectiveDirSlug = dirSlug || (legacyDir ? slug : null);
+
+      if (row && isCmsPagePublic(row.status)) {
+        setPage(row);
+      } else if (isDirectory) {
+        const dirConfig = getServiceDirectoryConfig(effectiveDirSlug);
+        setPage({ title: dirConfig?.title || slug, slug, page_type: row?.page_type });
+      } else {
+        setPage(null);
+      }
+
+      if (isDirectory && effectiveDirSlug) {
+        const rows = await serviceDirectoryApi.loadRows(effectiveDirSlug).catch(() => []);
         setDirectoryRows(rows);
+      } else {
+        setDirectoryRows([]);
       }
     } catch {
-      if (isDirectory) {
+      // Fallback: try legacy slug-based directory
+      const legacyDir = isServiceDirectorySlug(slug);
+      if (legacyDir) {
+        const dirConfig = getServiceDirectoryConfig(slug);
         setPage({ title: dirConfig?.title || slug, slug });
         const rows = await serviceDirectoryApi.loadRows(slug).catch(() => []);
         setDirectoryRows(rows);
@@ -53,6 +79,11 @@ export default function CmsPageView() {
 
   const localized = useLocalizedRecord(page, ['title', 'short_description', 'content']);
   const adminContent = (localized?.content || page?.content || '').trim();
+
+  // Determine directory info from page_type or slug
+  const dirSlug = page?.page_type ? PAGE_TYPE_TO_DIR_SLUG[page.page_type] : (isServiceDirectorySlug(slug) ? slug : null);
+  const dirConfig = dirSlug ? getServiceDirectoryConfig(dirSlug) : null;
+  const isDirectory = !!dirSlug && directoryRows.length >= 0;
 
   if (loading) return (
     <div className="min-h-screen bg-background pt-20">
@@ -119,8 +150,7 @@ export default function CmsPageView() {
 
       <section className="py-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
-          {/* Admin-entered content. On directory pages it appears ABOVE the list;
-              on regular pages it's the main body. */}
+          {/* Admin-entered content — appears above directory list on directory pages */}
           {adminContent && (
             <div className="bg-white rounded-2xl border border-border p-8">
               <div className="prose prose-slate max-w-none">
@@ -129,11 +159,11 @@ export default function CmsPageView() {
             </div>
           )}
 
-          {isDirectory ? (
+          {dirSlug ? (
             <ServiceDirectoryTable
               rows={directoryRows}
               getLink={(row) => dirConfig?.linkPattern?.(row)}
-              variant={slug === 'about-volunteers' ? 'volunteers' : 'default'}
+              variant={dirSlug === 'about-volunteers' ? 'volunteers' : 'default'}
             />
           ) : (
             !adminContent && (

@@ -86,32 +86,43 @@ export default function TeamDetail() {
                 <motion.div key={member.id}
                   initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }} transition={{ delay: i * 0.05 }}
-                  className="bg-white rounded-2xl border border-border p-6 text-center hover:shadow-lg transition-all duration-300"
+                  className="bg-white rounded-2xl border border-border p-6 text-center hover:shadow-lg transition-all duration-300 flex flex-col"
                 >
-                  <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-2 border-border bg-primary/5 flex items-center justify-center">
+                  <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden border-2 border-border bg-primary/5 flex items-center justify-center flex-shrink-0">
                     {member.photo ? (
-                      <img src={member.photo} alt={member.full_name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling?.classList.remove('hidden'); }} />
+                      <img
+                        src={member.photo.startsWith('http') ? member.photo : `/storage/${member.photo.replace(/^\/+/, '')}`}
+                        alt={member.full_name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          const fallback = e.target.parentElement?.querySelector('.photo-fallback');
+                          if (fallback) fallback.classList.remove('hidden');
+                        }}
+                      />
                     ) : null}
-                    <span className={`text-3xl font-bold text-primary ${member.photo ? 'hidden' : ''}`}>{member.full_name?.charAt(0)}</span>
+                    <span className={`photo-fallback text-3xl font-bold text-primary ${member.photo ? 'hidden' : ''}`}>{member.full_name?.charAt(0)}</span>
                   </div>
-                  <h3 className="font-heading font-semibold text-foreground text-lg">{member.full_name}</h3>
-                  {member.designation && (
-                    <p className="text-primary text-sm font-medium mt-1">{localize(member, 'designation', lang)}</p>
-                  )}
-                  {member.description && (
-                    <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{localize(member, 'description', lang)}</p>
-                  )}
-                  <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border text-sm">
-                    {member.email && (
-                      <a href={`mailto:${member.email}`} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
-                        <Mail className="w-4 h-4" /> {member.email}
-                      </a>
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="font-heading font-semibold text-foreground text-lg">{member.full_name}</h3>
+                    {member.designation && (
+                      <p className="text-primary text-sm font-medium mt-1">{localize(member, 'designation', lang)}</p>
                     )}
-                    {member.mobile && (
-                      <a href={`tel:${member.mobile}`} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
-                        <Phone className="w-4 h-4" /> {member.mobile}
-                      </a>
+                    {member.description && (
+                      <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{localize(member, 'description', lang)}</p>
                     )}
+                    <div className="flex flex-wrap items-center justify-center gap-3 mt-auto pt-4 border-t border-border text-xs">
+                      {member.email && (
+                        <a href={`mailto:${member.email}`} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors truncate max-w-[180px]">
+                          <Mail className="w-3.5 h-3.5 flex-shrink-0" /> <span className="truncate">{member.email}</span>
+                        </a>
+                      )}
+                      {member.mobile && (
+                        <a href={`tel:${member.mobile}`} className="flex items-center gap-1.5 text-muted-foreground hover:text-primary transition-colors">
+                          <Phone className="w-3.5 h-3.5 flex-shrink-0" /> {member.mobile}
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ))}
