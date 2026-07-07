@@ -821,7 +821,7 @@ export const activeWorkService = {
           short_description: form.description || null,
           description: form.overview?.about || null,
           cover_image: form.cover_image || null,
-          population: form.statistics?.population ? Number(form.statistics.population) : null,
+          population: form.statistics?.population ? Number(form.statistics.population) : 0,
           is_featured: form.featured !== false,
           is_active: form.status !== 'inactive',
         };
