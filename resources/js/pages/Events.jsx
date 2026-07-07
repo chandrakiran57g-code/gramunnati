@@ -5,6 +5,8 @@ import { Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { Button } from '@/components/ui/button';
 import { normalizeExternalUrl } from '@/lib/externalUrl';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700',
@@ -26,6 +28,7 @@ function formatEvent(item) {
 }
 
 export default function Events() {
+  const { lang } = useLanguage();
   const [tab, setTab] = useState('upcoming');
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
@@ -97,9 +100,9 @@ export default function Events() {
                       <span className={`text-xs font-semibold px-2.5 py-1 rounded-full capitalize ${categoryColors[event.category] || categoryColors.general}`}>{event.category}</span>
                       <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0"><Calendar className="w-3 h-3" />{event.start_date}</div>
                     </div>
-                    <h3 className="font-heading font-bold text-lg mb-2">{event.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{event.description}</p>
-                    {event.location && <div className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="w-3.5 h-3.5" />{event.location}</div>}
+                    <h3 className="font-heading font-bold text-lg mb-2">{localize(event, 'title', lang) || event.title}</h3>
+                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{localize(event, 'description', lang) || event.description}</p>
+                    {event.location && <div className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="w-3.5 h-3.5" />{localize(event, 'location', lang) || event.location}</div>}
                   </div>
                   {tab === 'upcoming' && event.registration_link && (
                     <div className="mt-4">

@@ -95,8 +95,8 @@ export default function AdminMediaUpload({
       )}
       {previewSrc && (
         <div className="relative mt-2 mb-2 inline-block">
-          {isVideo && !ytId && value ? (
-            <video src={previewSrc} controls className="max-h-40 max-w-xs rounded-lg border" />
+          {isVideo && !ytId ? (
+            <video key={previewSrc} src={previewSrc} controls preload="metadata" className="max-h-40 max-w-xs rounded-lg border" />
           ) : (
             <img src={previewSrc} alt="" className="h-24 w-36 rounded-lg border object-cover" />
           )}

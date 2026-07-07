@@ -10,9 +10,63 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { BookOpen, Layers, Loader2, Save } from 'lucide-react';
+import { BookOpen, Layers, Loader2, Save, X } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+
+function galleryList(value) {
+  return String(value || '')
+    .split('\n')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** Gallery images uploaded from local device; stored as newline-joined URLs. */
+function GalleryImagesEditor({ value, onChange }) {
+  const images = galleryList(value);
+
+  const addImage = (url) => {
+    if (!url) return;
+    onChange([...images, url].join('\n'));
+  };
+
+  const removeImage = (idx) => {
+    onChange(images.filter((_, i) => i !== idx).join('\n'));
+  };
+
+  return (
+    <div>
+      <Label>Gallery images</Label>
+      {images.length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-3">
+          {images.map((src, idx) => (
+            <div key={`${src}-${idx}`} className="relative">
+              <img src={src} alt="" className="h-24 w-36 rounded-lg border object-cover" />
+              <Button
+                type="button"
+                size="icon"
+                variant="destructive"
+                className="absolute -right-2 -top-2 h-6 w-6"
+                onClick={() => removeImage(idx)}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+      <AdminImageUpload
+        value=""
+        onChange={addImage}
+        subPath="programs/gallery"
+        className="mt-2"
+      />
+      <p className="mt-1 text-xs text-muted-foreground">
+        Upload images from your device — each upload is added to the page gallery.
+      </p>
+    </div>
+  );
+}
 
 export default function AdminProgramPages() {
   const [programs, setPrograms] = useState([]);
@@ -127,16 +181,10 @@ export default function AdminProgramPages() {
           <BilingualTextarea name="objectives" label="Objectives (one per line)" form={form} setForm={setForm} rows={4} />
           <BilingualTextarea name="activities" label="Activities (one per line)" form={form} setForm={setForm} rows={4} />
           <BilingualTextarea name="impact_highlights" label="Impact highlights (one per line)" form={form} setForm={setForm} rows={3} />
-          <div>
-            <Label>Gallery image URLs (one per line)</Label>
-            <textarea
-              value={form.gallery_images || ''}
-              onChange={(e) => setForm({ ...form, gallery_images: e.target.value })}
-              rows={3}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
-              placeholder="https://…"
-            />
-          </div>
+          <GalleryImagesEditor
+            value={form.gallery_images || ''}
+            onChange={(v) => setForm((f) => ({ ...f, gallery_images: v }))}
+          />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
               { key: 'villages', label: 'Villages impacted' },

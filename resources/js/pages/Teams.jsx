@@ -4,8 +4,11 @@ import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Users, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 export default function Teams() {
+  const { lang } = useLanguage();
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,10 +59,10 @@ export default function Teams() {
                       <Users className="w-7 h-7 text-primary" />
                     </div>
                     <h3 className="font-heading text-xl font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
-                      {group.name}
+                      {localize(group, 'name', lang) || group.name}
                     </h3>
                     <p className="text-muted-foreground text-sm leading-relaxed mb-4">
-                      {group.description}
+                      {localize(group, 'description', lang) || group.description}
                     </p>
                     <span className="inline-flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
                       View Members <ArrowRight className="w-4 h-4" />

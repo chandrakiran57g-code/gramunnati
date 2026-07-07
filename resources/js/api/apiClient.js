@@ -23,8 +23,25 @@ export async function ensureCsrf() {
   csrfReady = true;
 }
 
-export async function apiFetch(path, { method = 'GET', body, headers = {} } = {}) {
-  if (method !== 'GET' && method !== 'HEAD') {
+/** Fired after every successful admin mutation so the UI can confirm the save. */
+export const ADMIN_SAVED_EVENT = 'cmsr:admin-saved';
+
+function friendlyErrorMessage(status, json) {
+  if (status === 413) {
+    return 'File or request too large for the server. Try a smaller file, or paste a YouTube/video URL instead.';
+  }
+  if (status === 419) {
+    return 'Your session expired. Please try again — if it keeps failing, refresh the page.';
+  }
+  if (status === 401) {
+    return 'You are logged out. Please log in again.';
+  }
+  return json?.message || `HTTP ${status}`;
+}
+
+export async function apiFetch(path, { method = 'GET', body, headers = {} } = {}, _retried = false) {
+  const isMutation = method !== 'GET' && method !== 'HEAD';
+  if (isMutation) {
     await ensureCsrf();
   }
 
@@ -52,6 +69,16 @@ export async function apiFetch(path, { method = 'GET', body, headers = {} } = {}
   }
 
   const res = await fetch(url, opts);
+
+  // Session/CSRF token expired mid-session — refresh the cookie and retry once.
+  // (FormData bodies cannot be resent after a failed attempt in some browsers,
+  // but a fresh attempt with the same FormData object works for fetch.)
+  if (res.status === 419 && !_retried) {
+    csrfReady = false;
+    await ensureCsrf();
+    return apiFetch(path, { method, body, headers }, true);
+  }
+
   let json = null;
   const text = await res.text();
   try {
@@ -61,10 +88,14 @@ export async function apiFetch(path, { method = 'GET', body, headers = {} } = {}
   }
 
   if (!res.ok) {
-    const err = new Error(json?.message || `HTTP ${res.status}`);
+    const err = new Error(friendlyErrorMessage(res.status, json));
     err.status = res.status;
     err.data = json;
     throw err;
+  }
+
+  if (isMutation && typeof window !== 'undefined' && !url.includes('/auth/')) {
+    window.dispatchEvent(new CustomEvent(ADMIN_SAVED_EVENT, { detail: { url, method } }));
   }
 
   return json;

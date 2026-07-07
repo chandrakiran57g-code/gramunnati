@@ -17,15 +17,15 @@ function linesToList(text) {
     .filter(Boolean);
 }
 
-function mergeProgram(cmsRow, detailPage, staticFallback) {
+function mergeProgram(cmsRow, detailPage, staticFallback, lang = 'en') {
   const slug = cmsRow.slug;
   const title = cmsRow.title || slug;
   const description = cmsRow.description || '';
   const cover = detailPage?.hero_image || cmsRow.cover_image || '/hero/village.jpg';
-  const longDescription = localize(detailPage, 'long_description') || detailPage?.long_description || description;
-  const objectives = linesToList(localize(detailPage, 'objectives') || detailPage?.objectives);
-  const activities = linesToList(localize(detailPage, 'activities') || detailPage?.activities);
-  const impact = linesToList(localize(detailPage, 'impact_highlights') || detailPage?.impact_highlights);
+  const longDescription = localize(detailPage, 'long_description', lang) || detailPage?.long_description || description;
+  const objectives = linesToList(localize(detailPage, 'objectives', lang) || detailPage?.objectives);
+  const activities = linesToList(localize(detailPage, 'activities', lang) || detailPage?.activities);
+  const impact = linesToList(localize(detailPage, 'impact_highlights', lang) || detailPage?.impact_highlights);
   const stats = {
     villages: detailPage?.stats?.villages ?? 0,
     schools: detailPage?.stats?.schools ?? 0,
@@ -39,8 +39,8 @@ function mergeProgram(cmsRow, detailPage, staticFallback) {
 
   return {
     slug,
-    title: localize(cmsRow, 'title') || title,
-    description: localize(cmsRow, 'description') || description,
+    title: localize(cmsRow, 'title', lang) || title,
+    description: localize(cmsRow, 'description', lang) || description,
     icon: cmsRow.icon || '🌾',
     cover,
     longDescription,
@@ -72,7 +72,7 @@ export default function ProgramDetail() {
       const cmsRow = (programs || []).find((p) => p.slug === slug);
       // Static entry only supplies theme colors — never page content
       const staticFallback = getProgramBySlug(slug);
-      setProgram(cmsRow ? mergeProgram(cmsRow, detailPage, staticFallback) : null);
+      setProgram(cmsRow ? mergeProgram(cmsRow, detailPage, staticFallback, lang) : null);
     }).finally(() => {
       if (!cancelled) setLoading(false);
     });

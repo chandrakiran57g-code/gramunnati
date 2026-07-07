@@ -3,6 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, LogOut, Menu } from 'lucide-react';
 import { clearAdminSession } from '@/lib/adminAuth';
+import AdminSaveIndicator from '@/components/admin/AdminSaveIndicator';
 import { adminRoutes } from '@/lib/adminRoutes';
 import { adminSidebarSections } from '@/lib/adminNavConfig';
 import { BRAND_LOGO_URL, BRAND_NAME } from '@/lib/brand';
@@ -226,6 +227,7 @@ export default function AdminLayout() {
         </div>
         <main className="flex-1 overflow-y-auto"><Outlet /></main>
       </div>
+      <AdminSaveIndicator />
     </div>
   );
 }

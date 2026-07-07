@@ -11,9 +11,12 @@ import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
 import { safeText } from '@/lib/safeText';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize, localizeNested } from '@/lib/localizedContent';
 
 export default function ActiveWorkDetail() {
   const { slug } = useParams();
+  const { lang } = useLanguage();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +52,10 @@ export default function ActiveWorkDetail() {
 
   const isProgram = isProgramTemplate(item.template_type);
   const programMeta = isProgram ? getProgramTemplateMeta(item.template_type) : null;
+  const displayName = localize(item, 'name', lang) || item.name;
+  const overviewAbout = localizeNested(item, 'overview', 'about', lang)
+    || localize(item, 'description', lang)
+    || 'No overview yet.';
   const impact = item.impact || {};
   const mockVillage = {
     population: 500, male_population: 250, female_population: 250,
@@ -59,11 +66,11 @@ export default function ActiveWorkDetail() {
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
         <div className="relative h-72 overflow-hidden">
-          <img src={item.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={item.name} className="w-full h-full object-cover" />
+          <img src={item.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={displayName} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">
             <Link to="/" className="text-white/70 text-sm flex items-center gap-1 mb-2"><ChevronLeft className="w-4 h-4" /> Back</Link>
-            <h1 className="font-heading text-3xl font-bold text-white">{programMeta?.icon ? `${programMeta.icon} ` : ''}{item.name}</h1>
+            <h1 className="font-heading text-3xl font-bold text-white">{programMeta?.icon ? `${programMeta.icon} ` : ''}{displayName}</h1>
             {item.location?.district && <p className="text-white/80 text-sm mt-1 flex items-center gap-1"><MapPin className="w-4 h-4" />{safeText(item.location.district)}</p>}
           </div>
         </div>
@@ -112,7 +119,7 @@ export default function ActiveWorkDetail() {
           </TabsList>
           <TabsContent value="overview">
             <div className="bg-white rounded-xl border p-6 prose max-w-none space-y-4">
-              <p>{item.overview?.about || item.description || 'No overview yet.'}</p>
+              <p>{overviewAbout}</p>
               {isProgram && item.program_details?.objectives && (
                 <div>
                   <h4 className="font-semibold mb-2">Objectives</h4>

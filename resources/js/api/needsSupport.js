@@ -96,9 +96,11 @@ export const needsSupportService = {
     const row = {
       id: item.id?.startsWith('project-') ? uid() : (item.id || uid()),
       name: item.name,
+      name_te: item.name_te || '',
       slug: item.slug || slugify(item.name),
       cover_image: item.cover_image || '',
       description: item.description || '',
+      description_te: item.description_te || '',
       village_name: item.village_name || '',
       village_slug: item.village_slug || '',
       funding_goal: Number(item.funding_goal) || 0,

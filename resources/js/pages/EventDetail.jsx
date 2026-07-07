@@ -6,6 +6,8 @@ import { Calendar, MapPin, ChevronLeft, Clock, Users, ExternalLink } from 'lucid
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { normalizeExternalUrl } from '@/lib/externalUrl';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700', Education: 'bg-school/10 text-school', Volunteer: 'bg-volunteer/10 text-volunteer',
@@ -14,6 +16,7 @@ const categoryColors = {
 
 export default function EventDetail() {
   const { slug } = useParams();
+  const { lang } = useLanguage();
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,7 +45,7 @@ export default function EventDetail() {
           <div className="absolute bottom-6 left-6 right-6">
             <Link to="/events" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Events</Link>
             {event.category && <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${categoryColors[event.category] || ''}`}>{event.category}</span>}
-            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mt-2">{event.title}</h1>
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mt-2">{localize(event, 'title', lang) || event.title}</h1>
           </div>
         </div>
       </HeroScrollSection>
@@ -56,7 +59,7 @@ export default function EventDetail() {
           </div>
           <div className="bg-white rounded-xl border border-border p-4 text-center">
             <MapPin className="w-5 h-5 text-projects mx-auto mb-2" />
-            <div className="font-semibold text-sm">{event.location}</div>
+            <div className="font-semibold text-sm">{localize(event, 'location', lang) || event.location}</div>
           </div>
           <div className="bg-white rounded-xl border border-border p-4 text-center">
             <Clock className="w-5 h-5 text-projects mx-auto mb-2" />
@@ -70,7 +73,7 @@ export default function EventDetail() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-border p-6 mb-6">
           <h3 className="font-heading font-bold text-lg mb-3">About This Event</h3>
-          <p className="text-muted-foreground text-sm leading-relaxed">{event.description || 'Event details coming soon.'}</p>
+          <p className="text-muted-foreground text-sm leading-relaxed">{localize(event, 'description', lang) || event.description || 'Event details coming soon.'}</p>
         </motion.div>
 
         {!isPast && (
