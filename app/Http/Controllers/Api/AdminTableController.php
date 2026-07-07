@@ -126,80 +126,92 @@ class AdminTableController extends Controller
 
     public function show(Request $request, string $table, int $id): JsonResponse
     {
-        $model = $this->resolveModel($table);
-        $query = $model::query();
-        if ($with = self::WITH[$table] ?? null) {
-            $query->with($with);
-        }
-        $row = $query->find($id);
-        if (! $row) {
-            return response()->json(['data' => null, 'error' => ['message' => 'Not found']], 404);
-        }
-        $this->transformRows($table, collect([$row]));
+        try {
+            $model = $this->resolveModel($table);
+            $query = $model::query();
+            if ($with = self::WITH[$table] ?? null) {
+                $query->with($with);
+            }
+            $row = $query->find($id);
+            if (! $row) {
+                return response()->json(['data' => null, 'error' => ['message' => 'Not found']], 404);
+            }
+            $this->transformRows($table, collect([$row]));
 
-        return response()->json(['data' => $row, 'error' => null]);
+            return response()->json(['data' => $row, 'error' => null]);
+        } catch (\Throwable $e) {
+            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
+        }
     }
 
     public function store(Request $request, string $table): JsonResponse
     {
-        if ($table === 'user_roles') {
-            $data = $request->validate(['user_id' => 'required|integer', 'role_id' => 'required|integer']);
-            DB::table('user_roles')->updateOrInsert(
-                ['user_id' => $data['user_id'], 'role_id' => $data['role_id']],
-                $data
-            );
+        try {
+            if ($table === 'user_roles') {
+                $data = $request->validate(['user_id' => 'required|integer', 'role_id' => 'required|integer']);
+                DB::table('user_roles')->updateOrInsert(
+                    ['user_id' => $data['user_id'], 'role_id' => $data['role_id']],
+                    $data
+                );
 
-            return response()->json(['data' => $data, 'error' => null], 201);
-        }
-
-        $model = $this->resolveModel($table);
-        $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
-
-        // Slugs must be unique even against soft-deleted rows — append -2, -3, …
-        // instead of crashing with a duplicate-key error.
-        if (! empty($payload['slug']) && Schema::hasColumn($table, 'slug')) {
-            $payload['slug'] = $this->uniqueSlug($table, (string) $payload['slug']);
-        }
-
-        $row = $model::query()->create($payload);
-
-        if ($table === 'donations' && ($row->payment_status ?? '') === 'success') {
-            $number = $row->receipt_number ?: ('RCP-'.now()->format('Y').'-'.str_pad((string) $row->id, 5, '0', STR_PAD_LEFT));
-            if (! $row->receipt_number) {
-                $row->update(['receipt_number' => $number]);
+                return response()->json(['data' => $data, 'error' => null], 201);
             }
-            \App\Models\DonationReceipt::query()->firstOrCreate(
-                ['donation_id' => $row->id],
-                ['receipt_number' => $number]
-            );
-            $row = $row->fresh(['receipts']);
-        }
 
-        $row = $row->fresh();
-        $freshWith = self::WITH[$table] ?? [];
-        if (! empty($freshWith)) {
-            $row->load($freshWith);
-        }
-        $this->transformRows($table, collect([$row]));
+            $model = $this->resolveModel($table);
+            $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
 
-        return response()->json(['data' => $row, 'error' => null], 201);
+            // Slugs must be unique even against soft-deleted rows — append -2, -3, …
+            // instead of crashing with a duplicate-key error.
+            if (! empty($payload['slug']) && Schema::hasColumn($table, 'slug')) {
+                $payload['slug'] = $this->uniqueSlug($table, (string) $payload['slug']);
+            }
+
+            $row = $model::query()->create($payload);
+
+            if ($table === 'donations' && ($row->payment_status ?? '') === 'success') {
+                $number = $row->receipt_number ?: ('RCP-'.now()->format('Y').'-'.str_pad((string) $row->id, 5, '0', STR_PAD_LEFT));
+                if (! $row->receipt_number) {
+                    $row->update(['receipt_number' => $number]);
+                }
+                \App\Models\DonationReceipt::query()->firstOrCreate(
+                    ['donation_id' => $row->id],
+                    ['receipt_number' => $number]
+                );
+                $row = $row->fresh(['receipts']);
+            }
+
+            $row = $row->fresh();
+            $freshWith = self::WITH[$table] ?? [];
+            if (! empty($freshWith)) {
+                $row->load($freshWith);
+            }
+            $this->transformRows($table, collect([$row]));
+
+            return response()->json(['data' => $row, 'error' => null], 201);
+        } catch (\Throwable $e) {
+            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
+        }
     }
 
     public function update(Request $request, string $table, int $id): JsonResponse
     {
-        $model = $this->resolveModel($table);
-        $row = $model::query()->findOrFail($id);
-        $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
-        $row->fill($payload)->save();
+        try {
+            $model = $this->resolveModel($table);
+            $row = $model::query()->findOrFail($id);
+            $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
+            $row->fill($payload)->save();
 
-        $row = $row->fresh();
-        $freshWith = self::WITH[$table] ?? [];
-        if (! empty($freshWith)) {
-            $row->load($freshWith);
+            $row = $row->fresh();
+            $freshWith = self::WITH[$table] ?? [];
+            if (! empty($freshWith)) {
+                $row->load($freshWith);
+            }
+            $this->transformRows($table, collect([$row]));
+
+            return response()->json(['data' => $row, 'error' => null]);
+        } catch (\Throwable $e) {
+            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
         }
-        $this->transformRows($table, collect([$row]));
-
-        return response()->json(['data' => $row, 'error' => null]);
     }
 
     /**
