@@ -12,8 +12,20 @@ class AdminMiddleware
     {
         $user = $request->user();
 
-        if (! $user || ! method_exists($user, 'isSuperAdmin') || ! $user->isSuperAdmin()) {
-            return response()->json(['message' => 'Forbidden'], 403);
+        if (! $user) {
+            return response()->json(['message' => 'Unauthenticated — please log in first.'], 401);
+        }
+
+        // Check for 'Super Admin' role (the canonical name used everywhere).
+        // Also accept 'SuperAdmin' (no space) for backward compatibility.
+        $isAdmin = $user->roles()
+            ->whereIn('name', ['Super Admin', 'SuperAdmin'])
+            ->exists();
+
+        if (! $isAdmin) {
+            return response()->json([
+                'message' => 'Forbidden — your account does not have admin privileges.',
+            ], 403);
         }
 
         return $next($request);

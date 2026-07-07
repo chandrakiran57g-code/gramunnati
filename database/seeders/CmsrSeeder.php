@@ -15,7 +15,6 @@ use App\Models\UserCategory;
 use App\Models\District;
 use App\Models\Mandal;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class CmsrSeeder extends Seeder
 {
@@ -32,7 +31,7 @@ class CmsrSeeder extends Seeder
 
         $admin = User::query()->firstOrCreate(
             ['email' => 'test@gmail.com'],
-            ['name' => 'Admin', 'password' => Hash::make('testadmin123')]
+            ['name' => 'Admin', 'password' => 'testadmin123']  // 'hashed' cast auto-hashes
         );
         $admin->profile()->updateOrCreate(
             ['user_id' => $admin->id],
