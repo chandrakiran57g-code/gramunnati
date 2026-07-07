@@ -98,10 +98,21 @@ export function useProjectCategoryOptions() {
 }
 
 export function villageDisplay(v) {
+  // Relations can arrive as objects {id, name} (eager-loaded) or as plain
+  // strings depending on the API route. Handle both safely.
+  const resolveName = (...sources) => {
+    for (const s of sources) {
+      if (!s) continue;
+      if (typeof s === 'string') return s;
+      if (typeof s === 'object' && s.name) return s.name;
+      if (typeof s === 'object' && s.village_name) return s.village_name;
+    }
+    return '';
+  };
   return {
-    district: v?.districts?.name || v?.district || '—',
-    state: v?.states?.name || v?.state || '—',
-    mandal: v?.mandals?.name || v?.mandal || '',
+    district: resolveName(v?.districts, v?.district) || '—',
+    state: resolveName(v?.states, v?.state) || '—',
+    mandal: resolveName(v?.mandals, v?.mandal),
   };
 }
 
