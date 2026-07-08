@@ -156,7 +156,14 @@ class CmsController extends Controller
         $out = [];
         foreach ($rows as $row) {
             $decoded = json_decode($row->value, true);
-            $out[$row->key] = json_last_error() === JSON_ERROR_NONE ? $decoded : $row->value;
+            // Only accept scalar decoded values (string/number/bool/null).
+            // If json_decode returns an array/object, use the raw string value
+            // so the frontend always receives strings for fields like contact_phone.
+            if (json_last_error() === JSON_ERROR_NONE && !is_array($decoded) && !is_object($decoded)) {
+                $out[$row->key] = $decoded;
+            } else {
+                $out[$row->key] = $row->value;
+            }
         }
 
         return response()->json($out);

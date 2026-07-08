@@ -133,7 +133,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-cream-200 flex-shrink-0" />
-                <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">{contactPhone}</a>
+                <a href={`tel:${String(contactPhone || '').replace(/\s+/g, '')}`} className="hover:text-white transition-colors">{contactPhone}</a>
               </li>
             </ul>
             <div className="mt-6">
