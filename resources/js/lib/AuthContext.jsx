@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { authService } from '@/api/auth';
 
 const AuthContext = createContext();
@@ -96,6 +96,26 @@ export const AuthProvider = ({ children }) => {
 
   const isAdmin = userRoles.includes('Super Admin');
 
+  /**
+   * isLoadingPublicSettings — used by CmsrApp; always false here
+   * since there is no separate public-settings loading phase.
+   */
+  const isLoadingPublicSettings = false;
+
+  /**
+   * navigateToLogin — used by CmsrApp when authError.type === 'auth_required'.
+   * Redirects to /login preserving the current path as returnTo.
+   */
+  const navigateToLogin = useCallback(() => {
+    const returnTo = typeof window !== 'undefined'
+      ? encodeURIComponent(window.location.pathname + window.location.search)
+      : '';
+    const target = returnTo ? `/login?returnTo=${returnTo}` : '/login';
+    if (typeof window !== 'undefined') {
+      window.location.href = target;
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -104,6 +124,7 @@ export const AuthProvider = ({ children }) => {
         userRoles,
         isAuthenticated,
         isLoadingAuth,
+        isLoadingPublicSettings,
         authChecked,
         authError,
         isAdmin,
@@ -115,6 +136,7 @@ export const AuthProvider = ({ children }) => {
         updatePassword,
         updateProfile,
         checkSession,
+        navigateToLogin,
       }}
     >
       {children}
