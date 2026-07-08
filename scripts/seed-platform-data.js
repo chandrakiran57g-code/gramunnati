@@ -97,9 +97,9 @@ async function main() {
 
   // ─── Team members ─────────────────────────────────────
   const memberDefs = [
-    { full_name: 'Rajesh Kumar', team_group_id: 1, designation: 'Founder & Director', email: 'rajesh@gramunnati.in', display_order: 1 },
-    { full_name: 'Dr. Anitha Rao', team_group_id: 2, designation: 'Advisory Chair', email: 'anitha@gramunnati.in', display_order: 1 },
-    { full_name: 'Arjun Mehta', team_group_id: 3, designation: 'Technical Lead', email: 'arjun@gramunnati.in', display_order: 1 },
+    { full_name: 'Rajesh Kumar', team_group_id: 1, designation: 'Founder & Director', email: 'rajesh@cmsr.in', display_order: 1 },
+    { full_name: 'Dr. Anitha Rao', team_group_id: 2, designation: 'Advisory Chair', email: 'anitha@cmsr.in', display_order: 1 },
+    { full_name: 'Arjun Mehta', team_group_id: 3, designation: 'Technical Lead', email: 'arjun@cmsr.in', display_order: 1 },
     { full_name: 'Suresh Reddy', team_group_id: 4, designation: 'Village Coordinator — Kondapur', mobile: '+91 98765 43210', display_order: 1 },
     { full_name: 'Lakshmi Devi', team_group_id: 5, designation: 'School Coordinator — Rampur', mobile: '+91 98765 43211', display_order: 1 },
   ];
@@ -141,7 +141,7 @@ async function main() {
 
   // ─── News & Events ────────────────────────────────────
   const newsDefs = [
-    { slug: 'gramunnati-launch-2026', title: 'GramUnnati Platform Launch 2026', content: 'GramUnnati officially launches to connect villages, schools, and donors across rural India.', featured_image: IMG.village, is_published: true, published_at: new Date().toISOString() },
+    { slug: 'cmsr-launch-2026', title: 'CMSR Platform Launch 2026', content: 'CMSR officially launches to connect villages, schools, and donors across rural India.', featured_image: IMG.village, is_published: true, published_at: new Date().toISOString() },
     { slug: '1000-saplings-planted', title: '1,000 Saplings Planted in Rajapet', content: 'Volunteers and villagers planted 1,000 native trees as part of the green belt initiative.', featured_image: IMG.tree, is_published: true, published_at: new Date().toISOString() },
   ];
 
@@ -173,7 +173,7 @@ async function main() {
 
   // ─── Testimonials (settings fallback if testimonials RLS blocks) ──
   const testimonialDefs = [
-    { id: 't1', name: 'Priya Sharma', message: 'GramUnnati helped our village get clean water and a digital school. Truly life-changing work.', designation: 'Village Representative', is_featured: true, sort_order: 1 },
+    { id: 't1', name: 'Priya Sharma', message: 'CMSR helped our village get clean water and a digital school. Truly life-changing work.', designation: 'Village Representative', is_featured: true, sort_order: 1 },
     { id: 't2', name: 'Ramesh Goud', message: 'I donated to the tree plantation project and saw the impact within months.', designation: 'Donor', is_featured: true, sort_order: 2 },
     { id: 't3', name: 'Sunita Reddy', message: 'As a teacher, the digital classroom training opened new possibilities for my students.', designation: 'School Teacher', is_featured: true, sort_order: 3 },
   ];

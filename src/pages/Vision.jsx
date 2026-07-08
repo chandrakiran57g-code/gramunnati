@@ -53,7 +53,7 @@ export default function Vision() {
           <div className="grid sm:grid-cols-2 gap-8 items-center">
             <div>
               <p className="text-muted-foreground leading-relaxed text-lg mb-6">
-                As responsible citizens, we all have a social responsibility towards our communities and society. Through GramUnnati, citizens can voluntarily come together to support village development and school empowerment across India.
+                As responsible citizens, we all have a social responsibility towards our communities and society. Through CMSR, citizens can voluntarily come together to support village development and school empowerment across India.
               </p>
               <p className="text-muted-foreground leading-relaxed">
                 By uniting citizens, communities, professionals, institutions, and stakeholders on a common digital platform, we aim to create sustainable, self-reliant, and model villages and schools that serve as examples for future generations.

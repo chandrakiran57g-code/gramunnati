@@ -58,7 +58,7 @@ export default function SearchPage() {
         <div className="brand-gradient py-16 px-4">
           <div className="max-w-3xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-              <h1 className="font-heading text-4xl font-bold mb-6">Search GramUnnati Platform</h1>
+              <h1 className="font-heading text-4xl font-bold mb-6">Search CMSR Platform</h1>
               <form onSubmit={handleSearch} className="flex gap-3 bg-white rounded-xl p-2 shadow-xl">
                 <div className="flex-1 flex items-center gap-2 px-3">
                   <Search className="w-5 h-5 text-muted-foreground" />

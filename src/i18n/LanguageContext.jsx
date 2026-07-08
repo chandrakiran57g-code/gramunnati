@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { translations, getNestedTranslation, LANGUAGES } from './translations';
 
-const STORAGE_KEY = 'gramunnati_lang';
+const STORAGE_KEY = 'cmsr_lang';
 
 const LanguageContext = createContext(null);
 

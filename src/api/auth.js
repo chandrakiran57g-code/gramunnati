@@ -11,7 +11,7 @@ export const authService = {
   async signUp({ email, password, fullName, mobile, firstName, lastName }) {
     const cleanMobile = String(mobile || '').replace(/\D/g, '');
     if (!cleanMobile || cleanMobile.length < 10) throw new Error('Valid mobile number is required');
-    const authEmail = email?.trim() || `${cleanMobile}@gramunnati.local`;
+    const authEmail = email?.trim() || `${cleanMobile}@cmsr.local`;
     const names = (fullName || `${firstName || ''} ${lastName || ''}`).trim().split(/\s+/);
     const first = names[0] || '';
     const last = names.slice(1).join(' ') || '';
@@ -49,7 +49,7 @@ export const authService = {
       .maybeSingle();
     if (error) throw error;
     if (!profile) throw new Error('Mobile number not registered');
-    const authEmail = profile.email || `${cleanMobile}@gramunnati.local`;
+    const authEmail = profile.email || `${cleanMobile}@cmsr.local`;
     return this.signInWithPassword(authEmail, password);
   },
 

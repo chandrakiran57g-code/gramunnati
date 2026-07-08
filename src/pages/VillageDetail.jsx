@@ -233,10 +233,10 @@ export default function VillageDetail() {
                   {[
                     { date: 'Jun 2026', title: 'Solar Street Lights Installed', desc: '20 solar-powered street lights installed across main roads of the village.', type: 'infrastructure', icon: '💡' },
                     { date: 'May 2026', title: 'Water Tank Renovation Completed', desc: 'The community overhead tank was repaired and capacity increased to serve all 450 households.', type: 'milestone', icon: '💧' },
-                    { date: 'Apr 2026', title: '500 Trees Plantation Drive', desc: 'GramUnnati volunteers joined villagers to plant 500 native trees around the village perimeter.', type: 'environment', icon: '🌳' },
+                    { date: 'Apr 2026', title: '500 Trees Plantation Drive', desc: 'CMSR volunteers joined villagers to plant 500 native trees around the village perimeter.', type: 'environment', icon: '🌳' },
                     { date: 'Mar 2026', title: 'New School Library Opened', desc: 'A fully stocked library with 1,200 books was inaugurated at the government high school.', type: 'education', icon: '📚' },
-                    { date: 'Feb 2026', title: 'Women SHG Formed', desc: '32 women formed a Self-Help Group with GramUnnati support. First meeting held on Feb 14, 2026.', type: 'community', icon: '👩' },
-                    { date: 'Jan 2026', title: 'Village Registered on GramUnnati', desc: `${village.village_name} was officially registered on the GramUnnati digital platform.`, type: 'milestone', icon: '🏘️' },
+                    { date: 'Feb 2026', title: 'Women SHG Formed', desc: '32 women formed a Self-Help Group with CMSR support. First meeting held on Feb 14, 2026.', type: 'community', icon: '👩' },
+                    { date: 'Jan 2026', title: 'Village Registered on CMSR', desc: `${village.village_name} was officially registered on the CMSR digital platform.`, type: 'milestone', icon: '🏘️' },
                   ].map((event, i) => (
                     <div key={i} className="relative">
                       <div className="absolute -left-8 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm border-2 border-white">

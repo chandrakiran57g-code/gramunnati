@@ -37,7 +37,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <AuthLayout icon={Shield} title="GramUnnati Admin" subtitle="Sign in to the management control room">
+    <AuthLayout icon={Shield} title="CMSR Admin" subtitle="Sign in to the management control room">
       {error && (
         <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}

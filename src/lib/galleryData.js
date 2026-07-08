@@ -11,7 +11,7 @@ export const galleryCollections = [
       { id: 'k1', type: 'image', src: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80', caption: 'Village landscape overview' },
       { id: 'k2', type: 'image', src: 'https://images.unsplash.com/photo-1519340333755-56e9c1d04579?w=800&q=80', caption: 'Community gathering' },
       { id: 'k3', type: 'image', src: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80', caption: 'Water conservation work' },
-      { id: 'kv1', type: 'video', embedId: 'dQw4w9WgXcQ', caption: 'GramUnnati Village Transformation Journey' },
+      { id: 'kv1', type: 'video', embedId: 'dQw4w9WgXcQ', caption: 'CMSR Village Transformation Journey' },
     ],
   },
   {

@@ -10,7 +10,7 @@ const team = [
   { name: 'Mohan Das', role: 'Field Coordinator', bio: 'On-ground coordinator for village surveys, project implementation, and community liaison work.', photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80', dept: 'Field' },
   { name: 'Lakshmi Naidu', role: 'Volunteer Coordinator', bio: 'Manages thousands of volunteers across states, matching skills with community needs for maximum impact.', photo: 'https://images.unsplash.com/photo-1598550874175-4d0ef436c909?w=200&q=80', dept: 'Volunteers' },
   { name: 'Rajesh Chandra', role: 'Finance & Compliance', bio: 'Chartered accountant ensuring full transparency, compliance, and responsible utilization of all funds.', photo: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=200&q=80', dept: 'Finance' },
-  { name: 'Deepa Krishnan', role: 'Communications Manager', bio: 'Storyteller who brings GramUnnati\'s impact to life through compelling narratives, social media, and outreach.', photo: 'https://images.unsplash.com/photo-1546961342-ea5f62d04cf8?w=200&q=80', dept: 'Communications' },
+  { name: 'Deepa Krishnan', role: 'Communications Manager', bio: 'Storyteller who brings CMSR\'s impact to life through compelling narratives, social media, and outreach.', photo: 'https://images.unsplash.com/photo-1546961342-ea5f62d04cf8?w=200&q=80', dept: 'Communications' },
 ];
 
 const deptColors = {
@@ -65,7 +65,7 @@ export default function OurTeam() {
         {/* Advisory Board */}
         <div className="mt-20 text-center">
           <h2 className="font-heading text-3xl font-bold mb-3">Advisory Board</h2>
-          <p className="text-muted-foreground mb-10">Distinguished experts guiding GramUnnati's strategy and governance</p>
+          <p className="text-muted-foreground mb-10">Distinguished experts guiding CMSR's strategy and governance</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
             {[
               { name: 'Prof. S. Krishnamurthy', role: 'Former IAS, Rural Development Expert', org: 'Ministry of Panchayati Raj' },

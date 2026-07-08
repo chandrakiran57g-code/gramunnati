@@ -8,7 +8,7 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 const CATEGORIES = ['All', 'general', 'village', 'school', 'project', 'event'];
 
 const fallbackNews = [
-  { id: '1', title: 'GramUnnati Launches Mega Tree Plantation Drive in Telangana', summary: 'Over 10,000 trees to be planted across 50 villages in Nalgonda and Warangal districts this season.', featured_image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=80', category: 'village', published_at: '2026-06-01' },
+  { id: '1', title: 'CMSR Launches Mega Tree Plantation Drive in Telangana', summary: 'Over 10,000 trees to be planted across 50 villages in Nalgonda and Warangal districts this season.', featured_image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=80', category: 'village', published_at: '2026-06-01' },
   { id: '2', title: 'Digital Classrooms Installed in 12 Government Schools', summary: 'Thanks to donor support, 12 government schools across Andhra Pradesh now have fully equipped digital classrooms.', featured_image: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&q=80', category: 'school', published_at: '2026-05-25' },
 ];
 
@@ -52,7 +52,7 @@ export default function News() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Newspaper className="w-12 h-12 mx-auto mb-4 opacity-70" />
               <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Latest News</h1>
-              <p className="text-white/80 max-w-xl mx-auto">Updates, announcements and stories from GramUnnati&apos;s village and school empowerment work</p>
+              <p className="text-white/80 max-w-xl mx-auto">Updates, announcements and stories from CMSR&apos;s village and school empowerment work</p>
             </motion.div>
           </div>
         </div>

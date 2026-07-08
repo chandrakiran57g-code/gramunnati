@@ -1,5 +1,5 @@
 /**
- * GramUnnati — Finalized Color Palette
+ * CMSR — Finalized Color Palette
  * Base: white + brown | Accents: 8 service pillars only
  */
 

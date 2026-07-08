@@ -15,7 +15,7 @@ export const PROGRAMS = [
     heroImage: '/hero/village.jpg',
     cover: '/hero/village.jpg',
     description: 'Comprehensive infrastructure improvement for rural villages including roads, public buildings, sanitation, and community facilities.',
-    longDescription: 'GramUnnati connects citizens across India to transform villages through roads, electricity, sanitation, community halls, and digital connectivity — building self-reliant rural communities.',
+    longDescription: 'CMSR connects citizens across India to transform villages through roads, electricity, sanitation, community halls, and digital connectivity — building self-reliant rural communities.',
     impact: ['500+ roads improved', '1,200+ villages covered', '₹8Cr invested'],
     objectives: ['Pucca roads and street lighting', 'Public building renovation', 'Sanitation and drainage', 'Electricity and connectivity', 'Community facility development'],
     activities: ['Road construction & repair', 'Public building renovation', 'Sanitation facilities', 'Electricity connection', 'Street lighting', 'Digital gram sabha'],
@@ -43,7 +43,7 @@ export const PROGRAMS = [
     activities: ['Smart classroom deployment', 'Library establishment', 'Furniture & equipment', 'Teacher training', 'Computer labs', 'STEM workshops'],
     stats: { villages: 450, schools: 450, volunteers: 3200, donations: 42000000 },
     stories: [
-      { title: 'GramUnnati Digital Classroom', desc: 'Tablets and smart boards deployed — 350 students now learn with digital tools.', img: '/hero/school.jpg' },
+      { title: 'CMSR Digital Classroom', desc: 'Tablets and smart boards deployed — 350 students now learn with digital tools.', img: '/hero/school.jpg' },
     ],
   },
   {

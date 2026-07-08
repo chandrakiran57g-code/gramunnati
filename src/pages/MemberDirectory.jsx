@@ -68,7 +68,7 @@ export default function MemberDirectory() {
             Member List
           </motion.h1>
           <p className="text-cream-100/80 text-lg max-w-2xl mx-auto">
-            Registered members of the GramUnnati platform — numbered by join order
+            Registered members of the CMSR platform — numbered by join order
           </p>
         </div>
       </section>

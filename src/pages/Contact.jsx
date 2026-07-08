@@ -46,7 +46,7 @@ export default function Contact() {
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               {[
                 { icon: MapPin, title: 'Address', value: 'India — Nationwide Coverage' },
-                { icon: Mail, title: 'Email', value: 'contact@GramUnnati.in' },
+                { icon: Mail, title: 'Email', value: 'contact@CMSR.in' },
                 { icon: Phone, title: 'Phone', value: '+91 99999 99999' },
               ].map((item, i) => (
                 <div key={item.title} className="flex items-start gap-4 bg-white rounded-xl border border-border p-5">

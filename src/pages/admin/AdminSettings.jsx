@@ -109,10 +109,10 @@ export default function AdminSettings() {
               <h3 className="font-heading font-bold text-lg mb-4">General Settings</h3>
               <SettingsFields
                 fields={[
-                  { label: 'Site Name', placeholder: 'GramUnnati', id: 'site_name' },
-                  { label: 'Contact Email', placeholder: 'contact@gramunnati.in', id: 'contact_email' },
+                  { label: 'Site Name', placeholder: 'CMSR', id: 'site_name' },
+                  { label: 'Contact Email', placeholder: 'contact@cmsr.in', id: 'contact_email' },
                   { label: 'Contact Phone', placeholder: '+91 9XXXXXXXXX', id: 'contact_phone' },
-                  { label: 'Address', placeholder: 'GramUnnati Office, Hyderabad', id: 'address' },
+                  { label: 'Address', placeholder: 'CMSR Office, Hyderabad', id: 'address' },
                 ]}
                 values={values}
                 onChange={handleChange}
@@ -138,8 +138,8 @@ export default function AdminSettings() {
                 fields={[
                   { label: 'Razorpay Key ID', placeholder: 'rzp_live_XXXXXXXXXX', id: 'rzp_key' },
                   { label: 'Razorpay Key Secret', placeholder: '••••••••••••••••', id: 'rzp_secret', type: 'password' },
-                  { label: 'UPI ID', placeholder: 'gramunnati@upi', id: 'upi_id' },
-                  { label: 'Bank Account Name', placeholder: 'GramUnnati Foundation', id: 'bank_name' },
+                  { label: 'UPI ID', placeholder: 'cmsr@upi', id: 'upi_id' },
+                  { label: 'Bank Account Name', placeholder: 'CMSR Foundation', id: 'bank_name' },
                   { label: 'Bank Account Number', placeholder: 'XXXXXXXXXXXX', id: 'bank_account' },
                   { label: 'IFSC Code', placeholder: 'SBIN0XXXXXX', id: 'ifsc' },
                 ]}
@@ -158,7 +158,7 @@ export default function AdminSettings() {
               <h3 className="font-heading font-bold text-lg mb-4">SEO Settings</h3>
               <SettingsFields
                 fields={[
-                  { label: 'Default Meta Title', placeholder: 'GramUnnati — Village Development', id: 'meta_title' },
+                  { label: 'Default Meta Title', placeholder: 'CMSR — Village Development', id: 'meta_title' },
                   { label: 'Default Meta Description', placeholder: 'Join the movement…', id: 'meta_desc' },
                   { label: 'Default Keywords', placeholder: 'village development, rural India…', id: 'meta_keywords' },
                   { label: 'Google Analytics ID', placeholder: 'G-XXXXXXXXXX', id: 'ga_id' },

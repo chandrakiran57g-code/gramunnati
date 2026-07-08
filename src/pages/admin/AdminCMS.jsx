@@ -99,7 +99,7 @@ export default function AdminCMS() {
               </div>
               <p className="text-sm text-muted-foreground">Manage frequently asked questions. Drag to reorder.</p>
               <div className="mt-4 space-y-2">
-                {['What is GramUnnati?','How can I donate?','Is my donation tax deductible?','How do I become a volunteer?'].map((q, i) => (
+                {['What is CMSR?','How can I donate?','Is my donation tax deductible?','How do I become a volunteer?'].map((q, i) => (
                   <div key={i} className="flex items-center justify-between bg-muted/30 rounded-xl px-4 py-3">
                     <span className="text-sm">{q}</span>
                     <div className="flex gap-1">

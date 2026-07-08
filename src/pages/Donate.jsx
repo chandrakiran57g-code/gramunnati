@@ -46,7 +46,7 @@ export default function Donate() {
     if (!form.donor_name || !form.amount || form.amount < 10) return;
     setStep('processing');
     try {
-      const receiptNo = `GramUnnati-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*99999).toString().padStart(5,'0')}`;
+      const receiptNo = `CMSR-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*99999).toString().padStart(5,'0')}`;
       await base44.entities.Donation.create({
         donor_name: form.donor_name,
         email: form.email,

@@ -23,8 +23,8 @@ export default function About() {
       <div className="brand-gradient py-20 px-4">
         <div className="max-w-5xl mx-auto text-center text-cream-100">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <img src={LOGO_URL} alt="GramUnnati" className="w-20 h-20 rounded-full mx-auto mb-6 border-4 border-white/30 object-contain bg-white/10 p-1" />
-            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">About GramUnnati</h1>
+            <img src={LOGO_URL} alt="CMSR" className="w-20 h-20 rounded-full mx-auto mb-6 border-4 border-white/30 object-contain bg-white/10 p-1" />
+            <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">About CMSR</h1>
             <p className="text-xl text-white/80 mb-3 italic font-medium">"Our Village – Our Responsibility – Our Development"</p>
             <p className="text-white/60 text-sm">"మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి"</p>
           </motion.div>

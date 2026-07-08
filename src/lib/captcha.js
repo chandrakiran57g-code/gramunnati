@@ -1,6 +1,6 @@
 /** Simple signed math captcha — token encodes expected answer */
 
-const SECRET = import.meta.env.VITE_CAPTCHA_SECRET || 'gramunnati-captcha-v1';
+const SECRET = import.meta.env.VITE_CAPTCHA_SECRET || 'cmsr-captcha-v1';
 
 function hash(str) {
   let h = 0;

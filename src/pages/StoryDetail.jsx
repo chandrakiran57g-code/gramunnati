@@ -117,7 +117,7 @@ export default function StoryDetail() {
                       <img src={r.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=200&q=60'} alt="" className="w-16 h-16 rounded-lg object-cover flex-shrink-0" />
                       <div>
                         <h5 className="text-sm font-semibold group-hover:text-primary transition-colors line-clamp-2">{r.title}</h5>
-                        <p className="text-xs text-muted-foreground mt-0.5">{r.village_name || 'GramUnnati'}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{r.village_name || 'CMSR'}</p>
                       </div>
                     </Link>
                   ))}

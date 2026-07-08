@@ -151,9 +151,9 @@ export default function Navbar() {
 
   const brandBlock = (
     <>
-      <img src={LOGO_URL} alt="GramUnnati Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
+      <img src={LOGO_URL} alt="CMSR Logo" className="h-9 w-9 xl:h-10 xl:w-10 object-contain rounded-full shrink-0" />
       <div className="hidden lg:block leading-tight whitespace-nowrap min-w-0">
-        <div className="font-heading font-bold text-sm xl:text-base text-foreground truncate">GramUnnati</div>
+        <div className="font-heading font-bold text-sm xl:text-base text-foreground truncate">CMSR</div>
         <div className="text-[10px] xl:text-xs text-muted-foreground truncate">{t('brand.tagline')}</div>
       </div>
     </>

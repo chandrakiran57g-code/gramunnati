@@ -120,7 +120,7 @@ export default function VolunteerProfile() {
               <h3 className="font-heading font-bold text-lg mb-2">Download Certificate</h3>
               <p className="text-muted-foreground text-sm mb-4">Congratulations! You've achieved {currentAchievement.label} status.</p>
               <Button className="bg-donation text-white border-0" onClick={() => {
-                const content = `GramUnnati Volunteer Certificate\n\n${volunteer.full_name}\n${currentAchievement.label}\nHours: ${hours} | Projects: ${projects}\n\nThank you for your service!`;
+                const content = `CMSR Volunteer Certificate\n\n${volunteer.full_name}\n${currentAchievement.label}\nHours: ${hours} | Projects: ${projects}\n\nThank you for your service!`;
                 const blob = new Blob([content], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');

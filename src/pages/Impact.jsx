@@ -64,7 +64,7 @@ export default function Impact() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-80" />
               <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">Our Impact Dashboard</h1>
-              <p className="text-white/80 max-w-2xl mx-auto">Real numbers. Real change. Track the measurable impact of GramUnnati's work across India.</p>
+              <p className="text-white/80 max-w-2xl mx-auto">Real numbers. Real change. Track the measurable impact of CMSR's work across India.</p>
             </motion.div>
           </div>
         </div>
@@ -103,7 +103,7 @@ export default function Impact() {
               <MapPin className="w-5 h-5 text-primary" />
               <h2 className="font-heading text-2xl font-bold">Impact by State</h2>
             </div>
-            <p className="text-muted-foreground text-sm">Top states driving rural transformation through GramUnnati</p>
+            <p className="text-muted-foreground text-sm">Top states driving rural transformation through CMSR</p>
           </motion.div>
 
           <div className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm">

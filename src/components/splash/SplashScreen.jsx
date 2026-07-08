@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import GramUnnatiLeaf from '@/components/splash/GramUnnatiLeaf';
+import CMSRLeaf from '@/components/splash/CmsrLeaf';
 import { BRAND_COLORS, BRAND_LOGO_URL, BRAND_NAME, BRAND_TAGLINE } from '@/lib/brand';
 
 export const HOLD_AFTER_REVEAL_MS = 800;
@@ -94,7 +94,7 @@ export default function SplashScreen({ onComplete }) {
       animate={{ opacity: isExiting ? 0 : 1 }}
       transition={{ duration: EXIT_FADE_MS / 1000, ease: EASE }}
       role="dialog"
-      aria-label="GramUnnati brand introduction"
+      aria-label="CMSR brand introduction"
     >
       {/* Step 1–3: deep green intro */}
       <motion.div
@@ -162,7 +162,7 @@ export default function SplashScreen({ onComplete }) {
                 ease: EASE,
               }}
             >
-              <GramUnnatiLeaf gradientId={leaf.gradientId} className="h-full w-full drop-shadow-md" />
+              <CMSRLeaf gradientId={leaf.gradientId} className="h-full w-full drop-shadow-md" />
             </motion.div>
           ))}
 
