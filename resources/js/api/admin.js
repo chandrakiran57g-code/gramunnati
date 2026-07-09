@@ -44,6 +44,19 @@ export const galleryService = {
   async uploadFile(bucket, file, path = '') {
     await ensureSanctumAdminSession();
     await ensureCsrf();
+
+    const isVideo = /^video\//i.test(file?.type || '') || /\.(mp4|webm|mov|m4v|mkv|avi)$/i.test(file?.name || '');
+    const maxBytes = isVideo ? 500 * 1024 * 1024 : 50 * 1024 * 1024;
+    if (file?.size > maxBytes) {
+      const mb = (file.size / (1024 * 1024)).toFixed(1);
+      const cap = (maxBytes / (1024 * 1024)).toFixed(0);
+      throw new Error(
+        isVideo
+          ? `Video is ${mb}MB (max ${cap}MB). Compress it or paste a YouTube link instead.`
+          : `Image is ${mb}MB (max ${cap}MB). Use a smaller file or paste an image URL.`
+      );
+    }
+
     const fd = new FormData();
     fd.append('file', file);
     fd.append('bucket', bucket || 'uploads');

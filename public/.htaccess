@@ -3,6 +3,13 @@
     AddHandler application/x-httpd-ea-php83___lsphp .php .php8 .phtml
 </IfModule>
 
+# Raise upload limits when the host allows php_value in .htaccess (fallback to .user.ini).
+<IfModule mod_php.c>
+    php_value upload_max_filesize 512M
+    php_value post_max_size 520M
+    php_value max_execution_time 300
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

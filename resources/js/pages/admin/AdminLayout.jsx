@@ -7,6 +7,7 @@ import AdminSaveIndicator from '@/components/admin/AdminSaveIndicator';
 import { adminRoutes } from '@/lib/adminRoutes';
 import { adminSidebarSections } from '@/lib/adminNavConfig';
 import { BRAND_LOGO_URL, BRAND_NAME } from '@/lib/brand';
+import CmsrBrandText from '@/components/brand/CmsrBrandText';
 
 export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -51,7 +52,9 @@ export default function AdminLayout() {
       <div className="flex items-center gap-3 border-b border-white/10 p-4">
         <img src={BRAND_LOGO_URL} alt={BRAND_NAME} className="h-9 w-9 rounded-full bg-white/10 object-contain" />
         <div>
-          <div className="font-heading text-sm font-bold">{BRAND_NAME}</div>
+          <div className="font-heading text-sm font-bold">
+            <CmsrBrandText text={BRAND_NAME} />
+          </div>
           <div className="text-[11px] text-white/50">Admin Panel</div>
         </div>
       </div>
@@ -222,7 +225,10 @@ export default function AdminLayout() {
           <button type="button" onClick={() => setSidebarOpen(true)} className="rounded-lg p-1.5 hover:bg-white/10">
             <Menu className="h-5 w-5" />
           </button>
-          <span className="font-heading text-sm font-bold">{BRAND_NAME} Admin</span>
+          <span className="font-heading text-sm font-bold inline-flex items-baseline gap-1">
+            <CmsrBrandText text={BRAND_NAME} />
+            <span>Admin</span>
+          </span>
           <div className="w-8" />
         </div>
         <main className="flex-1 overflow-y-auto"><Outlet /></main>

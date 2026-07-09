@@ -1,4 +1,5 @@
 import { supabase } from '@/api/supabaseClient';
+import { apiFetch, ensureCsrf } from '@/api/apiClient';
 
 const ADMIN_SESSION_KEY = 'cmsr_admin_session';
 
@@ -36,6 +37,8 @@ export async function clearAdminSession() {
   try {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     await supabase.auth.signOut();
+    await ensureCsrf();
+    await apiFetch('/auth/logout', { method: 'POST' });
   } catch {
     /* ignore */
   }
@@ -59,5 +62,19 @@ export async function authenticateAdmin(email, password) {
   }
 
   setAdminSession();
+
+  try {
+    await ensureCsrf();
+    await apiFetch('/auth/login', {
+      method: 'POST',
+      body: { email: email.trim().toLowerCase(), password },
+    });
+  } catch (err) {
+    return {
+      ok: false,
+      error: err.message || 'Could not start Laravel session — file uploads may fail. Refresh and try again.',
+    };
+  }
+
   return { ok: true };
 }

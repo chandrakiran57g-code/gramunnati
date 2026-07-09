@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AuthLayout from '@/components/AuthLayout';
+import CmsrBrandText from '@/components/brand/CmsrBrandText';
 import { isAdminAuthenticated, authenticateAdmin } from '@/lib/adminAuth';
 import { adminRoutes } from '@/lib/adminRoutes';
 
@@ -37,7 +38,16 @@ export default function AdminLogin() {
   };
 
   return (
-    <AuthLayout icon={Shield} title="CMSR Admin" subtitle="Sign in to the management control room">
+    <AuthLayout
+      icon={Shield}
+      title={(
+        <span className="inline-flex items-baseline justify-center gap-1.5">
+          <CmsrBrandText text="CMSR" />
+          <span>Admin</span>
+        </span>
+      )}
+      subtitle="Sign in to the management control room"
+    >
       {error && (
         <div className="mb-4 rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}

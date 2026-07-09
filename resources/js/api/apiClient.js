@@ -26,6 +26,16 @@ export async function ensureCsrf() {
 /** Fired after every successful admin mutation so the UI can confirm the save. */
 export const ADMIN_SAVED_EVENT = 'cmsr:admin-saved';
 
+function firstValidationError(json) {
+  const errors = json?.errors;
+  if (!errors || typeof errors !== 'object') return null;
+  for (const messages of Object.values(errors)) {
+    if (Array.isArray(messages) && messages[0]) return messages[0];
+    if (typeof messages === 'string' && messages) return messages;
+  }
+  return null;
+}
+
 function friendlyErrorMessage(status, json) {
   if (status === 413) {
     return 'File or request too large for the server. Try a smaller file, or paste a YouTube/video URL instead.';
@@ -35,6 +45,18 @@ function friendlyErrorMessage(status, json) {
   }
   if (status === 401) {
     return 'You are logged out. Please log in again.';
+  }
+  if (status === 403) {
+    return json?.message || 'You do not have permission for this action. Log out and sign in again as admin.';
+  }
+  if (status === 422) {
+    const fieldError = firstValidationError(json);
+    if (fieldError) {
+      if (/failed to upload|upload_max_filesize|post_max_size|exceeds server/i.test(fieldError)) {
+        return `${fieldError} You can also paste a YouTube link instead of uploading.`;
+      }
+      return fieldError;
+    }
   }
   return json?.message || `HTTP ${status}`;
 }

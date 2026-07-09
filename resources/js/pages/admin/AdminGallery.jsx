@@ -146,7 +146,12 @@ export default function AdminGallery() {
       if (fileInputRef.current) fileInputRef.current.value = '';
       await loadGallery();
     } catch (err) {
-      toast.error(err.message || 'Upload failed');
+      const msg = err.message || 'Upload failed';
+      toast.error(msg);
+      if (isVideo && hasFile && !showUrlFields) {
+        setShowUrlFields(true);
+        toast.message('Tip: paste a YouTube link under the file picker if upload keeps failing.', { duration: 6000 });
+      }
     } finally {
       setUploading(false);
     }
