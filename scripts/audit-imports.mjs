@@ -3,8 +3,8 @@ import path from 'path';
 
 const root = 'resources/js';
 
-/** Symbols that must be imported when used (not auto-global). */
-const symbols = [
+/** Always check these high-risk symbols (used across many pages). */
+const manualSymbols = [
   'HeroScrollSection',
   'useLocalizedRecord',
   'localize',
@@ -21,9 +21,14 @@ const symbols = [
   'AdminPageHeader',
   'AdminMediaUpload',
   'useAuth',
-  'useNavigate',
-  'useParams',
+  'normalizeExternalUrl',
+  'isExternalUrl',
+  'groupGalleryRows',
+  'resolveCardCover',
+  'slugifyTitle',
 ];
+
+const exportScanDirs = ['lib', 'hooks', 'components', 'i18n'];
 
 const files = [];
 
@@ -43,27 +48,56 @@ function definesSymbol(src, sym) {
     new RegExp(`export\\s+const\\s+${sym}\\b`),
     new RegExp(`export\\s+default\\s+function\\s+${sym}\\b`),
     new RegExp(`export\\s*\\{[^}]*\\b${sym}\\b`),
+    new RegExp(`function\\s+${sym}\\s*\\(`),
+    new RegExp(`const\\s+${sym}\\s*=`),
   ];
   return patterns.some((re) => re.test(src));
 }
+
+function collectExportedSymbols(file, src) {
+  const rel = file.replace(/\\/g, '/');
+  const inScanDir = exportScanDirs.some((d) => rel.includes(`/${d}/`) || rel.startsWith(`${d}/`));
+  if (!inScanDir) return [];
+
+  const found = new Set();
+  for (const match of src.matchAll(/export\s+function\s+(\w+)/g)) found.add(match[1]);
+  for (const match of src.matchAll(/export\s+const\s+(\w+)/g)) {
+    const name = match[1];
+    if (/^[A-Z]/.test(name) || name.startsWith('use')) found.add(name);
+  }
+  return [...found];
+}
+
+const autoSymbols = new Set();
+for (const file of files) {
+  const src = fs.readFileSync(file, 'utf8');
+  for (const sym of collectExportedSymbols(file, src)) autoSymbols.add(sym);
+}
+
+const symbols = [...new Set([...manualSymbols, ...autoSymbols])];
 
 const issues = [];
 
 for (const file of files) {
   const src = fs.readFileSync(file, 'utf8');
+  const rel = file.replace(/\\/g, '/');
 
   for (const sym of symbols) {
     if (definesSymbol(src, sym)) continue;
 
-    const useRe = sym.startsWith('use')
+    const isHook = sym.startsWith('use') && sym[3] === sym[3]?.toUpperCase();
+    const isComponent = /^[A-Z]/.test(sym);
+    const useRe = isHook
       ? new RegExp(`\\b${sym}\\s*\\(`)
-      : new RegExp(`<\\s*${sym}\\b|\\b${sym}\\s*\\(`);
+      : isComponent
+        ? new RegExp(`<\\s*${sym}\\b|\\b${sym}\\s*\\(`)
+        : new RegExp(`\\b${sym}\\s*\\(`);
 
     if (!useRe.test(src)) continue;
 
     const importRe = new RegExp(`import\\s+[^;]*\\b${sym}\\b`);
     if (!importRe.test(src)) {
-      issues.push({ file: file.replace(/\\/g, '/'), sym });
+      issues.push({ file: rel, sym });
     }
   }
 }
@@ -73,8 +107,8 @@ if (issues.length) {
   for (const i of issues) {
     console.error(`  ${i.file}: ${i.sym}`);
   }
-  console.error(`\n${issues.length} issue(s). Run: node scripts/audit-imports.mjs`);
+  console.error(`\n${issues.length} issue(s).`);
   process.exit(1);
 }
 
-console.log('Import audit passed.');
+console.log(`Import audit passed (${symbols.length} symbols checked).`);

@@ -6,6 +6,7 @@ import { Building2, Globe, Mail, Phone, Calendar, ArrowLeft } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { normalizeExternalUrl } from '@/lib/externalUrl';
 import RichContent from '@/components/shared/RichContent';
 
 const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
