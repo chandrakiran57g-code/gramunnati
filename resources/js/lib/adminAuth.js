@@ -1,12 +1,10 @@
 import { supabase } from '@/api/supabaseClient';
 import { apiFetch, ensureCsrf } from '@/api/apiClient';
+import { ADMIN_CREDENTIALS } from '@/lib/adminCredentials';
 
 const ADMIN_SESSION_KEY = 'cmsr_admin_session';
 
-export const ADMIN_CREDENTIALS = {
-  email: 'test@gmail.com',
-  password: 'testadmin123',
-};
+export { ADMIN_CREDENTIALS };
 
 export function validateAdminCredentials(email, password) {
   const normalizedEmail = email.trim().toLowerCase();

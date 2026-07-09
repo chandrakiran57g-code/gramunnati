@@ -1,7 +1,7 @@
 import { supabase } from './supabaseClient';
 import { apiFetch, ensureCsrf } from './apiClient';
 import { adminDbMutation, ensureAdminDbAccess } from '@/lib/adminDb';
-import { ADMIN_CREDENTIALS } from '@/lib/adminAuth';
+import { ensureSanctumAdminSession } from '@/lib/sanctumSession';
 
 const PROJECT_CHART_COLORS = ['#2D6A4F', '#2563EB', '#22C55E', '#06B6D4', '#EF4444', '#6B7280', '#F59E0B', '#8B5CF6'];
 
@@ -15,25 +15,21 @@ function formatMonthLabel(date) {
 }
 
 /**
- * Ensure Laravel Sanctum session is active (required for /api/upload).
- */
-async function ensureSanctumAdminSession() {
-  try {
-    const json = await apiFetch('/auth/user');
-    if (json?.user) return;
-  } catch (err) {
-    if (err.status && err.status !== 401) throw err;
-  }
-  await ensureCsrf();
-  await apiFetch('/auth/login', {
-    method: 'POST',
-    body: { email: ADMIN_CREDENTIALS.email, password: ADMIN_CREDENTIALS.password },
-  });
-}
-
-/**
  * Gallery / Storage Service — Laravel public disk for file uploads
  */
+const BASE64_FALLBACK_MAX_BYTES = 12 * 1024 * 1024;
+
+async function fileToBase64(file) {
+  const buf = await file.arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  let binary = '';
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
 export const galleryService = {
   /**
    * Upload image or video to storage
@@ -61,10 +57,34 @@ export const galleryService = {
     fd.append('file', file);
     fd.append('bucket', bucket || 'uploads');
     fd.append('path', path || '');
-    const json = await apiFetch('/upload', { method: 'POST', body: fd });
-    const url = json?.url || json?.publicUrl;
-    if (!url) throw new Error('Upload failed — no URL returned from server');
-    return { path: json.path, url };
+
+    try {
+      const json = await apiFetch('/upload', { method: 'POST', body: fd });
+      const url = json?.url || json?.publicUrl;
+      if (!url) throw new Error('Upload failed — no URL returned from server');
+      return { path: json.path, url };
+    } catch (err) {
+      const canRetryBase64 = (err.status === 422 || err.status === 413)
+        && file?.size > 0
+        && file.size <= BASE64_FALLBACK_MAX_BYTES;
+
+      if (!canRetryBase64) throw err;
+
+      const data = await fileToBase64(file);
+      const json = await apiFetch('/admin/upload-base64', {
+        method: 'POST',
+        body: {
+          filename: file.name || 'upload.bin',
+          data,
+          bucket: bucket || 'uploads',
+          path: path || '',
+          mime: file.type || undefined,
+        },
+      });
+      const url = json?.url || json?.publicUrl;
+      if (!url) throw new Error('Upload failed — no URL returned from server');
+      return { path: json.path, url };
+    }
   },
 
   /**

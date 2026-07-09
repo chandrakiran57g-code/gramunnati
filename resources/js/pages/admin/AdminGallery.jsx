@@ -358,9 +358,8 @@ export default function AdminGallery() {
 
             <div className="relative z-10">
               <Button
-                type="button"
+                type="submit"
                 disabled={uploading}
-                onClick={handleUpload}
                 className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl min-w-[9rem]"
               >
                 {uploading ? (

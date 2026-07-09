@@ -3,6 +3,7 @@
  * Keeps existing pages working without rewriting every query.
  */
 import { apiFetch, ensureCsrf } from './apiClient';
+import { ensureSanctumAdminSession } from '@/lib/sanctumSession';
 
 const authListeners = new Set();
 let cachedSession = null;
@@ -320,6 +321,7 @@ const storage = {
   from(bucket) {
     return {
       async upload(path, file) {
+        await ensureSanctumAdminSession();
         await ensureCsrf();
         const fd = new FormData();
         fd.append('file', file);
