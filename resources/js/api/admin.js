@@ -42,7 +42,6 @@ export const galleryService = {
    * @param {string} path - Optional subfolder path
    */
   async uploadFile(bucket, file, path = '') {
-    await ensureAdminDbAccess();
     await ensureSanctumAdminSession();
     await ensureCsrf();
     const fd = new FormData();
@@ -51,7 +50,7 @@ export const galleryService = {
     fd.append('path', path || '');
     const json = await apiFetch('/upload', { method: 'POST', body: fd });
     const url = json?.url || json?.publicUrl;
-    if (!url) throw new Error('Upload failed — no URL returned');
+    if (!url) throw new Error('Upload failed — no URL returned from server');
     return { path: json.path, url };
   },
 

@@ -5,6 +5,14 @@ export const BRAND_NAME = 'CMSR';
 
 export const BRAND_TAGLINE = 'Common Man Social Responsibility';
 
+/** Per-letter colors from the CMSR logo */
+export const BRAND_LETTER_COLORS = {
+  C: '#2563EB',
+  M: '#2D8F4F',
+  S: '#14B8A6',
+  R: '#CA8A04', // matches navbar Donate Us (service-agriculture)
+};
+
 export const BRAND_COLORS = {
   green: '#2D6A4F',
   peach: '#F6D8C6',

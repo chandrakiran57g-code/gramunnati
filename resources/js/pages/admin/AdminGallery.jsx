@@ -4,7 +4,6 @@ import { Image, Video, Upload, Grid3X3, List, Trash2, Loader2, RefreshCw, Plus, 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { toast } from 'sonner';
 import {
   getGalleryCollections,
@@ -97,11 +96,17 @@ export default function AdminGallery() {
   );
 
   const handleUpload = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
+    if (uploading) return;
+
     const isVideo = uploadForm.mediaType === 'video';
     const hasFile = Boolean(uploadForm.file);
     const hasUrl = Boolean(uploadForm.mediaUrl.trim());
     const hasYoutube = Boolean(uploadForm.youtubeUrl.trim());
+    const resolvedTitle =
+      uploadForm.title.trim()
+      || (uploadForm.file?.name ? uploadForm.file.name.replace(/\.[^.]+$/, '') : '')
+      || (isVideo ? 'Gallery Video' : 'Gallery Photo');
 
     if (isVideo) {
       if (!hasFile && !hasUrl && !hasYoutube) {
@@ -113,21 +118,24 @@ export default function AdminGallery() {
       return;
     }
 
-    if (uploadForm.collectionId === NEW_COLLECTION && !uploadForm.title.trim()) {
+    if (uploadForm.collectionId === NEW_COLLECTION && !resolvedTitle) {
       toast.error('Enter a title for the new collection');
       return;
     }
 
     setUploading(true);
     try {
+      if (hasFile && isVideo) {
+        toast.message('Uploading video…', { duration: 3000 });
+      }
       await addGalleryMedia({
-        title: uploadForm.title.trim() || undefined,
+        title: resolvedTitle,
         category: uploadForm.category,
         mediaType: uploadForm.mediaType,
         mediaUrl: uploadForm.mediaUrl.trim() || undefined,
         youtubeUrl: uploadForm.youtubeUrl.trim() || undefined,
         file: uploadForm.file || undefined,
-        caption: uploadForm.caption || uploadForm.title,
+        caption: uploadForm.caption || resolvedTitle,
         collectionId: uploadForm.collectionId === NEW_COLLECTION ? undefined : uploadForm.collectionId,
       });
       toast.success(`${isVideo ? 'Video' : 'Photo'} added — visible on public /gallery now`);
@@ -157,27 +165,25 @@ export default function AdminGallery() {
 
   return (
     <div className="min-h-screen bg-background">
-      <HeroScrollSection size="compact">
-        <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white py-8 px-6">
-          <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <h1 className="font-heading text-3xl font-bold flex items-center gap-3">
-                <Image className="w-8 h-8" />
-                Gallery Manager
-              </h1>
-              <p className="text-white/70 text-sm mt-1">
-                {collections.length} collections · {totalPhotos} photos · {totalVideos} videos · synced with public /gallery
-              </p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={loadGallery}>
-                <RefreshCw className="w-4 h-4 mr-2" />
-                Refresh
-              </Button>
-            </div>
+      <div className="bg-gradient-to-r from-pink-500 to-purple-600 text-white py-8 px-6">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 className="font-heading text-3xl font-bold flex items-center gap-3">
+              <Image className="w-8 h-8" />
+              Gallery Manager
+            </h1>
+            <p className="text-white/70 text-sm mt-1">
+              {collections.length} collections · {totalPhotos} photos · {totalVideos} videos · synced with public /gallery
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" className="bg-white/10 border-white/30 text-white hover:bg-white/20" onClick={loadGallery}>
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
           </div>
         </div>
-      </HeroScrollSection>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
@@ -345,10 +351,18 @@ export default function AdminGallery() {
               </div>
             )}
 
-            <div>
-              <Button type="submit" disabled={uploading} className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl">
+            <div className="relative z-10">
+              <Button
+                type="button"
+                disabled={uploading}
+                onClick={handleUpload}
+                className="bg-purple-600 hover:bg-purple-700 text-white rounded-xl min-w-[9rem]"
+              >
                 {uploading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Uploading…
+                  </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />

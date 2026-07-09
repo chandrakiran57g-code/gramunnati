@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import CMSRLeaf from '@/components/splash/CmsrLeaf';
+import CmsrBrandText from '@/components/brand/CmsrBrandText';
 import { BRAND_COLORS, BRAND_LOGO_URL, BRAND_NAME } from '@/lib/brand';
 
 export const HOLD_AFTER_REVEAL_MS = 800;
@@ -182,15 +183,14 @@ export default function SplashScreen({ onComplete }) {
 
         {/* Brand reveal text */}
         <div className="splash-text-stack flex min-h-[4.5rem] flex-col items-center gap-3 text-center">
-          <motion.h1
+          <motion.div
             className="splash-brand-name font-heading font-bold"
-            style={{ color: BRAND_COLORS.text }}
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: showTitle ? 1 : 0, y: showTitle ? 0 : 14 }}
             transition={{ duration: 0.5, ease: EASE }}
           >
-            {BRAND_NAME}
-          </motion.h1>
+            <CmsrBrandText text={BRAND_NAME} as="h1" />
+          </motion.div>
 
           <motion.p
             className="splash-tagline font-body font-medium"

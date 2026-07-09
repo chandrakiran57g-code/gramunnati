@@ -187,13 +187,22 @@ export async function addGalleryMedia({
     await persistGalleryCollections(collections);
 
     try {
-      const { error: galleryError } = await supabase.from('galleries').insert({
+      const row = {
         title: collectionTitle,
         galleryable_type: type,
         galleryable_id: 0,
-        image_path: url || `youtube:${embedId}`,
         sort_order: collections.length,
-      });
+      };
+      if (mediaType === 'video') {
+        if (embedId) {
+          row.video_url = `youtube:${embedId}`;
+        } else if (url) {
+          row.video_url = url;
+        }
+      } else if (url) {
+        row.image_path = url;
+      }
+      const { error: galleryError } = await supabase.from('galleries').insert(row);
       if (galleryError) {
         /* galleries row is optional — settings hold the live gallery data */
       }

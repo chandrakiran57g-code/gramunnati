@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Heart, MapPin, Phone, Mail } from 'lucide-react';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 import BrandTagline from '@/components/brand/BrandTagline';
+import CmsrBrandText from '@/components/brand/CmsrBrandText';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { normalizeExternalUrl, isExternalUrl } from '@/lib/externalUrl';
 
@@ -86,7 +87,7 @@ export default function Footer() {
             <div className="flex items-center gap-3 mb-4">
               <img src={logo} alt={siteName} className="h-12 w-12 object-contain rounded-full bg-white/10 p-1" />
               <div>
-                <div className="font-heading font-bold text-xl text-white">{siteName}</div>
+                <CmsrBrandText text={siteName} className="font-heading font-bold text-xl text-white" />
                 <BrandTagline className="text-xs text-brown-400 [&_span:first-child]:text-brown-400 [&_span:last-child]:text-primary" />
               </div>
             </div>
