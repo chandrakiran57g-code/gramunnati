@@ -18,6 +18,8 @@ function formatMonthLabel(date) {
  * Gallery / Storage Service — Laravel public disk for file uploads
  */
 const BASE64_FALLBACK_MAX_BYTES = 12 * 1024 * 1024;
+/** Prefer base64 for smaller files — avoids broken multipart uploads on many cPanel hosts. */
+const BASE64_PREFERRED_MAX_BYTES = 6 * 1024 * 1024;
 
 async function fileToBase64(file) {
   const buf = await file.arrayBuffer();
@@ -28,6 +30,23 @@ async function fileToBase64(file) {
     binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
   }
   return btoa(binary);
+}
+
+async function uploadViaBase64(bucket, file, path = '') {
+  const data = await fileToBase64(file);
+  const json = await apiFetch('/admin/upload-base64', {
+    method: 'POST',
+    body: {
+      filename: file.name || 'upload.bin',
+      data,
+      bucket: bucket || 'uploads',
+      path: path || '',
+      mime: file.type || undefined,
+    },
+  });
+  const url = json?.url || json?.publicUrl;
+  if (!url) throw new Error('Upload failed — no URL returned from server');
+  return { path: json.path, url };
 }
 
 export const galleryService = {
@@ -58,32 +77,26 @@ export const galleryService = {
     fd.append('bucket', bucket || 'uploads');
     fd.append('path', path || '');
 
+    const tryBase64 = file?.size > 0 && file.size <= BASE64_FALLBACK_MAX_BYTES;
+    const preferBase64 = file?.size > 0 && file.size <= BASE64_PREFERRED_MAX_BYTES;
+
+    if (preferBase64) {
+      try {
+        return await uploadViaBase64(bucket, file, path);
+      } catch {
+        /* fall through to multipart */
+      }
+    }
+
     try {
       const json = await apiFetch('/upload', { method: 'POST', body: fd });
       const url = json?.url || json?.publicUrl;
       if (!url) throw new Error('Upload failed — no URL returned from server');
       return { path: json.path, url };
     } catch (err) {
-      const canRetryBase64 = (err.status === 422 || err.status === 413)
-        && file?.size > 0
-        && file.size <= BASE64_FALLBACK_MAX_BYTES;
+      if (!tryBase64 || preferBase64) throw err;
 
-      if (!canRetryBase64) throw err;
-
-      const data = await fileToBase64(file);
-      const json = await apiFetch('/admin/upload-base64', {
-        method: 'POST',
-        body: {
-          filename: file.name || 'upload.bin',
-          data,
-          bucket: bucket || 'uploads',
-          path: path || '',
-          mime: file.type || undefined,
-        },
-      });
-      const url = json?.url || json?.publicUrl;
-      if (!url) throw new Error('Upload failed — no URL returned from server');
-      return { path: json.path, url };
+      return uploadViaBase64(bucket, file, path);
     }
   },
 

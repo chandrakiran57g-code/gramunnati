@@ -14,9 +14,9 @@ class UploadController extends Controller
 {
     private const VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'm4v', 'ogv', 'avi', 'mkv', '3gp'];
 
-    private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'];
+    private const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'heic', 'heif', 'avif', 'jfif', 'tif', 'tiff'];
 
-    /** Base64 JSON uploads — keep under typical cPanel post_max when limits are low. */
+    /** Base64 JSON uploads — raw bytes cap (encoded payload is ~4/3 larger). */
     private const BASE64_MAX_BYTES = 12 * 1024 * 1024;
 
     public function limits(): JsonResponse

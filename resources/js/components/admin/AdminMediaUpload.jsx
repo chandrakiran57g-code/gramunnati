@@ -61,6 +61,7 @@ export default function AdminMediaUpload({
       toast.success('File uploaded');
     } catch (err) {
       toast.error(err.message || 'Upload failed. Paste a URL below instead.');
+      if (allowUrl) setShowUrlField(true);
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = '';
