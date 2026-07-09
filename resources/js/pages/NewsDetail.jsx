@@ -6,6 +6,7 @@ import { Calendar, ChevronLeft, Tag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 import RichContent from '@/components/shared/RichContent';
 
 export default function NewsDetail() {

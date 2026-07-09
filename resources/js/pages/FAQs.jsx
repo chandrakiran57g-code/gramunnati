@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle, Loader2 } from 'lucide-react';
 import { cmsService } from '@/api/cms';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 import RichContent from '@/components/shared/RichContent';
 
 export default function FAQs() {

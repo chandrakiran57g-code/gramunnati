@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { normalizeExternalUrl } from '@/lib/externalUrl';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { localize } from '@/lib/localizedContent';
 import RichContent from '@/components/shared/RichContent';
 
 const categoryColors = {

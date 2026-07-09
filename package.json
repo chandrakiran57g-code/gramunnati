@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "vite build",
+        "build": "node scripts/audit-imports.mjs && vite build",
+        "audit:imports": "node scripts/audit-imports.mjs",
         "lint": "eslint resources/js --quiet",
         "seed:platform": "php artisan db:seed --class=CmsrSeeder --force"
     },

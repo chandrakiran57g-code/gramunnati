@@ -6,6 +6,7 @@ import { Users, Mail, Phone, ArrowLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { localize, useLocalizedRecord } from '@/lib/localizedContent';
 import RichContent from '@/components/shared/RichContent';
 
 export default function TeamDetail() {
