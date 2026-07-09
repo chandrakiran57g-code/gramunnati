@@ -13,6 +13,7 @@ import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { groupGalleryRows } from '@/lib/beforeAfterGallery';
 import RichContent from '@/components/shared/RichContent';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 export default function VillageDetail() {
   const { slug } = useParams();

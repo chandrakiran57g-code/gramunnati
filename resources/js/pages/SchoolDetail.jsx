@@ -13,6 +13,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { groupGalleryRows } from '@/lib/beforeAfterGallery';
 import RichContent from '@/components/shared/RichContent';
+import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const schoolTypeLabel = { government: 'Government', private: 'Private', aided: 'Aided', model: 'Model School' };
 const schoolTypeColor = { government: 'bg-primary/10 text-primary', private: 'bg-school/10 text-school', aided: 'bg-purple-100 text-purple-700', model: 'bg-donation/10 text-donation' };
