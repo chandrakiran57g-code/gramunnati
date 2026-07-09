@@ -7,7 +7,7 @@ import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import { toast } from 'sonner';
 import {
   VOLUNTEER_SKILLS, VOLUNTEER_STATES, VOLUNTEER_AVAILABILITY, VOLUNTEER_STATUSES,
@@ -243,8 +243,7 @@ export default function AdminVolunteers() {
               </div>
             </div>
             <div className="sm:col-span-2">
-              <Label>Experience / About You</Label>
-              <Textarea className="mt-1" rows={4} value={form.experience} onChange={(e) => setForm({ ...form, experience: e.target.value })} />
+              <RichTextEditor label="Experience / About You" value={form.experience} onChange={(html) => setForm({ ...form, experience: html })} />
             </div>
           </div>
           <div className="mt-4 flex gap-2">
@@ -279,25 +278,25 @@ export default function AdminVolunteers() {
       {loading ? (
         <div className="h-40 animate-pulse rounded-xl bg-muted" />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-border bg-white">
-          <table className="w-full text-sm">
-            <thead className="border-b bg-muted/40 text-left text-xs uppercase tracking-wide text-muted-foreground">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+          <table className="w-full text-sm border-collapse">
+            <thead className="bg-[#337ab7] text-left text-white">
               <tr>
-                <th className="px-4 py-3">Volunteer ID</th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3 hidden sm:table-cell">Program</th>
-                <th className="px-4 py-3 hidden md:table-cell">Location</th>
-                <th className="px-4 py-3">Status</th>
+                <th className="px-4 py-3 font-semibold border-r border-white/25">Volunteer ID</th>
+                <th className="px-4 py-3 font-semibold border-r border-white/25">Name</th>
+                <th className="px-4 py-3 font-semibold hidden sm:table-cell border-r border-white/25">Program</th>
+                <th className="px-4 py-3 font-semibold hidden md:table-cell border-r border-white/25">Location</th>
+                <th className="px-4 py-3 font-semibold border-r border-white/25">Status</th>
                 <th className="px-4 py-3 w-24" />
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody>
               {filtered.map((v) => {
                 const st = statusBadge(v.status || (v.is_active === false ? 'inactive' : 'active'));
                 return (
-                  <tr key={v.id} className="hover:bg-muted/20">
-                    <td className="px-4 py-3 font-mono text-xs">{v.volunteer_code || '—'}</td>
-                    <td className="px-4 py-3">
+                  <tr key={v.id} className="border-t border-gray-200 hover:bg-gray-50">
+                    <td className="px-4 py-3 font-mono text-xs border-r border-gray-200">{v.volunteer_code || '—'}</td>
+                    <td className="px-4 py-3 border-r border-gray-200">
                       <div className="flex items-center gap-2">
                         {v.photo ? (
                           <img src={v.photo} alt="" className="h-8 w-8 rounded-full object-cover" />
@@ -307,9 +306,9 @@ export default function AdminVolunteers() {
                         <span className="font-medium">{v.full_name}</span>
                       </div>
                     </td>
-                    <td className="hidden px-4 py-3 text-muted-foreground sm:table-cell">{v.program_category || '—'}</td>
-                    <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">{[v.district, v.state].filter(Boolean).join(', ') || '—'}</td>
-                    <td className="px-4 py-3"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${st.color}`}>{st.label}</span></td>
+                    <td className="hidden px-4 py-3 text-gray-700 sm:table-cell border-r border-gray-200">{v.program_category || '—'}</td>
+                    <td className="hidden px-4 py-3 text-gray-700 md:table-cell border-r border-gray-200">{[v.district, v.state].filter(Boolean).join(', ') || '—'}</td>
+                    <td className="px-4 py-3 border-r border-gray-200"><span className={`rounded-full px-2 py-0.5 text-xs font-medium ${st.color}`}>{st.label}</span></td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1">
                         <Button size="sm" variant="ghost" onClick={() => handleEdit(v)}><Pencil className="h-4 w-4" /></Button>

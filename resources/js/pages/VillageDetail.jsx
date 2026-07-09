@@ -12,7 +12,7 @@ import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Responsi
 import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { groupGalleryRows } from '@/lib/beforeAfterGallery';
-import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import RichContent from '@/components/shared/RichContent';
 
 export default function VillageDetail() {
   const { slug } = useParams();
@@ -143,7 +143,7 @@ export default function VillageDetail() {
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl border border-border p-6">
                 <h3 className="font-heading font-bold text-lg mb-3">About {village.village_name}</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">{village.description || village.short_description || 'Village description not yet available. Contact the village representative to add information.'}</p>
+                <RichContent content={village.description || village.short_description || 'Village description not yet available. Contact the village representative to add information.'} className="text-muted-foreground leading-relaxed text-sm" />
                 {village.history && (
                   <div className="mt-4 pt-4 border-t border-border">
                     <h4 className="font-semibold text-sm mb-2">History</h4>

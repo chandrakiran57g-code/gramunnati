@@ -6,6 +6,7 @@ import { Heart, MapPin, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import RichContent from '@/components/shared/RichContent';
 import { safeText } from '@/lib/safeText';
 
 const typeLabels = { village: 'Village', school: 'School', farmer: 'Farmer', student: 'Student', women_shg: 'Women SHG', youth_group: 'Youth Group', artisan: 'Artisan', other: 'Other' };
@@ -71,7 +72,7 @@ export default function BeneficiaryDetail() {
             {beneficiary.description && (
               <div className="mb-8">
                 <h2 className="font-heading text-xl font-bold mb-3">About</h2>
-                <p className="text-muted-foreground leading-relaxed">{beneficiary.description}</p>
+                <RichContent content={beneficiary.description} className="text-muted-foreground leading-relaxed" />
               </div>
             )}
             {beneficiary.impact_details && (
@@ -79,7 +80,7 @@ export default function BeneficiaryDetail() {
                 <h2 className="font-heading text-xl font-bold mb-3 flex items-center gap-2">
                   <Heart className="w-5 h-5 text-donation" /> Impact Story
                 </h2>
-                <p className="text-muted-foreground leading-relaxed">{beneficiary.impact_details}</p>
+                <RichContent content={beneficiary.impact_details} className="text-muted-foreground leading-relaxed" />
               </div>
             )}
           </div>

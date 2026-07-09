@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import BeforeAfterSlider from '@/components/shared/BeforeAfterSlider';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import RichContent from '@/components/shared/RichContent';
 import { safeText } from '@/lib/safeText';
 
 const categoryColors = {
@@ -151,7 +152,7 @@ export default function ProjectDetail() {
             <div className="grid sm:grid-cols-2 gap-6">
               <div className="bg-white rounded-xl border border-border p-6">
                 <h3 className="font-heading font-bold text-lg mb-3">About This Project</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">{project.description || project.short_description || 'Project details coming soon.'}</p>
+                <RichContent content={project.description || project.short_description || 'Project details coming soon.'} className="text-muted-foreground leading-relaxed text-sm" />
                 {project.objective && <div className="mt-4 pt-4 border-t border-border"><h4 className="font-semibold text-sm mb-2">Objective</h4><p className="text-muted-foreground text-sm">{project.objective}</p></div>}
               </div>
               <div className="bg-white rounded-xl border border-border p-6">

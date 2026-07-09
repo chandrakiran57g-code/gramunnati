@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle, Loader2 } from 'lucide-react';
 import { cmsService } from '@/api/cms';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { localize } from '@/lib/localizedContent';
+import RichContent from '@/components/shared/RichContent';
 
 export default function FAQs() {
   const [open, setOpen] = useState(null);
@@ -53,8 +53,8 @@ export default function FAQs() {
                   <AnimatePresence>
                     {open === i && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }}>
-                        <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-4 whitespace-pre-wrap">
-                          {a}
+                        <div className="px-6 pb-5 text-sm text-muted-foreground leading-relaxed border-t border-border/50 pt-4">
+                          <RichContent content={a} />
                         </div>
                       </motion.div>
                     )}

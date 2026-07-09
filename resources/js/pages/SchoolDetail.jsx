@@ -12,7 +12,7 @@ import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { groupGalleryRows } from '@/lib/beforeAfterGallery';
-import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import RichContent from '@/components/shared/RichContent';
 
 const schoolTypeLabel = { government: 'Government', private: 'Private', aided: 'Aided', model: 'Model School' };
 const schoolTypeColor = { government: 'bg-primary/10 text-primary', private: 'bg-school/10 text-school', aided: 'bg-purple-100 text-purple-700', model: 'bg-donation/10 text-donation' };
@@ -180,7 +180,7 @@ export default function SchoolDetail() {
                 {school.description && (
                   <div>
                     <h3 className="font-heading font-bold text-lg mb-2">About {school.school_name}</h3>
-                    <p className="text-muted-foreground leading-relaxed text-sm">{school.description}</p>
+                    <RichContent content={school.description} className="text-muted-foreground leading-relaxed text-sm" />
                   </div>
                 )}
                 {school.vision && (

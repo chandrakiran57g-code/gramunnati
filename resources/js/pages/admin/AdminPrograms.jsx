@@ -9,7 +9,8 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminDbSetupBanner from '@/components/admin/AdminDbSetupBanner';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import AdminUrlField from '@/components/admin/AdminUrlField';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
@@ -157,7 +158,7 @@ export default function AdminPrograms() {
                 publicBase="/programs"
               />
               <div><Label>Icon (emoji)</Label><Input value={form.icon} onChange={(e) => setForm((f) => ({ ...f, icon: e.target.value }))} placeholder="🏘️" className="mt-1" /></div>
-              <BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={4} />
+              <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
               <AdminImageUpload label="Cover image" value={form.cover_image} onChange={(url) => setForm((f) => ({ ...f, cover_image: url }))} subPath="programs" />
               <div className="grid grid-cols-2 gap-4">
                 <div><Label>Sort Order</Label><Input type="number" value={form.sort_order} onChange={(e) => setForm((f) => ({ ...f, sort_order: +e.target.value }))} className="mt-1" /></div>

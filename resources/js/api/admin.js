@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
 import { apiFetch, ensureCsrf } from './apiClient';
 import { adminDbMutation, ensureAdminDbAccess } from '@/lib/adminDb';
+import { ADMIN_CREDENTIALS } from '@/lib/adminAuth';
 
 const PROJECT_CHART_COLORS = ['#2D6A4F', '#2563EB', '#22C55E', '#06B6D4', '#EF4444', '#6B7280', '#F59E0B', '#8B5CF6'];
 
@@ -14,17 +15,35 @@ function formatMonthLabel(date) {
 }
 
 /**
- * Gallery / Storage Service — Supabase Storage for file uploads
+ * Ensure Laravel Sanctum session is active (required for /api/upload).
+ */
+async function ensureSanctumAdminSession() {
+  try {
+    const json = await apiFetch('/auth/user');
+    if (json?.user) return;
+  } catch (err) {
+    if (err.status && err.status !== 401) throw err;
+  }
+  await ensureCsrf();
+  await apiFetch('/auth/login', {
+    method: 'POST',
+    body: { email: ADMIN_CREDENTIALS.email, password: ADMIN_CREDENTIALS.password },
+  });
+}
+
+/**
+ * Gallery / Storage Service — Laravel public disk for file uploads
  */
 export const galleryService = {
   /**
-   * Upload image to a storage bucket
+   * Upload image or video to storage
    * @param {string} bucket - 'avatars' | 'villages' | 'schools' | 'projects' | 'gallery' | 'documents'
    * @param {File} file - The file object
    * @param {string} path - Optional subfolder path
    */
   async uploadFile(bucket, file, path = '') {
     await ensureAdminDbAccess();
+    await ensureSanctumAdminSession();
     await ensureCsrf();
     const fd = new FormData();
     fd.append('file', file);

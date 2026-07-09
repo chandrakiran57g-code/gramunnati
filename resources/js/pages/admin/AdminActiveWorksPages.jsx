@@ -25,7 +25,8 @@ import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import BeforeAfterGalleryEditor from '@/components/admin/BeforeAfterGalleryEditor';
 import { normalizeBeforeAfter } from '@/lib/beforeAfterGallery';
-import { BilingualInput, BilingualTextarea, BilingualNestedTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import RichTextEditor, { BilingualRichText, BilingualNestedRichText } from '@/components/admin/RichTextEditor';
 
 export default function AdminActiveWorksPages() {
   const [searchParams] = useSearchParams();
@@ -249,11 +250,11 @@ export default function AdminActiveWorksPages() {
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
-                  <BilingualTextarea name="description" label="Short description" form={form} setForm={setForm} rows={2} />
-                  <BilingualNestedTextarea parent="overview" name="about" label="About" form={form} setForm={setForm} rows={3} />
-                  <BilingualNestedTextarea parent="overview" name="vision" label="Vision" form={form} setForm={setForm} rows={2} />
-                  <BilingualNestedTextarea parent="overview" name="challenges" label="Challenges" form={form} setForm={setForm} rows={2} />
-                  <BilingualNestedTextarea parent="overview" name="achievements" label="Achievements" form={form} setForm={setForm} rows={2} />
+                  <BilingualRichText name="description" label="Short description" form={form} setForm={setForm} />
+                  <BilingualNestedRichText parent="overview" name="about" label="About" form={form} setForm={setForm} />
+                  <BilingualNestedRichText parent="overview" name="vision" label="Vision" form={form} setForm={setForm} />
+                  <BilingualNestedRichText parent="overview" name="challenges" label="Challenges" form={form} setForm={setForm} />
+                  <BilingualNestedRichText parent="overview" name="achievements" label="Achievements" form={form} setForm={setForm} />
                 </TabsContent>
 
                 <TabsContent value="impact">
@@ -304,18 +305,21 @@ export default function AdminActiveWorksPages() {
 
                 {isProgram && (
                   <TabsContent value="program" className="space-y-4">
-                    <div>
-                      <Label>Objectives (one per line)</Label>
-                      <Textarea className="mt-1" rows={4} value={form.program_details?.objectives || ''} onChange={(e) => setProgramDetail('objectives', e.target.value)} />
-                    </div>
-                    <div>
-                      <Label>Activities (one per line)</Label>
-                      <Textarea className="mt-1" rows={4} value={form.program_details?.activities || ''} onChange={(e) => setProgramDetail('activities', e.target.value)} />
-                    </div>
-                    <div>
-                      <Label>Impact highlights (one per line)</Label>
-                      <Textarea className="mt-1" rows={3} value={form.program_details?.impact_highlights || ''} onChange={(e) => setProgramDetail('impact_highlights', e.target.value)} />
-                    </div>
+                    <RichTextEditor
+                      label="Objectives"
+                      value={form.program_details?.objectives || ''}
+                      onChange={(html) => setProgramDetail('objectives', html)}
+                    />
+                    <RichTextEditor
+                      label="Activities"
+                      value={form.program_details?.activities || ''}
+                      onChange={(html) => setProgramDetail('activities', html)}
+                    />
+                    <RichTextEditor
+                      label="Impact highlights"
+                      value={form.program_details?.impact_highlights || ''}
+                      onChange={(html) => setProgramDetail('impact_highlights', html)}
+                    />
                   </TabsContent>
                 )}
 

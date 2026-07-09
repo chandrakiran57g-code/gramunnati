@@ -6,12 +6,13 @@ import { serviceDirectoryApi } from '@/api/serviceDirectory';
 import { CMS_STATUS, isCmsPagePublic } from '@/lib/cmsStatus';
 import { isServiceDirectorySlug, getServiceDirectoryConfig } from '@/lib/serviceDirectory';
 import { PLATFORM_DATA_CHANGED } from '@/lib/platformRefresh';
-import ReactMarkdown from 'react-markdown';
 import ServiceDirectoryTable from '@/components/cms/ServiceDirectoryTable';
+import StructuredContent from '@/components/shared/StructuredContent';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
-import { useLocalizedRecord } from '@/lib/localizedContent';
+import { localize, useLocalizedRecord } from '@/lib/localizedContent';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 /** Map page_type values to the service directory slug used by serviceDirectoryApi */
 const PAGE_TYPE_TO_DIR_SLUG = {
@@ -22,6 +23,7 @@ const PAGE_TYPE_TO_DIR_SLUG = {
 
 export default function CmsPageView() {
   const { slug } = useParams();
+  const { lang } = useLanguage();
   const [page, setPage] = useState(null);
   const [directoryRows, setDirectoryRows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,8 +79,21 @@ export default function CmsPageView() {
     return () => window.removeEventListener(PLATFORM_DATA_CHANGED, onChange);
   }, [slug]);
 
-  const localized = useLocalizedRecord(page, ['title', 'short_description', 'content']);
-  const adminContent = (localized?.content || page?.content || '').trim();
+  const localized = useLocalizedRecord(page, ['title', 'short_description', 'content', 'content_title', 'content_heading']);
+  const adminContent = (localize(page, 'content', lang) || page?.content || '').trim();
+  const contentTitle = localize(page, 'content_title', lang) || page?.content_title;
+  const contentHeading = localize(page, 'content_heading', lang) || page?.content_heading;
+  const contentSections = Array.isArray(page?.content_sections)
+    ? page.content_sections.map((s) => ({
+        ...s,
+        heading: localize(s, 'heading', lang) || s.heading,
+        subheading: localize(s, 'subheading', lang) || s.subheading,
+        body: localize(s, 'body', lang) || s.body,
+      }))
+    : [];
+  const hasStructured = contentSections.some((s) => (s?.heading || s?.subheading || s?.body || '').trim())
+    || Boolean(contentTitle)
+    || Boolean(contentHeading);
 
   // Determine directory info from page_type or slug
   const dirSlug = page?.page_type ? PAGE_TYPE_TO_DIR_SLUG[page.page_type] : (isServiceDirectorySlug(slug) ? slug : null);
@@ -151,11 +166,14 @@ export default function CmsPageView() {
       <section className="py-12">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-8">
           {/* Admin-entered content — appears above directory list on directory pages */}
-          {adminContent && (
+          {(hasStructured || adminContent) && (
             <div className="bg-white rounded-2xl border border-border p-8">
-              <div className="prose prose-slate max-w-none">
-                <ReactMarkdown>{adminContent}</ReactMarkdown>
-              </div>
+              <StructuredContent
+                title={contentTitle}
+                heading={contentHeading}
+                sections={contentSections}
+                fallbackMarkdown={adminContent}
+              />
             </div>
           )}
 
@@ -166,7 +184,7 @@ export default function CmsPageView() {
               variant={dirSlug === 'about-volunteers' ? 'volunteers' : 'default'}
             />
           ) : (
-            !adminContent && (
+            !(hasStructured || adminContent) && (
               <div className="bg-white rounded-2xl border border-border p-8 text-center text-muted-foreground">
                 {localized?.short_description || page.short_description || 'Content coming soon.'}
               </div>

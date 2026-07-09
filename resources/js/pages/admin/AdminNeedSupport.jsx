@@ -3,16 +3,18 @@ import { needsSupportService, loadProgramCategoryOptions } from '@/api/needsSupp
 import AdminShell from '@/components/admin/AdminShell';
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { Loader2, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { resolveCardCover } from '@/lib/adminMedia';
+import { Link } from 'react-router-dom';
+import { adminRoutes } from '@/lib/adminRoutes';
 
 const EMPTY = {
   name: '',
@@ -119,10 +121,15 @@ export default function AdminNeedSupport() {
 
   return (
     <AdminShell
-      title="Need Support"
-      section="Homepage"
-      description="Create cards for the homepage “Needs support now” section. Tag each card with one of the 8 program categories."
-      breadcrumbs={[{ label: 'Need Support' }]}
+      title="Need Support — Cards"
+      section="Need Support"
+      description="Create cards for the homepage “Needs support now” section and /need-support. Use Detail Pages for full project content."
+      breadcrumbs={[{ label: 'Need Support' }, { label: 'Cards' }]}
+      actions={
+        <Link to={adminRoutes.needSupportPages}>
+          <Button variant="outline" size="sm">Detail Pages</Button>
+        </Link>
+      }
     >
       <div className="mb-6 rounded-xl border border-border bg-white p-6">
         <h2 className="mb-4 font-semibold">{editId ? 'Edit Card' : 'New Card'}</h2>
@@ -165,7 +172,7 @@ export default function AdminNeedSupport() {
             />
           </div>
           <div className="sm:col-span-2">
-            <BilingualTextarea name="description" label="Short description" form={form} setForm={setForm} rows={2} />
+            <BilingualRichText name="description" label="Short description (card text)" form={form} setForm={setForm} />
           </div>
           <div>
             <Label>Funding goal (₹)</Label>
@@ -234,7 +241,7 @@ export default function AdminNeedSupport() {
                 </div>
               </div>
               <div className="flex shrink-0 gap-1">
-                <a href="/" target="_blank" rel="noreferrer">
+                <a href={item.slug ? `/need-support/${item.slug}` : '/need-support'} target="_blank" rel="noreferrer">
                   <Button size="sm" variant="ghost"><ExternalLink className="h-4 w-4" /></Button>
                 </a>
                 <Button size="sm" variant="ghost" onClick={() => handleEdit(item)}><Pencil className="h-4 w-4" /></Button>

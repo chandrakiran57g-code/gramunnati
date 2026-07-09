@@ -12,7 +12,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useGeoPickers, villageDisplay, slugifyName } from '@/hooks/useGeoPickers';
 import { toast } from 'sonner';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import AdminUrlField from '@/components/admin/AdminUrlField';
 
 const EMPTY_FORM = {
@@ -175,24 +176,24 @@ export default function AdminVillages() {
         {loading ? (
           <div className="space-y-3">{[...Array(5)].map((_, i) => <div key={i} className="bg-white rounded-2xl border border-border h-16 animate-pulse" />)}</div>
         ) : (
-          <div className="bg-white rounded-2xl border border-border overflow-hidden">
-            <table className="w-full">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+            <table className="w-full text-sm border-collapse min-w-[640px]">
               <thead>
-                <tr className="border-b border-border bg-muted/30">
-                  <th className="text-left px-5 py-3 text-xs font-semibold text-muted-foreground">Village</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground hidden sm:table-cell">District</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground hidden md:table-cell">State</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground hidden lg:table-cell">Population</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground">Status</th>
-                  <th className="text-right px-5 py-3 text-xs font-semibold text-muted-foreground">Actions</th>
+                <tr className="bg-[#337ab7] text-white">
+                  <th className="text-left px-5 py-3 text-xs font-semibold border-r border-white/25">Village</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold hidden sm:table-cell border-r border-white/25">District</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold hidden md:table-cell border-r border-white/25">State</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold hidden lg:table-cell border-r border-white/25">Population</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold border-r border-white/25">Status</th>
+                  <th className="text-right px-5 py-3 text-xs font-semibold">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
+              <tbody>
                 {filtered.map((v, i) => {
                   const loc = villageDisplay(v);
                   return (
-                    <motion.tr key={v.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="hover:bg-muted/20 transition-colors">
-                      <td className="px-5 py-3">
+                    <motion.tr key={v.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }} className="border-t border-gray-200 hover:bg-gray-50">
+                      <td className="px-5 py-3 border-r border-gray-200">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
                             <MapPin className="w-4 h-4 text-primary" />
@@ -203,10 +204,10 @@ export default function AdminVillages() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground hidden sm:table-cell">{loc.district}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground hidden md:table-cell">{loc.state}</td>
-                      <td className="px-4 py-3 text-sm text-muted-foreground hidden lg:table-cell">{v.population?.toLocaleString('en-IN') || '—'}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 text-sm text-gray-700 hidden sm:table-cell border-r border-gray-200">{loc.district}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 hidden md:table-cell border-r border-gray-200">{loc.state}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700 hidden lg:table-cell border-r border-gray-200">{v.population?.toLocaleString('en-IN') || '—'}</td>
+                      <td className="px-4 py-3 border-r border-gray-200">
                         <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${v.is_active !== false ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                           {v.is_active !== false ? 'Active' : 'Inactive'}
                         </span>
@@ -271,8 +272,8 @@ export default function AdminVillages() {
                   </select>
                 </div>
               </div>
-              <BilingualTextarea name="short_description" label="Short Description" form={form} setForm={setForm} rows={3} />
-              <BilingualTextarea name="description" label="Full Description" form={form} setForm={setForm} rows={4} />
+              <BilingualRichText name="short_description" label="Short Description" form={form} setForm={setForm} />
+              <BilingualRichText name="description" label="Full Description" form={form} setForm={setForm} />
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Population</Label>

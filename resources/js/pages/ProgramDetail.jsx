@@ -9,12 +9,32 @@ import { programPagesService } from '@/api/programPages';
 import { getProgramBySlug } from '@/lib/programs';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import RichContent from '@/components/shared/RichContent';
+import StructuredContent from '@/components/shared/StructuredContent';
+
+function stripHtml(text) {
+  return String(text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
 
 function linesToList(text) {
-  return String(text || '')
+  const raw = String(text || '');
+  if (/<\/?[a-z][\s\S]*>/i.test(raw.trim())) {
+    return raw.trim() ? [raw.trim()] : [];
+  }
+  return raw
     .split('\n')
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+function localizeSections(sections, lang) {
+  if (!Array.isArray(sections)) return [];
+  return sections.map((s) => ({
+    ...s,
+    heading: localize(s, 'heading', lang) || s.heading,
+    subheading: localize(s, 'subheading', lang) || s.subheading,
+    body: localize(s, 'body', lang) || s.body,
+  }));
 }
 
 function mergeProgram(cmsRow, detailPage, staticFallback, lang = 'en') {
@@ -44,6 +64,9 @@ function mergeProgram(cmsRow, detailPage, staticFallback, lang = 'en') {
     icon: cmsRow.icon || '🌾',
     cover,
     longDescription,
+    contentTitle: localize(detailPage, 'content_title', lang) || detailPage?.content_title,
+    contentHeading: localize(detailPage, 'content_heading', lang) || detailPage?.content_heading,
+    contentSections: localizeSections(detailPage?.content_sections, lang),
     objectives,
     activities,
     impact,
@@ -168,8 +191,12 @@ export default function ProgramDetail() {
 
           <TabsContent value="overview">
             <div className="bg-white rounded-xl border border-brown-300 p-6">
-              <h3 className="font-heading font-bold text-lg mb-3">About This Program</h3>
-              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{program.longDescription}</p>
+              <StructuredContent
+                title={program.contentTitle}
+                heading={program.contentHeading}
+                sections={program.contentSections}
+                fallbackMarkdown={program.longDescription}
+              />
             </div>
           </TabsContent>
 
@@ -177,14 +204,18 @@ export default function ProgramDetail() {
             <div className="bg-white rounded-xl border border-brown-300 p-6">
               <h3 className="font-heading font-bold text-lg mb-4">Program Objectives</h3>
               {program.objectives.length ? (
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {program.objectives.map((obj) => (
-                    <div key={obj} className={`flex items-start gap-3 ${program.lightColor} rounded-xl p-4`}>
-                      <Target className={`w-5 h-5 ${program.textColor} flex-shrink-0 mt-0.5`} />
-                      <span className="text-sm">{obj}</span>
-                    </div>
-                  ))}
-                </div>
+                program.objectives.some((o) => /<\/?[a-z][\s\S]*>/i.test(o)) ? (
+                  <RichContent content={program.objectives.join('\n')} />
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {program.objectives.map((obj) => (
+                      <div key={obj} className={`flex items-start gap-3 ${program.lightColor} rounded-xl p-4`}>
+                        <Target className={`w-5 h-5 ${program.textColor} flex-shrink-0 mt-0.5`} />
+                        <span className="text-sm">{stripHtml(obj)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )
               ) : (
                 <p className="text-muted-foreground text-sm">Objectives will appear here once added in Admin → What We Do → Detail Pages.</p>
               )}
@@ -195,14 +226,18 @@ export default function ProgramDetail() {
             <div className="bg-white rounded-xl border border-brown-300 p-6">
               <h3 className="font-heading font-bold text-lg mb-4">Key Activities</h3>
               {program.activities.length ? (
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {program.activities.map((act) => (
-                    <div key={act} className="bg-cream-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-cream-300">
-                      <FolderOpen className={`w-4 h-4 ${program.textColor} flex-shrink-0`} />
-                      {act}
-                    </div>
-                  ))}
-                </div>
+                program.activities.some((a) => /<\/?[a-z][\s\S]*>/i.test(a)) ? (
+                  <RichContent content={program.activities.join('\n')} />
+                ) : (
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {program.activities.map((act) => (
+                      <div key={act} className="bg-cream-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-cream-300">
+                        <FolderOpen className={`w-4 h-4 ${program.textColor} flex-shrink-0`} />
+                        {stripHtml(act)}
+                      </div>
+                    ))}
+                  </div>
+                )
               ) : (
                 <p className="text-muted-foreground text-sm">Activities will appear here once added in Admin.</p>
               )}
@@ -213,9 +248,13 @@ export default function ProgramDetail() {
             <div className="bg-white rounded-xl border border-brown-300 p-6">
               <h3 className="font-heading font-bold text-lg mb-4">Impact Highlights</h3>
               {program.impact.length ? (
-                <ul className="space-y-2 text-sm text-muted-foreground">
-                  {program.impact.map((item) => <li key={item}>• {item}</li>)}
-                </ul>
+                program.impact.some((item) => /<\/?[a-z][\s\S]*>/i.test(item)) ? (
+                  <RichContent content={program.impact.join('\n')} />
+                ) : (
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    {program.impact.map((item) => <li key={item}>• {stripHtml(item)}</li>)}
+                  </ul>
+                )
               ) : (
                 <p className="text-muted-foreground text-sm">Impact highlights coming soon.</p>
               )}

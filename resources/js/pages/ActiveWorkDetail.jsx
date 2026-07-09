@@ -10,6 +10,7 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
 import { safeText } from '@/lib/safeText';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
+import RichContent from '@/components/shared/RichContent';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize, localizeNested } from '@/lib/localizedContent';
@@ -118,26 +119,18 @@ export default function ActiveWorkDetail() {
             ))}
           </TabsList>
           <TabsContent value="overview">
-            <div className="bg-white rounded-xl border p-6 prose max-w-none space-y-4">
-              <p>{overviewAbout}</p>
+            <div className="bg-white rounded-xl border p-6 space-y-4">
+              <RichContent content={overviewAbout} />
               {isProgram && item.program_details?.objectives && (
                 <div>
                   <h4 className="font-semibold mb-2">Objectives</h4>
-                  <ul className="list-disc pl-5 text-sm text-muted-foreground">
-                    {item.program_details.objectives.split('\n').filter(Boolean).map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
+                  <RichContent content={item.program_details.objectives} />
                 </div>
               )}
               {isProgram && item.program_details?.activities && (
                 <div>
                   <h4 className="font-semibold mb-2">Activities</h4>
-                  <ul className="list-disc pl-5 text-sm text-muted-foreground">
-                    {item.program_details.activities.split('\n').filter(Boolean).map((line) => (
-                      <li key={line}>{line}</li>
-                    ))}
-                  </ul>
+                  <RichContent content={item.program_details.activities} />
                 </div>
               )}
             </div>

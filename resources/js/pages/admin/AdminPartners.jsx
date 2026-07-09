@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
 const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', is_active: true };
@@ -97,7 +98,7 @@ export default function AdminPartners() {
             </select>
           </div>
         </div>
-        <BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={3} className="mb-4" />
+        <BilingualRichText name="description" label="Description" form={form} setForm={setForm} className="mb-4" />
         <div className="flex gap-3">
           <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{editing ? 'Update' : 'Create'}</Button>
           {editing && <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>}

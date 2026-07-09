@@ -111,10 +111,12 @@ import AdminBackup from '@/pages/admin/AdminBackup';
 import ActiveWorkDetail from '@/pages/ActiveWorkDetail';
 import ActiveWorksCategory from '@/pages/ActiveWorksCategory';
 import NeedSupport from '@/pages/NeedSupport';
+import NeedSupportDetail from '@/pages/NeedSupportDetail';
 import AdminActiveWorksCards from '@/pages/admin/AdminActiveWorksCards';
 import AdminActiveWorksPages from '@/pages/admin/AdminActiveWorksPages';
 import AdminActiveWorksTemplates from '@/pages/admin/AdminActiveWorksTemplates';
 import AdminNeedSupport from '@/pages/admin/AdminNeedSupport';
+import AdminNeedSupportPages from '@/pages/admin/AdminNeedSupportPages';
 import AdminLegacyRedirect, { adminLegacyRedirects } from '@/pages/admin/AdminLegacyRedirect';
 import { adminRoutes } from '@/lib/adminRoutes';
 
@@ -187,6 +189,7 @@ const AuthenticatedApp = () => {
         <Route path="/page/:slug" element={<CmsPageView />} />
         <Route path="/active-works/category/:slug" element={<ActiveWorksCategory />} />
         <Route path="/need-support" element={<NeedSupport />} />
+        <Route path="/need-support/:slug" element={<NeedSupportDetail />} />
         <Route path="/active-work/:slug" element={<ActiveWorkDetail />} />
 
         {/* Teams */}
@@ -243,7 +246,9 @@ const AuthenticatedApp = () => {
           <Route path="active-works/templates" element={<AdminActiveWorksTemplates />} />
           <Route path="active-works/cards" element={<AdminActiveWorksCards />} />
           <Route path="active-works/pages" element={<AdminActiveWorksPages />} />
-          <Route path="need-support" element={<AdminNeedSupport />} />
+          <Route path="need-support" element={<Navigate to={adminRoutes.needSupportCards} replace />} />
+          <Route path="need-support/cards" element={<AdminNeedSupport />} />
+          <Route path="need-support/pages" element={<AdminNeedSupportPages />} />
 
           {/* Donations */}
           <Route path="donations" element={<AdminDonations />} />

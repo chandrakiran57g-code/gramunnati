@@ -12,15 +12,22 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 
+function plainText(htmlOrText) {
+  return String(htmlOrText || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 function NeedSupportCard({ project, index = 0 }) {
   const { t, lang } = useLanguage();
   const name = localize(project, 'project_name', lang) || localize(project, 'title', lang) || localize(project, 'name', lang);
-  const description = localize(project, 'short_description', lang) || localize(project, 'description', lang);
+  const description = plainText(
+    localize(project, 'short_description', lang) || localize(project, 'description', lang)
+  );
   const image = resolveImageUrl(project.cover_image || project.featured_image, index, 600);
   const target = Number(project.target || 0);
   const raised = Number(project.raised || 0);
   const progress = target > 0 ? Math.min(100, Math.round((raised / target) * 100)) : 0;
   const village = project.villages?.village_name;
+  const detailHref = project.slug ? `/need-support/${project.slug}` : null;
   const donateHref = project.slug
     ? `/donate?project_slug=${encodeURIComponent(project.slug)}`
     : `/donate?project_id=${project.id}`;
@@ -33,7 +40,7 @@ function NeedSupportCard({ project, index = 0 }) {
       whileHover={{ y: -4 }}
       className="home-feature-card flex flex-col h-full min-h-[320px] bg-[#FFF8E7] rounded-2xl border border-[#D4B896] overflow-hidden"
     >
-      <div className="relative h-40 overflow-hidden">
+      <Link to={detailHref || donateHref} className="relative h-40 overflow-hidden block">
         <SafeImage src={image} alt={name} fallbackIndex={index} width={480} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/90 to-transparent" />
         <span className="absolute top-2 left-2 home-urgent-badge text-[10px] px-2 py-0.5">{t('home.needsSupport')}</span>
@@ -41,10 +48,12 @@ function NeedSupportCard({ project, index = 0 }) {
           <h3 className="font-heading font-bold text-amber-50 text-base leading-tight line-clamp-2">{name}</h3>
           {village && <p className="text-amber-100/60 text-xs mt-0.5 truncate">{village}</p>}
         </div>
-      </div>
+      </Link>
       <div className="p-4 flex flex-col flex-1">
         {description && (
-          <p className="text-sm text-[#5C4033]/75 line-clamp-2 mb-3 flex-1">{description}</p>
+          <Link to={detailHref || donateHref} className="text-sm text-[#5C4033]/75 line-clamp-2 mb-3 flex-1 hover:text-[#5C4033]">
+            {description}
+          </Link>
         )}
         <div className="flex justify-between text-xs text-[#5C4033]/70 mb-1.5 gap-1">
           <span className="truncate">{t('home.raised')} {homeService.formatINR(raised)}</span>
@@ -55,13 +64,23 @@ function NeedSupportCard({ project, index = 0 }) {
         <div className="home-progress-bar mb-4">
           <div className="home-progress-fill" style={{ width: `${progress}%` }} />
         </div>
-        <Link
-          to={donateHref}
-          className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg bg-[#8B6914] text-amber-50 text-sm font-semibold hover:bg-[#6B5344] transition-colors mt-auto"
-        >
-          <Heart className="w-4 h-4" />
-          {t('home.supportNow')}
-        </Link>
+        <div className="mt-auto flex flex-col gap-2">
+          {detailHref && (
+            <Link
+              to={detailHref}
+              className="flex items-center justify-center w-full py-2 rounded-lg border border-[#8B6914] text-[#8B6914] text-sm font-semibold hover:bg-[#FFF8E7] transition-colors"
+            >
+              View details
+            </Link>
+          )}
+          <Link
+            to={donateHref}
+            className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg bg-[#8B6914] text-amber-50 text-sm font-semibold hover:bg-[#6B5344] transition-colors"
+          >
+            <Heart className="w-4 h-4" />
+            {t('home.supportNow')}
+          </Link>
+        </div>
       </div>
     </motion.article>
   );

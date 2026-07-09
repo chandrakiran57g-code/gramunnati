@@ -3,7 +3,7 @@ import { activeWorkService } from '@/api/activeWork';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import { toast } from 'sonner';
 import { Loader2, Plus, Pencil, Trash2, Layers } from 'lucide-react';
 
@@ -84,7 +84,7 @@ export default function AdminActiveWorks() {
             <div className="grid sm:grid-cols-2 gap-4">
               <div><Label>Name *</Label><Input value={catForm.name} onChange={(e) => setCatForm({ ...catForm, name: e.target.value })} className="mt-1" /></div>
               <div><Label>Slug</Label><Input value={catForm.slug} onChange={(e) => setCatForm({ ...catForm, slug: e.target.value })} placeholder="auto-generated" className="mt-1" /></div>
-              <div className="sm:col-span-2"><Label>Description</Label><Textarea value={catForm.description} onChange={(e) => setCatForm({ ...catForm, description: e.target.value })} className="mt-1" rows={2} /></div>
+              <div className="sm:col-span-2"><RichTextEditor label="Description" value={catForm.description} onChange={(html) => setCatForm({ ...catForm, description: html })} /></div>
               <div><Label>View All Link</Label><Input value={catForm.view_all_link} onChange={(e) => setCatForm({ ...catForm, view_all_link: e.target.value })} placeholder="/programs/women-shgs" className="mt-1" /></div>
               <div><Label>Banner Image URL</Label><Input value={catForm.banner_image} onChange={(e) => setCatForm({ ...catForm, banner_image: e.target.value })} className="mt-1" /></div>
               <div><Label>Display Order</Label><Input type="number" value={catForm.display_order} onChange={(e) => setCatForm({ ...catForm, display_order: Number(e.target.value) })} className="mt-1" /></div>
@@ -125,8 +125,8 @@ export default function AdminActiveWorks() {
               </div>
               <div><Label>Cover Image</Label><Input value={itemForm.cover_image} onChange={(e) => setItemForm({ ...itemForm, cover_image: e.target.value })} className="mt-1" /></div>
               <div><Label>Badge</Label><Input value={itemForm.badge} onChange={(e) => setItemForm({ ...itemForm, badge: e.target.value })} className="mt-1" /></div>
-              <div className="sm:col-span-2"><Label>Description</Label><Textarea value={itemForm.description} onChange={(e) => setItemForm({ ...itemForm, description: e.target.value })} className="mt-1" rows={2} /></div>
-              <div className="sm:col-span-2"><Label>About (Overview)</Label><Textarea value={itemForm.overview?.about || ''} onChange={(e) => setItemForm({ ...itemForm, overview: { ...itemForm.overview, about: e.target.value } })} className="mt-1" rows={3} /></div>
+              <div className="sm:col-span-2"><RichTextEditor label="Description" value={itemForm.description} onChange={(html) => setItemForm({ ...itemForm, description: html })} /></div>
+              <div className="sm:col-span-2"><RichTextEditor label="About (Overview)" value={itemForm.overview?.about || ''} onChange={(html) => setItemForm({ ...itemForm, overview: { ...itemForm.overview, about: html } })} /></div>
               <div><Label>Trees Planted</Label><Input type="number" value={itemForm.impact?.trees_planted || ''} onChange={(e) => setItemForm({ ...itemForm, impact: { ...itemForm.impact, trees_planted: Number(e.target.value) } })} className="mt-1" /></div>
               <div><Label>Volunteers</Label><Input type="number" value={itemForm.impact?.volunteers_count || ''} onChange={(e) => setItemForm({ ...itemForm, impact: { ...itemForm.impact, volunteers_count: Number(e.target.value) } })} className="mt-1" /></div>
               <div><Label>Education Score (0-100)</Label><Input type="number" value={itemForm.development_score?.education || ''} onChange={(e) => setItemForm({ ...itemForm, development_score: { ...itemForm.development_score, education: Number(e.target.value) } })} className="mt-1" /></div>

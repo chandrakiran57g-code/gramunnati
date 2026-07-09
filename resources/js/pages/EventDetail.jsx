@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { normalizeExternalUrl } from '@/lib/externalUrl';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { localize } from '@/lib/localizedContent';
+import RichContent from '@/components/shared/RichContent';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700', Education: 'bg-school/10 text-school', Volunteer: 'bg-volunteer/10 text-volunteer',
@@ -73,7 +73,7 @@ export default function EventDetail() {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-border p-6 mb-6">
           <h3 className="font-heading font-bold text-lg mb-3">About This Event</h3>
-          <p className="text-muted-foreground text-sm leading-relaxed">{localize(event, 'description', lang) || event.description || 'Event details coming soon.'}</p>
+          <RichContent content={localize(event, 'description', lang) || event.description || 'Event details coming soon.'} className="text-muted-foreground text-sm leading-relaxed" />
         </motion.div>
 
         {!isPast && (

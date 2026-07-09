@@ -13,4 +13,7 @@ class CmsPage extends Model
 
     protected $guarded = ['id'];
 
+    protected $casts = [
+        'content_sections' => 'array',
+    ];
 }

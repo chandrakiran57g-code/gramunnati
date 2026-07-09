@@ -10,7 +10,8 @@ import { toast } from 'sonner';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminDbSetupBanner from '@/components/admin/AdminDbSetupBanner';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 
@@ -128,7 +129,7 @@ export default function AdminTeams() {
             <BilingualInput name="name" label="Team Name" form={groupForm} setForm={setGroupForm} required className="sm:col-span-2" />
             <div><Label>Slug</Label><Input value={groupForm.slug} onChange={(e) => setGroupForm({ ...groupForm, slug: e.target.value })} placeholder="auto-generated" className="mt-1" /></div>
             <div><Label>Display Order</Label><Input type="number" value={groupForm.display_order} onChange={(e) => setGroupForm({ ...groupForm, display_order: Number(e.target.value) })} className="mt-1" /></div>
-            <BilingualTextarea name="description" label="Description" form={groupForm} setForm={setGroupForm} rows={2} className="sm:col-span-2" />
+            <BilingualRichText name="description" label="Description" form={groupForm} setForm={setGroupForm} className="sm:col-span-2" />
             <AdminImageUpload label="Banner image" value={groupForm.banner_image} onChange={(url) => setGroupForm({ ...groupForm, banner_image: url })} subPath="teams" />
             <div><Label>Status</Label>
               <select value={groupForm.status} onChange={(e) => setGroupForm({ ...groupForm, status: e.target.value })} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm">
@@ -165,7 +166,7 @@ export default function AdminTeams() {
                 <div className="sm:col-span-2">
                   <AdminImageUpload label="Member photo" value={form.photo} onChange={(url) => setForm({ ...form, photo: url })} subPath="teams/members" />
                 </div>
-                <BilingualTextarea name="description" label="Bio" form={form} setForm={setForm} rows={2} className="sm:col-span-2" />
+                <BilingualRichText name="description" label="Bio" form={form} setForm={setForm} className="sm:col-span-2" />
               </div>
               <div className="flex gap-3">
                 <Button onClick={handleSaveMember} disabled={saving} className="brand-gradient text-white border-0">{editingMember ? 'Update' : 'Add Member'}</Button>

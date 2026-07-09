@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { cmsService } from '@/api/cms';
-import { programPagesService, emptyProgramPage } from '@/api/programPages';
+import { needsSupportService } from '@/api/needsSupport';
+import { needSupportPagesService, emptyNeedSupportPage } from '@/api/needSupportPages';
 import AdminShell from '@/components/admin/AdminShell';
-import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { adminRoutes } from '@/lib/adminRoutes';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
-import StructuredContentEditor from '@/components/admin/StructuredContentEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { BookOpen, Layers, Loader2, Save, X } from 'lucide-react';
+import { Heart, Layers, Loader2, Save, X } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 
@@ -22,7 +20,6 @@ function galleryList(value) {
     .filter(Boolean);
 }
 
-/** Gallery images uploaded from local device; stored as newline-joined URLs. */
 function GalleryImagesEditor({ value, onChange }) {
   const images = galleryList(value);
 
@@ -56,50 +53,42 @@ function GalleryImagesEditor({ value, onChange }) {
           ))}
         </div>
       )}
-      <AdminImageUpload
-        value=""
-        onChange={addImage}
-        subPath="programs/gallery"
-        className="mt-2"
-      />
-      <p className="mt-1 text-xs text-muted-foreground">
-        Upload images from your device — each upload is added to the page gallery.
-      </p>
+      <AdminImageUpload value="" onChange={addImage} subPath="needs-support/gallery" className="mt-2" />
     </div>
   );
 }
 
-export default function AdminProgramPages() {
-  const [programs, setPrograms] = useState([]);
+export default function AdminNeedSupportPages() {
+  const [cards, setCards] = useState([]);
   const [selectedSlug, setSelectedSlug] = useState('');
-  const [form, setForm] = useState(emptyProgramPage());
+  const [form, setForm] = useState(emptyNeedSupportPage());
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const loadPrograms = async () => {
+  const loadCards = async () => {
     setLoading(true);
     try {
-      const rows = await cmsService.listPrograms();
-      setPrograms(rows || []);
+      const rows = await needsSupportService.listAllAdminItems();
+      setCards(rows || []);
     } catch {
-      setPrograms([]);
+      setCards([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { loadPrograms(); }, []);
+  useEffect(() => { loadCards(); }, []);
 
-  const selectProgram = async (slug) => {
+  const selectCard = async (slug) => {
     setSelectedSlug(slug);
-    const card = programs.find((p) => p.slug === slug);
-    const saved = await programPagesService.getPage(slug);
+    const card = cards.find((c) => c.slug === slug);
+    const saved = await needSupportPagesService.getPage(slug);
+    const base = emptyNeedSupportPage(slug);
     setForm({
-      ...emptyProgramPage(slug),
+      ...base,
       ...saved,
-      program_slug: slug,
-      content_sections: Array.isArray(saved?.content_sections) ? saved.content_sections : [],
-      stats: { ...emptyProgramPage(slug).stats, ...(saved?.stats || {}) },
+      card_slug: slug,
+      stats: { ...base.stats, ...(saved?.stats || {}) },
     });
     if (card && !saved?.long_description) {
       setForm((f) => ({
@@ -110,25 +99,17 @@ export default function AdminProgramPages() {
     }
   };
 
-  const handleCategoryChange = (slug) => {
-    if (slug) selectProgram(slug);
-    else {
-      setSelectedSlug('');
-      setForm(emptyProgramPage());
-    }
-  };
-
   const setStat = (key, value) => {
     setForm((f) => ({ ...f, stats: { ...(f.stats || {}), [key]: Number(value) || 0 } }));
   };
 
   const handleSave = async () => {
-    if (!selectedSlug) return toast.error('Select a program category first');
+    if (!selectedSlug) return toast.error('Select a Need Support card first');
     setSaving(true);
     try {
-      await programPagesService.savePage(selectedSlug, form);
-      toast.success('Program detail page saved');
-      notifyPlatformDataChanged({ type: 'program_pages' });
+      await needSupportPagesService.savePage(selectedSlug, form);
+      toast.success('Need Support detail page saved');
+      notifyPlatformDataChanged({ type: 'need_support_pages' });
     } catch (e) {
       toast.error(e.message || 'Save failed');
     } finally {
@@ -136,58 +117,60 @@ export default function AdminProgramPages() {
     }
   };
 
-  const selectedProgram = programs.find((p) => p.slug === selectedSlug);
+  const selectedCard = cards.find((c) => c.slug === selectedSlug);
 
   return (
     <AdminShell
-      title="What We Do — Detail Pages"
-      section={ADMIN_SECTIONS.programs.label}
-      description="Build the full Learn More page for each program card on /programs."
-      breadcrumbs={[{ label: 'Navbar Manager' }, { label: 'What We Do' }, { label: 'Detail Pages' }]}
+      title="Need Support — Detail Pages"
+      section="Need Support"
+      description="Build the full Learn More page for each Need Support card. Use headings and lists in the rich text editor for Vision / Mission style layout."
+      breadcrumbs={[{ label: 'Need Support' }, { label: 'Detail Pages' }]}
       actions={
-        <Link to={adminRoutes.programs}>
+        <Link to={adminRoutes.needSupportCards}>
           <Button variant="outline" size="sm"><Layers className="mr-1.5 h-4 w-4" />Cards</Button>
         </Link>
       }
       maxWidth="max-w-5xl"
     >
       <div className="mb-6 rounded-xl border border-border bg-white p-6">
-        <Label>Select program category *</Label>
+        <Label>Select Need Support card *</Label>
         <select
           value={selectedSlug}
-          onChange={(e) => handleCategoryChange(e.target.value)}
+          onChange={(e) => {
+            if (e.target.value) selectCard(e.target.value);
+            else {
+              setSelectedSlug('');
+              setForm(emptyNeedSupportPage());
+            }
+          }}
           className="mt-1 w-full rounded-lg border px-3 py-2 text-sm"
         >
-          <option value="">Choose a program card…</option>
-          {programs.map((p) => (
-            <option key={p.id} value={p.slug}>{p.icon ? `${p.icon} ` : ''}{p.title}</option>
+          <option value="">Choose a card…</option>
+          {cards.map((c) => (
+            <option key={c.id || c.slug} value={c.slug}>{c.name}</option>
           ))}
         </select>
-        {selectedProgram && (
+        {selectedCard && (
           <p className="mt-2 text-xs text-muted-foreground">
-            Public URL: <code>/programs/{selectedProgram.slug}</code>
+            Public URL: <code>/need-support/{selectedCard.slug}</code>
           </p>
         )}
       </div>
 
       {!selectedSlug ? (
         <div className="rounded-xl border border-dashed border-border py-16 text-center text-muted-foreground">
-          <BookOpen className="mx-auto mb-3 h-10 w-10 opacity-40" />
-          Select a program card above to edit its detail page content.
+          <Heart className="mx-auto mb-3 h-10 w-10 opacity-40" />
+          Select a card above to edit its detail page content.
         </div>
       ) : loading ? (
         <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin" /></div>
       ) : (
         <div className="space-y-6 rounded-xl border border-border bg-white p-6">
-          <BilingualRichText name="long_description" label="About (overview) — or use structured sections below" form={form} setForm={setForm} />
-          <StructuredContentEditor
+          <BilingualRichText
+            name="long_description"
+            label="About / full content (use Heading 1–3, paragraphs, and bullet lists)"
             form={form}
             setForm={setForm}
-            titleField="content_title"
-            headingField="content_heading"
-            sectionsField="content_sections"
-            legacyField="long_description"
-            showLegacyFallback={false}
           />
           <BilingualRichText name="objectives" label="Objectives" form={form} setForm={setForm} />
           <BilingualRichText name="activities" label="Activities" form={form} setForm={setForm} />
@@ -218,7 +201,7 @@ export default function AdminProgramPages() {
             label="Optional hero override"
             value={form.hero_image || ''}
             onChange={(url) => setForm({ ...form, hero_image: url })}
-            subPath="programs"
+            subPath="needs-support"
           />
           <Button onClick={handleSave} disabled={saving}>
             {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}

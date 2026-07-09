@@ -10,7 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 
 const EMPTY = { title: '', title_te: '', slug: '', content: '', content_te: '', summary: '', featured_image: '', category: 'general', is_published: false };
@@ -67,8 +68,8 @@ export default function AdminNews() {
         <form onSubmit={save} className="p-6 space-y-4">
           <BilingualInput name="title" label="Title" form={form} setForm={setForm} required />
           <AdminUrlField title={form.title} slug={form.slug} onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))} publicBase="/news" />
-          <div><Label>Summary</Label><Textarea value={form.summary} onChange={e=>setForm(f=>({...f,summary:e.target.value}))} className="mt-1 h-20"/></div>
-          <BilingualTextarea name="content" label="Content" form={form} setForm={setForm} rows={6} required />
+          <BilingualRichText name="summary" label="Summary" form={form} setForm={setForm} />
+          <BilingualRichText name="content" label="Content" form={form} setForm={setForm} required />
           <AdminImageUpload label="Featured image" value={form.featured_image} onChange={(url) => setForm(f => ({...f, featured_image: url}))} subPath="news" />
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Category</Label><select value={form.category} onChange={e=>setForm(f=>({...f,category:e.target.value}))} className="mt-1 w-full border rounded-lg px-3 py-2 text-sm"><option value="general">General</option><option value="village">Village</option><option value="school">School</option><option value="project">Project</option><option value="event">Event</option></select></div>

@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import AdminShell from '@/components/admin/AdminShell';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 const EMPTY = { question: '', question_te: '', answer: '', answer_te: '', sort_order: 0, is_active: true };
 
@@ -133,7 +134,7 @@ export default function AdminFaqs() {
             </div>
             <form onSubmit={save} className="space-y-4 p-6">
               <BilingualInput name="question" label="Question" form={form} setForm={setForm} required />
-              <BilingualTextarea name="answer" label="Answer" form={form} setForm={setForm} rows={5} required />
+              <BilingualRichText name="answer" label="Answer" form={form} setForm={setForm} required />
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Sort order</Label>

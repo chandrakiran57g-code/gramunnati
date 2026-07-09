@@ -4,7 +4,7 @@ import { Bell, Send, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import RichTextEditor from '@/components/admin/RichTextEditor';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 
 const AUDIENCE_OPTIONS = [
@@ -87,7 +87,7 @@ export default function AdminNotifications() {
 
           <div>
             <Label htmlFor="notif-message">Message</Label>
-            <Textarea id="notif-message" value={message} onChange={(e) => setMessage(e.target.value)} className="mt-1 rounded-xl min-h-[120px]" placeholder="Write your announcement…" required />
+            <RichTextEditor label="Message" value={message} onChange={setMessage} required hint="Use headings and lists for readable announcements." />
           </div>
 
           {error && <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</div>}

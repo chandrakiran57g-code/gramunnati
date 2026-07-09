@@ -6,7 +6,7 @@ import { Calendar, ChevronLeft, Tag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { localize } from '@/lib/localizedContent';
+import RichContent from '@/components/shared/RichContent';
 
 export default function NewsDetail() {
   const { slug } = useParams();
@@ -46,9 +46,10 @@ export default function NewsDetail() {
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="prose prose-slate max-w-none text-sm leading-relaxed">
-            {localize(article, 'content', lang) || article.content || article.summary || article.description || 'Full article content coming soon.'}
-          </div>
+          <RichContent
+            content={localize(article, 'content', lang) || article.content || article.summary || article.description || 'Full article content coming soon.'}
+            className="text-sm leading-relaxed"
+          />
 
           {article.tags?.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-border">

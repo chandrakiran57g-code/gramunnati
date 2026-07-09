@@ -1,20 +1,15 @@
-/** Per-program detail page content (Learn More pages) stored in settings. */
+/** Per-card Need Support detail pages stored in settings. */
 import { cmsService } from '@/api/cms';
 import { adminDbMutation } from '@/lib/adminDb';
 import { supabase } from '@/api/supabaseClient';
 import { parseSettingsValue, serializeSettingsValue } from '@/lib/settingsStore';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 
-const STORE_KEY = 'program_detail_pages';
+const STORE_KEY = 'need_support_detail_pages';
 
-export function emptyProgramPage(programSlug = '') {
+export function emptyNeedSupportPage(cardSlug = '') {
   return {
-    program_slug: programSlug,
-    content_title: '',
-    content_title_te: '',
-    content_heading: '',
-    content_heading_te: '',
-    content_sections: [],
+    card_slug: cardSlug,
     long_description: '',
     long_description_te: '',
     objectives: '',
@@ -24,6 +19,7 @@ export function emptyProgramPage(programSlug = '') {
     impact_highlights: '',
     impact_highlights_te: '',
     gallery_images: '',
+    hero_image: '',
     stats: { villages: 0, schools: 0, volunteers: 0, donations: 0 },
   };
 }
@@ -41,25 +37,25 @@ async function writeStore(store) {
       { onConflict: 'key' }
     );
     if (error) throw error;
-    notifyPlatformDataChanged({ type: 'program_pages' });
+    notifyPlatformDataChanged({ type: 'need_support_pages' });
   });
 }
 
-export const programPagesService = {
+export const needSupportPagesService = {
   async listAll() {
     return readStore();
   },
 
-  async getPage(programSlug) {
-    if (!programSlug) return null;
+  async getPage(cardSlug) {
+    if (!cardSlug) return null;
     const store = await readStore();
-    return store[programSlug] || null;
+    return store[cardSlug] || null;
   },
 
-  async savePage(programSlug, data) {
+  async savePage(cardSlug, data) {
     const store = await readStore();
-    store[programSlug] = { ...emptyProgramPage(programSlug), ...data, program_slug: programSlug };
+    store[cardSlug] = { ...emptyNeedSupportPage(cardSlug), ...data, card_slug: cardSlug };
     await writeStore(store);
-    return store[programSlug];
+    return store[cardSlug];
   },
 };

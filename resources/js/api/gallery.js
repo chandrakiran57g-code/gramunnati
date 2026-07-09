@@ -11,6 +11,26 @@ export { GALLERY_CATEGORIES };
 
 const VIDEO_MIME = /^video\//;
 const IMAGE_MIME = /^image\//;
+const VIDEO_EXT = new Set(['mp4', 'webm', 'mov', 'm4v', 'ogv', 'avi', 'mkv']);
+const IMAGE_EXT = new Set(['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp']);
+
+function fileExtension(file) {
+  const name = String(file?.name || '');
+  const idx = name.lastIndexOf('.');
+  return idx >= 0 ? name.slice(idx + 1).toLowerCase() : '';
+}
+
+function isVideoFile(file) {
+  if (!file) return false;
+  if (VIDEO_MIME.test(file.type || '')) return true;
+  return VIDEO_EXT.has(fileExtension(file));
+}
+
+function isImageFile(file) {
+  if (!file) return false;
+  if (IMAGE_MIME.test(file.type || '')) return true;
+  return IMAGE_EXT.has(fileExtension(file));
+}
 
 function parseGalleryValue(raw) {
   if (raw == null || raw === '') return null;
@@ -75,10 +95,12 @@ export async function listGalleryRows({ type, limit = 200 } = {}) {
 }
 
 async function uploadGalleryFile(file, category) {
-  const isVideo = VIDEO_MIME.test(file.type);
-  const isImage = IMAGE_MIME.test(file.type);
+  const isVideo = isVideoFile(file);
+  const isImage = isImageFile(file);
   if (!isVideo && !isImage) {
-    throw new Error('File must be an image (JPEG, PNG, WebP, GIF) or video (MP4, WebM, MOV)');
+    throw new Error(
+      'Unsupported file type. Use MP4, WebM, or MOV for videos, or JPEG/PNG/WebP for images.'
+    );
   }
 
   const folder = isVideo ? 'videos' : 'images';

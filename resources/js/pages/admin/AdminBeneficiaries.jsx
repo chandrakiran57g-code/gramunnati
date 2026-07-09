@@ -7,7 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import RichTextEditor, { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 const beneficiaryTypes = ['village', 'school', 'farmer', 'student', 'women_shg', 'youth_group', 'artisan', 'other'];
 
@@ -85,8 +86,8 @@ export default function AdminBeneficiaries() {
             </select>
           </div>
         </div>
-        <div className="mb-4"><BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={3} /></div>
-        <div className="mb-4"><Label>Impact Details</Label><Textarea value={form.impact_details} onChange={e => setForm({ ...form, impact_details: e.target.value })} rows={2} /></div>
+        <div className="mb-4"><BilingualRichText name="description" label="Description" form={form} setForm={setForm} /></div>
+        <div className="mb-4"><RichTextEditor label="Impact Details" value={form.impact_details} onChange={(html) => setForm({ ...form, impact_details: html })} /></div>
         <div className="flex gap-3">
           <Button onClick={handleSave} disabled={saving} className="brand-gradient text-white border-0">{saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}{editing ? 'Update' : 'Create'}</Button>
           {editing && <Button variant="outline" onClick={() => setEditing(null)}>Cancel</Button>}

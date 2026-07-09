@@ -86,39 +86,38 @@ export default function GalleryCollectionModal({ collection, onClose }) {
                     <Video className="w-4 h-4 text-primary" />
                     Videos ({videos.length})
                   </h3>
-                  <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     {videos.map((item) => (
                       <button
                         key={item.id}
                         type="button"
                         onClick={() => setActiveMedia(item)}
-                        className="group text-left rounded-xl overflow-hidden border border-border bg-white"
+                        className="group relative aspect-square rounded-xl overflow-hidden bg-muted text-left"
                       >
-                        <div className="aspect-video bg-brown-900 relative">
-                          {item.embedId ? (
-                            <img
-                              src={`https://img.youtube.com/vi/${item.embedId}/hqdefault.jpg`}
-                              alt={item.caption}
-                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                            />
-                          ) : (
-                            <video
-                              src={item.src}
-                              muted
-                              playsInline
-                              preload="metadata"
-                              className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                            />
-                          )}
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/20 transition-colors">
-                            <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
-                              <Play className="w-5 h-5 text-primary ml-0.5" />
-                            </div>
+                        {item.embedId ? (
+                          <img
+                            src={`https://img.youtube.com/vi/${item.embedId}/hqdefault.jpg`}
+                            alt={item.caption}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <video
+                            src={item.src}
+                            muted
+                            playsInline
+                            preload="metadata"
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-11 h-11 rounded-full bg-white/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Play className="w-5 h-5 text-primary ml-0.5" />
                           </div>
                         </div>
-                        <div className="p-3">
-                          <p className="text-sm font-semibold text-foreground line-clamp-2">{item.caption}</p>
-                        </div>
+                        <p className="absolute bottom-0 left-0 right-0 p-2.5 text-[11px] sm:text-xs text-white font-medium leading-snug line-clamp-2">
+                          {item.caption}
+                        </p>
                       </button>
                     ))}
                   </div>

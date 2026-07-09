@@ -10,7 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import AdminUrlField from '@/components/admin/AdminUrlField';
 
 const EMPTY = { title: '', title_te: '', slug: '', summary: '', summary_te: '', content: '', content_te: '', featured_image: '', village_name: '', school_name: '', is_featured: false, status: 'published' };
@@ -60,8 +61,8 @@ export default function AdminStories() {
         <form onSubmit={save} className="p-6 space-y-4">
           <BilingualInput name="title" label="Title" form={form} setForm={setForm} required />
           <AdminUrlField title={form.title} slug={form.slug} onSlugChange={(slug) => setForm((f) => ({ ...f, slug }))} publicBase="/stories" />
-          <BilingualTextarea name="summary" label="Summary" form={form} setForm={setForm} rows={3} />
-          <BilingualTextarea name="content" label="Content" form={form} setForm={setForm} rows={6} required />
+          <BilingualRichText name="summary" label="Summary" form={form} setForm={setForm} />
+          <BilingualRichText name="content" label="Content" form={form} setForm={setForm} required />
           <AdminImageUpload label="Featured image" value={form.featured_image} onChange={(url) => setForm(f => ({...f, featured_image: url}))} subPath="stories" />
           <div className="grid grid-cols-2 gap-4"><div><Label>Village</Label><Input value={form.village_name} onChange={e=>setForm(f=>({...f,village_name:e.target.value}))} className="mt-1"/></div><div><Label>School</Label><Input value={form.school_name} onChange={e=>setForm(f=>({...f,school_name:e.target.value}))} className="mt-1"/></div></div>
           <div className="grid grid-cols-2 gap-4">

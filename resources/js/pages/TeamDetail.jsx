@@ -6,7 +6,7 @@ import { Users, Mail, Phone, ArrowLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { localize, useLocalizedRecord } from '@/lib/localizedContent';
+import RichContent from '@/components/shared/RichContent';
 
 export default function TeamDetail() {
   const { slug } = useParams();
@@ -54,23 +54,50 @@ export default function TeamDetail() {
     </div>
   );
 
+  const banner = group.banner_image
+    ? (/^https?:\/\//i.test(group.banner_image) || group.banner_image.startsWith('/')
+        ? group.banner_image
+        : `/storage/${String(group.banner_image).replace(/^\/+/, '')}`)
+    : null;
+
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <section className="hero-gradient py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back to Teams
-            </Link>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
-              {localizedGroup?.name || group.name}
-            </motion.h1>
-            {(localizedGroup?.description || group.description) && (
-              <p className="text-white/70 text-lg max-w-2xl">{localizedGroup?.description || group.description}</p>
-            )}
-          </div>
-        </section>
+        {banner ? (
+          <section className="relative h-64 sm:h-80 overflow-hidden">
+            <img src={banner} alt={localizedGroup?.name || group.name} className="absolute inset-0 h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25" />
+            <div className="relative z-10 flex h-full items-end">
+              <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pb-8">
+                <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
+                  <ArrowLeft className="w-4 h-4" /> Back to Teams
+                </Link>
+                <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
+                  {localizedGroup?.name || group.name}
+                </motion.h1>
+                {(localizedGroup?.description || group.description) && (
+                  <RichContent content={localizedGroup?.description || group.description} className="text-white/80 text-lg max-w-2xl [&_.rich-content_p]:text-white/80" />
+                )}
+              </div>
+            </div>
+          </section>
+        ) : (
+          <section className="hero-gradient py-16">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6">
+              <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
+                <ArrowLeft className="w-4 h-4" /> Back to Teams
+              </Link>
+              <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
+                {localizedGroup?.name || group.name}
+              </motion.h1>
+              {(localizedGroup?.description || group.description) && (
+                <RichContent content={localizedGroup?.description || group.description} className="text-white/70 text-lg max-w-2xl [&_.rich-content_p]:text-white/70" />
+              )}
+            </div>
+          </section>
+        )}
       </HeroScrollSection>
 
       <section className="py-16">
@@ -109,7 +136,7 @@ export default function TeamDetail() {
                       <p className="text-primary text-sm font-medium mt-1">{localize(member, 'designation', lang)}</p>
                     )}
                     {member.description && (
-                      <p className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3">{localize(member, 'description', lang)}</p>
+                      <RichContent content={localize(member, 'description', lang)} className="text-muted-foreground text-sm mt-3 leading-relaxed line-clamp-3" />
                     )}
                     <div className="flex flex-wrap items-center justify-center gap-3 mt-auto pt-4 border-t border-border text-xs">
                       {member.email && (

@@ -17,7 +17,8 @@ import { Loader2, Pencil, Trash2, ExternalLink, FileText } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { resolveCardCover } from '@/lib/adminMedia';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 const EMPTY_FORM = {
   name: '',
@@ -178,7 +179,7 @@ export default function AdminActiveWorksCards() {
             />
           </div>
           <div className="sm:col-span-2">
-            <BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={3} required />
+            <BilingualRichText name="description" label="Description" form={form} setForm={setForm} required />
           </div>
           <div>
             <Label>Sort Order</Label>

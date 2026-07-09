@@ -11,30 +11,45 @@ function formatDate(value) {
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
-export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'default' }) {
+/**
+ * Paginated directory table styled like the village list
+ * (blue header, Previous / page / Next).
+ *
+ * columns: [{ key, label, sortable?, link?, format? }]
+ */
+export default function DirectoryTable({
+  rows = [],
+  columns = [],
+  getLink,
+  searchKeys,
+}) {
   const [search, setSearch] = useState('');
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
-  const [sortKey, setSortKey] = useState('name');
+  const [sortKey, setSortKey] = useState(columns.find((c) => c.sortable !== false && c.key !== 'sno')?.key || columns[0]?.key);
   const [sortDir, setSortDir] = useState('asc');
+
+  const keysToSearch = searchKeys || columns.map((c) => c.key).filter((k) => k !== 'sno');
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = [...rows];
     if (q) {
       list = list.filter((r) =>
-        [r.name, r.mandal, r.district, r.state].some((v) => String(v || '').toLowerCase().includes(q))
+        keysToSearch.some((k) => String(r[k] ?? '').toLowerCase().includes(q))
       );
     }
-    list.sort((a, b) => {
-      const av = String(a[sortKey] || '').toLowerCase();
-      const bv = String(b[sortKey] || '').toLowerCase();
-      if (av < bv) return sortDir === 'asc' ? -1 : 1;
-      if (av > bv) return sortDir === 'asc' ? 1 : -1;
-      return 0;
-    });
+    if (sortKey && sortKey !== 'sno') {
+      list.sort((a, b) => {
+        const av = String(a[sortKey] ?? '').toLowerCase();
+        const bv = String(b[sortKey] ?? '').toLowerCase();
+        if (av < bv) return sortDir === 'asc' ? -1 : 1;
+        if (av > bv) return sortDir === 'asc' ? 1 : -1;
+        return 0;
+      });
+    }
     return list;
-  }, [rows, search, sortKey, sortDir]);
+  }, [rows, search, sortKey, sortDir, keysToSearch]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -53,8 +68,23 @@ export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'd
     </button>
   );
 
-  const isVolunteers = variant === 'volunteers';
-  const colSpan = 5;
+  const renderCell = (row, col, index) => {
+    if (col.render) return col.render(row, index);
+    if (col.key === 'sno') return start + index + 1;
+    const raw = row[col.key];
+    const value = col.format ? col.format(raw, row) : (raw || '—');
+    if (col.link || (col.key === 'name' && getLink)) {
+      const href = getLink?.(row);
+      if (href) {
+        return <Link to={href} className="text-[#337ab7] hover:underline font-medium">{value}</Link>;
+      }
+    }
+    return value;
+  };
+
+  const thClass = (i, total) =>
+    `text-left font-semibold px-4 py-3 ${columns[i]?.width || ''} border-r border-white/25 last:border-r-0`;
+  const tdClass = 'px-4 py-3 text-gray-700 border-r border-gray-200 last:border-r-0';
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
@@ -71,9 +101,9 @@ export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'd
           <span>entries</span>
         </div>
         <div className="flex items-center gap-2">
-          <label htmlFor="dir-search" className="text-gray-600">Search:</label>
+          <label htmlFor="dir-table-search" className="text-gray-600">Search:</label>
           <input
-            id="dir-search"
+            id="dir-table-search"
             type="search"
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -86,38 +116,33 @@ export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'd
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-[#337ab7] text-white">
-              <th className="text-left font-semibold px-4 py-3 w-16 border-r border-white/25">S.No</th>
-              <th className="text-left font-semibold px-4 py-3 border-r border-white/25"><SortBtn col="name" label="Name" /></th>
-              {isVolunteers ? (
-                <th className="text-left font-semibold px-4 py-3 border-r border-white/25"><SortBtn col="state" label="State" /></th>
-              ) : (
-                <th className="text-left font-semibold px-4 py-3 border-r border-white/25"><SortBtn col="mandal" label="Mandal" /></th>
-              )}
-              <th className="text-left font-semibold px-4 py-3 border-r border-white/25"><SortBtn col="district" label="District" /></th>
-              <th className="text-left font-semibold px-4 py-3"><SortBtn col="date_of_entry" label="Date of Entry" /></th>
+              {columns.map((col, i) => (
+                <th key={col.key} className={thClass(i, columns.length)}>
+                  {col.sortable === false || col.key === 'sno' ? (
+                    col.label
+                  ) : (
+                    <SortBtn col={col.key} label={col.label} />
+                  )}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
             {pageRows.length === 0 ? (
-              <tr><td colSpan={colSpan} className="px-4 py-10 text-center text-gray-500">No records found.</td></tr>
-            ) : pageRows.map((row, i) => {
-              const href = getLink(row);
-              return (
+              <tr>
+                <td colSpan={columns.length} className="px-4 py-10 text-center text-gray-500">No records found.</td>
+              </tr>
+            ) : (
+              pageRows.map((row, i) => (
                 <tr key={row.id || i} className="border-t border-gray-200 hover:bg-gray-50">
-                  <td className="px-4 py-3 text-gray-700 border-r border-gray-200">{start + i + 1}</td>
-                  <td className="px-4 py-3 border-r border-gray-200">
-                    {href ? (
-                      <Link to={href} className="text-[#337ab7] hover:underline font-medium">{row.name}</Link>
-                    ) : (
-                      <span className="text-gray-800">{row.name}</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-gray-700 border-r border-gray-200">{isVolunteers ? (row.state || '—') : (row.mandal || '—')}</td>
-                  <td className="px-4 py-3 text-gray-700 border-r border-gray-200">{row.district || '—'}</td>
-                  <td className="px-4 py-3 text-gray-700">{formatDate(row.date_of_entry)}</td>
+                  {columns.map((col) => (
+                    <td key={col.key} className={tdClass}>
+                      {renderCell(row, col, i)}
+                    </td>
+                  ))}
                 </tr>
-              );
-            })}
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -131,11 +156,11 @@ export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'd
             type="button"
             disabled={currentPage <= 1}
             onClick={() => setPage((p) => p - 1)}
-            className="px-3 py-1.5 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-50"
+            className="px-3 py-1.5 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-50 inline-flex items-center gap-1"
           >
-            Previous
+            <ChevronLeft className="w-3.5 h-3.5" /> Previous
           </button>
-          {[...Array(totalPages)].slice(0, 7).map((_, i) => {
+          {[...Array(Math.min(totalPages, 7))].map((_, i) => {
             const n = i + 1;
             return (
               <button
@@ -154,12 +179,14 @@ export default function ServiceDirectoryTable({ rows = [], getLink, variant = 'd
             type="button"
             disabled={currentPage >= totalPages}
             onClick={() => setPage((p) => p + 1)}
-            className="px-3 py-1.5 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-50"
+            className="px-3 py-1.5 border border-gray-300 rounded disabled:opacity-40 hover:bg-gray-50 inline-flex items-center gap-1"
           >
-            Next
+            Next <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
     </div>
   );
 }
+
+export { formatDate };

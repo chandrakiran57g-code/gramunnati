@@ -46,8 +46,11 @@ export const adminSidebarSections = [
   {
     label: 'Need Support',
     icon: Heart,
-    path: adminRoutes.needSupport,
     color: 'text-orange-400',
+    children: [
+      { label: 'Cards', icon: Layers, path: adminRoutes.needSupportCards },
+      { label: 'Detail Pages', icon: FileText, path: adminRoutes.needSupportPages },
+    ],
   },
   {
     label: 'Donations',

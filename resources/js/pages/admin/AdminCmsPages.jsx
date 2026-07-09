@@ -1,19 +1,20 @@
-import { useState, useEffect } from 'react';
-import { cmsService } from '@/api/cms';
-import { FileText, Plus, Pencil, Trash2, Loader2, ExternalLink, MapPin, School, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
+import StructuredContentEditor from '@/components/admin/StructuredContentEditor';
+import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
+import AdminImageUpload, { AdminVideoUpload } from '@/components/admin/AdminMediaUpload';
+import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { FileText, Plus, Pencil, Trash2, Loader2, ExternalLink, MapPin, School, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import { CMS_STATUS, isCmsPagePublic } from '@/lib/cmsStatus';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminDbSetupBanner from '@/components/admin/AdminDbSetupBanner';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
-import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
-import AdminImageUpload, { AdminVideoUpload } from '@/components/admin/AdminMediaUpload';
-import { ADMIN_SECTIONS } from '@/lib/adminSections';
+import { cmsService } from '@/api/cms';
+import { useState, useEffect } from 'react';
 
 const PAGE_TYPES = [
   { value: 'general', label: 'General', icon: FileText, description: 'Standard CMS page' },
@@ -30,6 +31,11 @@ const EMPTY_FORM = {
   short_description_te: '',
   content: '',
   content_te: '',
+  content_title: '',
+  content_title_te: '',
+  content_heading: '',
+  content_heading_te: '',
+  content_sections: [],
   status: CMS_STATUS.ACTIVE,
   page_type: 'general',
   display_order: 0,
@@ -74,6 +80,11 @@ export default function AdminCmsPages() {
       short_description_te: page.short_description_te || '',
       content: page.content || '',
       content_te: page.content_te || '',
+      content_title: page.content_title || '',
+      content_title_te: page.content_title_te || '',
+      content_heading: page.content_heading || '',
+      content_heading_te: page.content_heading_te || '',
+      content_sections: Array.isArray(page.content_sections) ? page.content_sections : [],
       status: page.status || CMS_STATUS.ACTIVE,
       page_type: page.page_type || 'general',
       display_order: page.display_order || 0,
@@ -161,8 +172,16 @@ export default function AdminCmsPages() {
               }
             }}
           />
-          <BilingualTextarea name="short_description" label="Short description" form={form} setForm={setForm} rows={2} />
-          <BilingualTextarea name="content" label="Content" form={form} setForm={setForm} rows={8} required />
+          <BilingualRichText name="short_description" label="Short description" form={form} setForm={setForm} />
+          <StructuredContentEditor
+            form={form}
+            setForm={setForm}
+            titleField="content_title"
+            headingField="content_heading"
+            sectionsField="content_sections"
+            legacyField="content"
+            showLegacyFallback
+          />
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminImageUpload
               label="Featured image (optional)"

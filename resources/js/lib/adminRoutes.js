@@ -20,6 +20,8 @@ export const adminRoutes = {
   activeWorksPages: `${ADMIN_BASE}/active-works/pages`,
   activeWorksTemplates: `${ADMIN_BASE}/active-works/templates`,
   needSupport: `${ADMIN_BASE}/need-support`,
+  needSupportCards: `${ADMIN_BASE}/need-support/cards`,
+  needSupportPages: `${ADMIN_BASE}/need-support/pages`,
 
   /* Donations */
   donations: `${ADMIN_BASE}/donations`,

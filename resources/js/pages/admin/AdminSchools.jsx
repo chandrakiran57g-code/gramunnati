@@ -10,7 +10,8 @@ import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useVillageOptions, slugifyName } from '@/hooks/useGeoPickers';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 const EMPTY_FORM = {
   school_name: '', school_name_te: '', slug: '', village_id: '', school_type: 'government', udise_code: '', principal_name: '', contact_number: '',
@@ -131,25 +132,25 @@ export default function AdminSchools() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-20"><School className="w-16 h-16 text-muted-foreground/20 mx-auto mb-4" /><p className="text-muted-foreground">No schools found.</p></div>
         ) : (
-          <div className="bg-white rounded-2xl border border-border overflow-hidden">
+          <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead><tr className="border-b border-border bg-muted/30">
-                  <th className="text-left px-4 py-3 font-semibold">School</th>
-                  <th className="text-left px-4 py-3 font-semibold">Village</th>
-                  <th className="text-left px-4 py-3 font-semibold">Type</th>
-                  <th className="text-left px-4 py-3 font-semibold">Students</th>
-                  <th className="text-left px-4 py-3 font-semibold">Status</th>
+              <table className="w-full text-sm border-collapse">
+                <thead><tr className="bg-[#337ab7] text-white">
+                  <th className="text-left px-4 py-3 font-semibold border-r border-white/25">School</th>
+                  <th className="text-left px-4 py-3 font-semibold border-r border-white/25">Village</th>
+                  <th className="text-left px-4 py-3 font-semibold border-r border-white/25">Type</th>
+                  <th className="text-left px-4 py-3 font-semibold border-r border-white/25">Students</th>
+                  <th className="text-left px-4 py-3 font-semibold border-r border-white/25">Status</th>
                   <th className="text-right px-4 py-3 font-semibold">Actions</th>
                 </tr></thead>
-                <tbody className="divide-y divide-border">
+                <tbody>
                   {filtered.map((item, i) => (
-                    <motion.tr key={item.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} className="hover:bg-muted/20">
-                      <td className="px-4 py-3"><div className="font-medium">{item.school_name}</div><div className="text-xs text-muted-foreground">{item.villages?.districts?.name || '—'}, {item.villages?.states?.name || '—'}</div></td>
-                      <td className="px-4 py-3 text-muted-foreground">{item.villages?.village_name || '—'}</td>
-                      <td className="px-4 py-3"><span className="px-2 py-0.5 rounded-full bg-school/10 text-school text-xs font-medium capitalize">{item.school_type}</span></td>
-                      <td className="px-4 py-3">{item.student_count || 0}</td>
-                      <td className="px-4 py-3">{item.is_active ? <span className="text-green-600 text-xs font-medium">Active</span> : <span className="text-red-500 text-xs font-medium">Inactive</span>}</td>
+                    <motion.tr key={item.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }} className="border-t border-gray-200 hover:bg-gray-50">
+                      <td className="px-4 py-3 border-r border-gray-200"><div className="font-medium">{item.school_name}</div><div className="text-xs text-muted-foreground">{item.villages?.districts?.name || '—'}, {item.villages?.states?.name || '—'}</div></td>
+                      <td className="px-4 py-3 text-gray-700 border-r border-gray-200">{item.villages?.village_name || '—'}</td>
+                      <td className="px-4 py-3 border-r border-gray-200"><span className="px-2 py-0.5 rounded-full bg-school/10 text-school text-xs font-medium capitalize">{item.school_type}</span></td>
+                      <td className="px-4 py-3 border-r border-gray-200">{item.student_count || 0}</td>
+                      <td className="px-4 py-3 border-r border-gray-200">{item.is_active ? <span className="text-green-600 text-xs font-medium">Active</span> : <span className="text-red-500 text-xs font-medium">Inactive</span>}</td>
                       <td className="px-4 py-3 text-right">
                         <button onClick={() => openEdit(item)} className="p-1.5 rounded-lg hover:bg-school/10 text-school"><Pencil className="w-4 h-4" /></button>
                         <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-red-500 ml-1"><Trash2 className="w-4 h-4" /></button>
@@ -198,7 +199,7 @@ export default function AdminSchools() {
                 <div><Label>Principal Name</Label><Input value={form.principal_name} onChange={e => setForm(f => ({...f, principal_name: e.target.value}))} className="mt-1" /></div>
                 <div><Label>UDISE Code</Label><Input value={form.udise_code} onChange={e => setForm(f => ({...f, udise_code: e.target.value}))} className="mt-1" /></div>
               </div>
-              <BilingualTextarea name="short_description" label="Short Description" form={form} setForm={setForm} rows={3} />
+              <BilingualRichText name="short_description" label="Short Description" form={form} setForm={setForm} />
               <div><Label>Cover Image URL</Label><Input value={form.cover_image} onChange={e => setForm(f => ({...f, cover_image: e.target.value}))} className="mt-1" /></div>
               <div>
                 <Label className="mb-3 block font-semibold">Infrastructure</Label>

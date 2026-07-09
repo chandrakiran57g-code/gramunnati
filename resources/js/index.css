@@ -978,3 +978,70 @@
     }
   }
 }
+
+/* Structured / rich admin content on public pages */
+.rich-content {
+  color: hsl(var(--muted-foreground));
+  line-height: 1.7;
+  font-size: 0.975rem;
+}
+.rich-content h1 {
+  font-family: var(--font-heading, inherit);
+  font-size: 1.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: hsl(var(--foreground));
+  margin: 0 0 1.25rem;
+}
+.rich-content h2 {
+  font-family: var(--font-heading, inherit);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  margin: 1.75rem 0 0.75rem;
+}
+.rich-content h3 {
+  font-family: var(--font-heading, inherit);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin: 1.35rem 0 0.5rem;
+}
+.rich-content h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: hsl(var(--foreground));
+  margin: 1.1rem 0 0.4rem;
+}
+.rich-content p {
+  margin: 0 0 1rem;
+  line-height: 1.75;
+}
+.rich-content p:last-child {
+  margin-bottom: 0;
+}
+.rich-content ul,
+.rich-content ol {
+  margin: 0.75rem 0 1.1rem;
+  padding-left: 1.5rem;
+}
+.rich-content ul {
+  list-style: disc;
+}
+.rich-content ol {
+  list-style: decimal;
+}
+.rich-content li {
+  margin: 0.35rem 0;
+  line-height: 1.65;
+}
+.rich-content strong,
+.rich-content b {
+  font-weight: 600;
+  color: hsl(var(--foreground));
+}
+.rich-content a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}

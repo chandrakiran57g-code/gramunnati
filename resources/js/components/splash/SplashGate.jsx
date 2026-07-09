@@ -4,10 +4,13 @@ import SplashScreen from '@/components/splash/SplashScreen';
 const SESSION_KEY = 'cmsr_splash_shown';
 
 /**
- * Splash plays only when:
- * - Hard refresh (F5) on any page
- * - First full document load of the homepage (/) in this tab
- * Never on: browser back/forward, SPA route changes, revisiting / via in-app links
+ * Splash only on:
+ * - Hard refresh (F5 / reload) in this tab
+ * - First full document entry for this tab (open site / new tab)
+ *
+ * Never on:
+ * - SPA route changes (including returning to home)
+ * - Browser back / forward
  */
 function shouldPlaySplash() {
   if (typeof window === 'undefined') return false;
@@ -20,16 +23,18 @@ function shouldPlaySplash() {
   }
 
   if (navType === 'back_forward') return false;
-  if (navType === 'reload') return true;
-
-  const path = window.location.pathname.replace(/\/+$/, '') || '/';
-  if (path !== '/') return false;
 
   try {
-    return sessionStorage.getItem(SESSION_KEY) !== '1';
+    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+      // Already introduced this tab — only show again on hard refresh
+      return navType === 'reload';
+    }
   } catch {
-    return true;
+    /* sessionStorage unavailable: fall through */
   }
+
+  // First entry in this tab (or refresh before key was set)
+  return true;
 }
 
 export default function SplashGate({ children }) {

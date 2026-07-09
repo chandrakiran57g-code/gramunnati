@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
-import { BilingualInput, BilingualTextarea } from '@/components/admin/BilingualField';
+import { BilingualInput } from '@/components/admin/BilingualField';
+import { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 const EMPTY = { title:'',title_te:'',slug:'',description:'',description_te:'',location:'',location_te:'',start_date:'',end_date:'',featured_image:'',is_published:false,registration_link:'' };
 
@@ -64,7 +65,7 @@ export default function AdminEvents() {
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between rounded-t-2xl z-10"><h3 className="font-heading text-lg font-bold">{editing?'Edit':'New'} Event</h3><button onClick={()=>setShowForm(false)}><X className="w-5 h-5"/></button></div>
         <form onSubmit={save} className="p-6 space-y-4">
           <BilingualInput name="title" label="Title" form={form} setForm={setForm} required />
-          <BilingualTextarea name="description" label="Description" form={form} setForm={setForm} rows={4} />
+          <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
           <BilingualInput name="location" label="Location" form={form} setForm={setForm} />
           <div className="grid grid-cols-2 gap-4"><div><Label>Start Date *</Label><Input type="datetime-local" value={form.start_date} onChange={e=>setForm(f=>({...f,start_date:e.target.value}))} required className="mt-1"/></div><div><Label>End Date</Label><Input type="datetime-local" value={form.end_date} onChange={e=>setForm(f=>({...f,end_date:e.target.value}))} className="mt-1"/></div></div>
           <div><Label>Featured Image URL</Label><Input value={form.featured_image} onChange={e=>setForm(f=>({...f,featured_image:e.target.value}))} className="mt-1"/></div>

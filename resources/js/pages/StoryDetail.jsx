@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { localize } from '@/lib/localizedContent';
+import RichContent from '@/components/shared/RichContent';
 
 function slugifyTitle(text) {
   return String(text || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -83,7 +83,7 @@ export default function StoryDetail() {
           <div className="absolute bottom-6 left-6 right-6 max-w-3xl">
             <Link to="/stories" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ArrowLeft className="w-4 h-4" /> Back to Stories</Link>
             <h1 className="font-heading text-2xl sm:text-4xl font-bold text-white mb-3">{title}</h1>
-            {summary && <p className="text-white/80 text-sm max-w-2xl">{summary}</p>}
+            {summary && <RichContent content={summary} className="text-white/80 text-sm max-w-2xl [&_.rich-content_p]:text-white/80" />}
             <div className="flex flex-wrap items-center gap-3 mt-3 text-white/70 text-sm">
               {story.published_at && <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{new Date(story.published_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>}
               {villageName && <Badge className="bg-white/20 text-white border-0"><MapPin className="w-3 h-3 mr-1" />{villageName}</Badge>}
@@ -98,9 +98,7 @@ export default function StoryDetail() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl border border-border p-6 sm:p-8">
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                <div className="prose prose-slate max-w-none text-sm leading-relaxed whitespace-pre-wrap">
-                  {content || 'Story content coming soon.'}
-                </div>
+                <RichContent content={content || 'Story content coming soon.'} className="text-sm leading-relaxed" />
               </motion.div>
             </div>
 
