@@ -32,7 +32,7 @@ export default function Gallery() {
         </div>
       </HeroScrollSection>
 
-      <div className="bg-white border-b border-border sticky top-16 z-30">
+      <div className="bg-white border-b border-border sticky-below-nav">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex gap-4">
           {TABS.map((tab) => (
             <button
@@ -50,7 +50,7 @@ export default function Gallery() {
         </div>
       </div>
 
-      <div className="bg-white border-b border-border sticky top-[7.25rem] z-30">
+      <div className="bg-white border-b border-border sticky-below-nav-toolbar">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex gap-2 overflow-x-auto">
           {GALLERY_CATEGORIES.map((cat) => (
             <button

@@ -22,6 +22,9 @@
     --brown-300: 33 36% 71%;        /* #D4B896 Sand Clay */
     --brown-200: 36 37% 84%;        /* #E7D9C4 Light Clay */
 
+    /* Fixed navbar height (matches Navbar h-16) */
+    --navbar-height: 4rem;
+
     /* ── Service accents (programs only — do not use for global UI) ── */
     --service-village: 158 57% 29%;       /* #2D6A4F */
     --service-village-tint: 152 41% 93%;  /* #E8F5EE */
@@ -132,6 +135,18 @@
 }
 
 @layer utilities {
+  /* Sticky toolbars sit flush under the fixed navbar (no scroll gap) */
+  .sticky-below-nav {
+    position: sticky;
+    top: var(--navbar-height);
+    z-index: 30;
+  }
+  .sticky-below-nav-toolbar {
+    position: sticky;
+    top: calc(var(--navbar-height) + 3.25rem);
+    z-index: 30;
+  }
+
   /* Platform gradients (cream + brown) */
   .brand-gradient {
     background: linear-gradient(135deg, #2C2418 0%, #3D2914 50%, #5C4033 100%);

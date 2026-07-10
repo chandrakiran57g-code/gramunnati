@@ -68,7 +68,7 @@ export default function Projects() {
         </div>
       </HeroScrollSection>
 
-      <div className="bg-white border-b border-border sticky top-[88px] z-30 shadow-sm">
+      <div className="bg-white border-b border-border sticky-below-nav shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row gap-3 flex-wrap">
           <div className="flex-1 min-w-[200px] relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
