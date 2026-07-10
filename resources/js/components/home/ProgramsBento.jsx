@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
+import { stripHtml } from '@/lib/stripHtml';
 
 function ProgramCard({ program, index }) {
   const ref = useRef(null);
@@ -26,7 +27,7 @@ function ProgramCard({ program, index }) {
     <>
       <span className="text-3xl sm:text-4xl mb-4 block">{program.icon}</span>
       <h3 className="font-heading text-xl sm:text-2xl font-bold text-[#3D2914] mb-2">{program.title}</h3>
-      <p className="text-sm text-[#5C4033]/80 leading-relaxed flex-1 font-body">{program.description}</p>
+      <p className="text-sm text-[#5C4033]/80 leading-relaxed flex-1 font-body">{stripHtml(program.description)}</p>
     </>
   );
 

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { PROGRAMS } from '@/lib/programs';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
+import { stripHtml } from '@/lib/stripHtml';
 
 function categoryTitle(category, t) {
   if (!category) return 'Active Works';
@@ -73,7 +74,7 @@ export default function ActiveWorksCategory() {
               </div>
               <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-3">{title}</h1>
               {category?.description && (
-                <p className="text-white/80 max-w-2xl">{category.description}</p>
+                <p className="text-white/80 max-w-2xl">{stripHtml(category.description)}</p>
               )}
             </motion.div>
           </div>

@@ -8,6 +8,7 @@ import { activeWorkService } from '@/api/activeWork';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { PROGRAMS } from '@/lib/programs';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
+import { stripHtml } from '@/lib/stripHtml';
 
 function translateBadge(badge, t) {
   if (!badge) return '';
@@ -62,7 +63,7 @@ export function ActiveWorkCard({ item, index = 0 }) {
       <div className="p-4 flex flex-col flex-1">
         <h3 className="font-heading font-bold text-[#3D2914] text-lg leading-tight mb-2">{item.name}</h3>
         {item.description && (
-          <p className="text-sm text-[#5C4033]/75 line-clamp-3 flex-1">{item.description}</p>
+          <p className="text-sm text-[#5C4033]/75 line-clamp-3 flex-1">{stripHtml(item.description)}</p>
         )}
         <div className="flex gap-2 mt-4 pt-2">
           {(item.card?.enable_details !== false) && (
@@ -95,7 +96,7 @@ export function HomeActiveWorksSection({ section, index = 0 }) {
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
           <h3 className="font-heading font-bold text-[#3D2914] text-2xl">{translateCategoryName(category, t)}</h3>
-          {category.description && <p className="text-[#5C4033]/70 text-sm mt-1">{category.description}</p>}
+          {category.description && <p className="text-[#5C4033]/70 text-sm mt-1">{stripHtml(category.description)}</p>}
         </div>
         <Link to={viewAll} className="inline-flex items-center gap-1 text-[#8B4513] font-semibold text-sm hover:text-[#6B3410]">
           {t('home.viewAll')} <ArrowUpRight className="w-4 h-4" />

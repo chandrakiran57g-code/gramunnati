@@ -6,6 +6,7 @@ import { Heart, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { safeText } from '@/lib/safeText';
+import { stripHtml } from '@/lib/stripHtml';
 
 const typeLabels = { village: 'Village', school: 'School', farmer: 'Farmer', student: 'Student', women_shg: 'Women SHG', youth_group: 'Youth Group', artisan: 'Artisan', other: 'Other' };
 const typeColors = { village: 'bg-green-100 text-green-700', school: 'bg-blue-100 text-blue-700', farmer: 'bg-yellow-100 text-yellow-700', student: 'bg-purple-100 text-purple-700', women_shg: 'bg-pink-100 text-pink-700', youth_group: 'bg-orange-100 text-orange-700', artisan: 'bg-indigo-100 text-indigo-700', other: 'bg-gray-100 text-gray-700' };
@@ -77,7 +78,7 @@ export default function Beneficiaries() {
                       {(b.village_name || b.state) && (
                         <p className="text-xs text-muted-foreground mb-2">{[safeText(b.village_name), safeText(b.district), safeText(b.state)].filter(Boolean).join(', ')}</p>
                       )}
-                      {b.description && <p className="text-muted-foreground text-sm line-clamp-2">{b.description}</p>}
+                      {b.description && <p className="text-muted-foreground text-sm line-clamp-2">{stripHtml(b.description)}</p>}
                       <span className="inline-flex items-center gap-1 text-primary text-sm font-medium mt-3 group-hover:gap-2 transition-all">
                         Read More <ArrowRight className="w-4 h-4" />
                       </span>

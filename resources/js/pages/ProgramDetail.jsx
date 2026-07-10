@@ -9,12 +9,9 @@ import { programPagesService } from '@/api/programPages';
 import { getProgramBySlug } from '@/lib/programs';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 import RichContent from '@/components/shared/RichContent';
 import StructuredContent from '@/components/shared/StructuredContent';
-
-function stripHtml(text) {
-  return String(text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-}
 
 function linesToList(text) {
   const raw = String(text || '');
@@ -141,7 +138,7 @@ export default function ProgramDetail() {
             <h1 className={`font-heading text-3xl sm:text-4xl font-bold text-cream-50 mb-3 ${program.textColor}`}>
               {program.title}
             </h1>
-            <p className="text-cream-100/90 text-base max-w-2xl">{program.description}</p>
+            <p className="text-cream-100/90 text-base max-w-2xl">{stripHtml(program.description)}</p>
           </motion.div>
         </div>
       </div>
@@ -166,7 +163,7 @@ export default function ProgramDetail() {
           <div className="flex flex-wrap gap-2 mb-6">
             {program.impact.map((item) => (
               <span key={item} className={`text-xs font-medium px-3 py-1.5 rounded-full ${program.lightColor} ${program.textColor}`}>
-                {item}
+                {stripHtml(item)}
               </span>
             ))}
           </div>

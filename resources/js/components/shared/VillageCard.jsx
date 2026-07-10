@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import SafeImage from '@/components/shared/SafeImage';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 
 export default function VillageCard({ village, index = 0 }) {
   const { lang } = useLanguage();
@@ -48,7 +49,7 @@ export default function VillageCard({ village, index = 0 }) {
         </div>
 
         {shortDescription && (
-          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{shortDescription}</p>
+          <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{stripHtml(shortDescription)}</p>
         )}
 
         <div className="grid grid-cols-3 gap-2 mb-4">

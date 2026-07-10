@@ -14,6 +14,7 @@ import RichContent from '@/components/shared/RichContent';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize, localizeNested } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 
 export default function ActiveWorkDetail() {
   const { slug } = useParams();
@@ -149,7 +150,7 @@ export default function ActiveWorkDetail() {
                 <div key={i} className="bg-white rounded-xl border p-4">
                   <div className="text-xs text-primary font-semibold">{ev.date}</div>
                   <h4 className="font-semibold">{ev.title}</h4>
-                  <p className="text-sm text-muted-foreground">{ev.description}</p>
+                  <p className="text-sm text-muted-foreground">{stripHtml(ev.description)}</p>
                 </div>
               ))}
               {!item.timeline?.length && <p className="text-muted-foreground">No timeline entries yet.</p>}

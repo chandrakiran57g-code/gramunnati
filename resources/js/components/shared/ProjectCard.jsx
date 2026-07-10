@@ -7,6 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import SafeImage from '@/components/shared/SafeImage';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 
 const categoryColors = {
   'Village Development': 'bg-service-village-tint text-service-village border-service-village/30',
@@ -98,7 +99,7 @@ export default function ProjectCard({ project, index = 0 }) {
           </div>
         )}
         <p className="text-sm text-muted-foreground line-clamp-2 mb-4 leading-relaxed">
-          {shortDescription}
+          {stripHtml(shortDescription)}
         </p>
 
         <div className="mb-4">

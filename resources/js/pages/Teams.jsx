@@ -6,6 +6,7 @@ import { Users, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 
 function bannerSrc(url) {
   if (!url) return null;
@@ -102,7 +103,7 @@ export default function Teams() {
                           {localize(group, 'name', lang) || group.name}
                         </h3>
                         <p className="text-muted-foreground text-sm leading-relaxed mb-4 line-clamp-3">
-                          {localize(group, 'description', lang) || group.description}
+                          {stripHtml(localize(group, 'description', lang) || group.description)}
                         </p>
                         <span className="inline-flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
                           View Members <ArrowRight className="w-4 h-4" />

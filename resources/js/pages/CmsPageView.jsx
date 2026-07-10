@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { localize, useLocalizedRecord } from '@/lib/localizedContent';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { stripHtml } from '@/lib/stripHtml';
 
 /** Map page_type values to the service directory slug used by serviceDirectoryApi */
 const PAGE_TYPE_TO_DIR_SLUG = {
@@ -137,7 +138,7 @@ export default function CmsPageView() {
                 </motion.h1>
                 {(localized?.short_description || page.short_description) && (
                   <p className="text-lg text-white/80">
-                    {localized?.short_description || page.short_description}
+                    {stripHtml(localized?.short_description || page.short_description)}
                   </p>
                 )}
               </div>
@@ -155,7 +156,7 @@ export default function CmsPageView() {
               </motion.h1>
               {(localized?.short_description || page.short_description) && (
                 <p className="text-lg text-white/70">
-                  {localized?.short_description || page.short_description}
+                  {stripHtml(localized?.short_description || page.short_description)}
                 </p>
               )}
             </div>
@@ -186,7 +187,7 @@ export default function CmsPageView() {
           ) : (
             !(hasStructured || adminContent) && (
               <div className="bg-white rounded-2xl border border-border p-8 text-center text-muted-foreground">
-                {localized?.short_description || page.short_description || 'Content coming soon.'}
+                {stripHtml(localized?.short_description || page.short_description) || 'Content coming soon.'}
               </div>
             )
           )}

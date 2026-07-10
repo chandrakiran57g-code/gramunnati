@@ -6,6 +6,7 @@ import { LogoCloud } from '@/components/partners/LogoCloud';
 import { Badge } from '@/components/ui/badge';
 import { Building2, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { stripHtml } from '@/lib/stripHtml';
 
 const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Others' };
 const typeColors = { ngo: 'bg-green-100 text-green-700', company: 'bg-blue-100 text-blue-700', educational_institution: 'bg-purple-100 text-purple-700', government: 'bg-orange-100 text-orange-700', individual: 'bg-gray-100 text-gray-700', csr_partner: 'bg-yellow-100 text-yellow-700', foundation: 'bg-pink-100 text-pink-700' };
@@ -98,7 +99,7 @@ export default function Partners() {
                       </div>
                     </div>
                     {partner.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-3">{partner.description}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-3">{stripHtml(partner.description)}</p>
                     )}
                     <span className="inline-flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
                       View Details <ArrowRight className="w-4 h-4" />

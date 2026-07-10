@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { cmsService } from '@/api/cms';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 
 export default function Programs() {
   const { lang } = useLanguage();
@@ -58,7 +59,7 @@ export default function Programs() {
                     </div>
                     <h3 className="font-heading font-bold text-lg mb-2 text-foreground">{title}</h3>
                   </Link>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-4">{description}</p>
+                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-4">{stripHtml(description)}</p>
                   <div className="mt-4 flex flex-col gap-2">
                     <Link to={`/programs/${prog.slug}`}>
                       <Button size="sm" variant="outline" className="w-full text-xs border-brown-300 text-foreground">

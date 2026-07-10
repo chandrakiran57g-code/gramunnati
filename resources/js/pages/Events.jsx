@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { normalizeExternalUrl } from '@/lib/externalUrl';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 
 const categoryColors = {
   Environment: 'bg-green-100 text-green-700',
@@ -101,7 +102,7 @@ export default function Events() {
                       <div className="flex items-center gap-1 text-xs text-muted-foreground shrink-0"><Calendar className="w-3 h-3" />{event.start_date}</div>
                     </div>
                     <h3 className="font-heading font-bold text-lg mb-2">{localize(event, 'title', lang) || event.title}</h3>
-                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{localize(event, 'description', lang) || event.description}</p>
+                    <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{stripHtml(localize(event, 'description', lang) || event.description)}</p>
                     {event.location && <div className="flex items-center gap-1 text-sm text-muted-foreground"><MapPin className="w-3.5 h-3.5" />{localize(event, 'location', lang) || event.location}</div>}
                   </div>
                   {tab === 'upcoming' && event.registration_link && (

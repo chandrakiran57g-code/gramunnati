@@ -10,10 +10,11 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
+import { stripHtml } from '@/lib/stripHtml';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 
 function plainText(htmlOrText) {
-  return String(htmlOrText || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  return stripHtml(htmlOrText);
 }
 
 function NeedSupportCard({ project, index = 0 }) {
