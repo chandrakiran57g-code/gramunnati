@@ -23,10 +23,10 @@ export default function Programs() {
   return (
     <div className="min-h-screen bg-background">
       <div className="brand-gradient py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center text-cream-50">
+        <div className="max-w-7xl mx-auto text-center text-white">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-4">What We Do</h1>
-            <p className="text-cream-100/90 max-w-2xl mx-auto">Programs creating lasting change across rural India</p>
+            <p className="text-white/90 max-w-2xl mx-auto">Programs creating lasting change across rural India</p>
           </motion.div>
         </div>
       </div>
@@ -54,7 +54,7 @@ export default function Programs() {
                   className="group bg-white rounded-2xl border border-brown-300 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                 >
                   <Link to={`/programs/${prog.slug}`}>
-                    <div className="w-14 h-14 bg-cream-200 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform overflow-hidden">
+                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform overflow-hidden">
                       {String(icon).startsWith('http') ? <img src={icon} alt="" className="h-full w-full object-cover" /> : icon}
                     </div>
                     <h3 className="font-heading font-bold text-lg mb-2 text-foreground">{title}</h3>

@@ -100,7 +100,7 @@ export default function AdminGallery() {
     if (uploading) return;
 
     const isVideo = uploadForm.mediaType === 'video';
-    const hasFile = Boolean(uploadForm.file);
+    const hasFile = uploadForm.mediaType === 'image' && Boolean(uploadForm.file);
     const hasUrl = Boolean(uploadForm.mediaUrl.trim());
     const hasYoutube = Boolean(uploadForm.youtubeUrl.trim());
     const resolvedTitle =
@@ -109,8 +109,8 @@ export default function AdminGallery() {
       || (isVideo ? 'Gallery Video' : 'Gallery Photo');
 
     if (isVideo) {
-      if (!hasFile && !hasUrl && !hasYoutube) {
-        toast.error('Choose a video file, paste a video URL, or paste a YouTube link');
+      if (!hasYoutube) {
+        toast.error('Paste a YouTube link to add a video');
         return;
       }
     } else if (!hasFile && !hasUrl) {
@@ -125,8 +125,8 @@ export default function AdminGallery() {
 
     setUploading(true);
     try {
-      if (hasFile && isVideo) {
-        toast.message('Uploading video…', { duration: 3000 });
+      if (hasFile && !isVideo) {
+        toast.message('Uploading image…', { duration: 3000 });
       }
       await addGalleryMedia({
         title: resolvedTitle,
@@ -134,7 +134,7 @@ export default function AdminGallery() {
         mediaType: uploadForm.mediaType,
         mediaUrl: uploadForm.mediaUrl.trim() || undefined,
         youtubeUrl: uploadForm.youtubeUrl.trim() || undefined,
-        file: uploadForm.file || undefined,
+        file: uploadForm.mediaType === 'image' ? (uploadForm.file || undefined) : undefined,
         caption: uploadForm.caption || resolvedTitle,
         collectionId: uploadForm.collectionId === NEW_COLLECTION ? undefined : uploadForm.collectionId,
       });
@@ -148,10 +148,6 @@ export default function AdminGallery() {
     } catch (err) {
       const msg = err.message || 'Upload failed';
       toast.error(msg);
-      if (isVideo && hasFile && !showUrlFields) {
-        setShowUrlFields(true);
-        toast.message('Tip: paste a YouTube link under the file picker if upload keeps failing.', { duration: 6000 });
-      }
     } finally {
       setUploading(false);
     }
@@ -208,13 +204,13 @@ export default function AdminGallery() {
         <div className="bg-white rounded-2xl border border-border p-6 mb-6">
           <h3 className="font-heading font-bold text-lg mb-4 flex items-center gap-2">
             <Plus className="w-5 h-5 text-purple-600" />
-            Add photo or video
+            Add photo or YouTube video
           </h3>
           <form onSubmit={handleUpload} className="space-y-4">
             <div className="flex flex-wrap gap-2">
               {[
                 { value: 'image', label: 'Photo', icon: Image },
-                { value: 'video', label: 'Video', icon: Video },
+                { value: 'video', label: 'YouTube video', icon: Video },
               ].map(({ value, label, icon: Icon }) => (
                 <button
                   key={value}
@@ -222,7 +218,8 @@ export default function AdminGallery() {
                   onClick={() => {
                     pickFile(null);
                     if (fileInputRef.current) fileInputRef.current.value = '';
-                    setUploadForm((f) => ({ ...f, mediaType: value, file: null }));
+                    setUploadForm((f) => ({ ...f, mediaType: value, file: null, mediaUrl: '', youtubeUrl: value === 'video' ? f.youtubeUrl : '' }));
+                    setShowUrlFields(value === 'video');
                   }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition-all ${
                     uploadForm.mediaType === value
@@ -282,22 +279,19 @@ export default function AdminGallery() {
               </div>
             </div>
 
+            {uploadForm.mediaType === 'image' ? (
             <div>
-              <Label>{uploadForm.mediaType === 'video' ? 'Video file (MP4, WebM, MOV)' : 'Image file'}</Label>
+              <Label>Image file</Label>
               <input
                 ref={fileInputRef}
                 type="file"
-                accept={uploadForm.mediaType === 'video' ? 'video/mp4,video/webm,video/quicktime,.mp4,.webm,.mov' : 'image/*'}
+                accept="image/*"
                 className="hidden"
                 onChange={(e) => pickFile(e.target.files?.[0])}
               />
               {filePreview ? (
                 <div className="relative mt-2 inline-block">
-                  {uploadForm.mediaType === 'video' ? (
-                    <video src={filePreview} controls className="max-h-48 max-w-sm rounded-xl border" />
-                  ) : (
-                    <img src={filePreview} alt="Preview" className="max-h-48 rounded-xl border object-cover" />
-                  )}
+                  <img src={filePreview} alt="Preview" className="max-h-48 rounded-xl border object-cover" />
                   <button
                     type="button"
                     onClick={() => {
@@ -317,7 +311,7 @@ export default function AdminGallery() {
                   className="mt-2 flex w-full max-w-md flex-col items-center gap-2 rounded-xl border-2 border-dashed border-purple-300 bg-purple-50/50 px-6 py-8 text-sm text-purple-700 transition-colors hover:border-purple-500 hover:bg-purple-50"
                 >
                   <Upload className="h-6 w-6" />
-                  Click to choose {uploadForm.mediaType === 'video' ? 'a video' : 'an image'} from your computer
+                  Click to choose an image from your computer
                 </button>
               )}
               {!showUrlFields && (
@@ -326,15 +320,29 @@ export default function AdminGallery() {
                   onClick={() => setShowUrlFields(true)}
                   className="mt-2 block text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
                 >
-                  {uploadForm.mediaType === 'video' ? 'or paste a video / YouTube URL instead' : 'or paste an image URL instead'}
+                  or paste an image URL instead
                 </button>
               )}
             </div>
+            ) : (
+            <div>
+              <Label>YouTube link *</Label>
+              <Input
+                value={uploadForm.youtubeUrl}
+                onChange={(e) => setUploadForm((f) => ({ ...f, youtubeUrl: e.target.value }))}
+                className="mt-1 rounded-xl"
+                placeholder="https://youtube.com/watch?v=..."
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                Video files are not uploaded to save server storage. Paste a YouTube link only.
+              </p>
+            </div>
+            )}
 
-            {showUrlFields && (
+            {showUrlFields && uploadForm.mediaType === 'image' && (
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <Label>{uploadForm.mediaType === 'video' ? 'Video URL (optional)' : 'Image URL (optional)'}</Label>
+                  <Label>Image URL (optional)</Label>
                   <Input
                     value={uploadForm.mediaUrl}
                     onChange={(e) => setUploadForm((f) => ({ ...f, mediaUrl: e.target.value }))}
@@ -342,17 +350,6 @@ export default function AdminGallery() {
                     placeholder="https://..."
                   />
                 </div>
-                {uploadForm.mediaType === 'video' && (
-                  <div>
-                    <Label>YouTube link (optional)</Label>
-                    <Input
-                      value={uploadForm.youtubeUrl}
-                      onChange={(e) => setUploadForm((f) => ({ ...f, youtubeUrl: e.target.value }))}
-                      className="mt-1 rounded-xl"
-                      placeholder="https://youtube.com/watch?v=..."
-                    />
-                  </div>
-                )}
               </div>
             )}
 
@@ -370,7 +367,7 @@ export default function AdminGallery() {
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />
-                    Add {uploadForm.mediaType === 'video' ? 'video' : 'photo'}
+                    Add {uploadForm.mediaType === 'video' ? 'YouTube video' : 'photo'}
                   </>
                 )}
               </Button>

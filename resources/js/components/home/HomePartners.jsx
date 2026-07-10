@@ -5,7 +5,7 @@ export default function HomePartners({ partners = [], loading }) {
   if (!loading && partners.length === 0) return null;
 
   return (
-    <section className="py-16 sm:py-20 bg-[#F5E6C8]/50">
+    <section className="py-16 sm:py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center mb-10">
         <h2 className="font-heading font-bold text-[#3D2914] text-xl sm:text-2xl mb-2">
           Saath mein kaam karne wale
@@ -15,7 +15,7 @@ export default function HomePartners({ partners = [], loading }) {
       <div className="max-w-5xl mx-auto px-4 flex flex-wrap justify-center items-center gap-8 sm:gap-12">
         {loading
           ? [...Array(5)].map((_, i) => (
-              <div key={i} className="w-24 h-12 bg-[#E8DFD0] rounded animate-pulse" />
+              <div key={i} className="w-24 h-12 bg-gray-200 rounded animate-pulse" />
             ))
           : partners.slice(0, 8).map((p, i) => (
               <motion.div

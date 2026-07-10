@@ -6,16 +6,16 @@ import { format } from 'date-fns';
 export default function HomeNewsEvents({ news = [], events = [], loading }) {
   if (loading) {
     return (
-      <section className="py-12 border-y border-[#D4B896]/40 bg-[#F5E6C8]/40">
+      <section className="py-12 border-y border-[#D4B896]/40 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-2 gap-8 animate-pulse">
             <div className="space-y-4">
-              <div className="h-6 bg-[#E8DFD0] rounded w-1/3" />
-              {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-[#E8DFD0] rounded-lg" />)}
+              <div className="h-6 bg-gray-200 rounded w-1/3" />
+              {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-gray-200 rounded-lg" />)}
             </div>
             <div className="space-y-4">
-              <div className="h-6 bg-[#E8DFD0] rounded w-1/3" />
-              {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-[#E8DFD0] rounded-lg" />)}
+              <div className="h-6 bg-gray-200 rounded w-1/3" />
+              {[1, 2, 3].map((i) => <div key={i} className="h-16 bg-gray-200 rounded-lg" />)}
             </div>
           </div>
         </div>
@@ -26,7 +26,7 @@ export default function HomeNewsEvents({ news = [], events = [], loading }) {
   if (!news.length && !events.length) return null;
 
   return (
-    <section className="py-12 sm:py-16 border-y border-[#D4B896]/40 bg-[#F5E6C8]/40">
+    <section className="py-12 sm:py-16 border-y border-[#D4B896]/40 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid md:grid-cols-2 gap-10">
           {news.length > 0 && (

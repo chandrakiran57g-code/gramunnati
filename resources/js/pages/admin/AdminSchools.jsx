@@ -12,6 +12,7 @@ import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useVillageOptions, slugifyName } from '@/hooks/useGeoPickers';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
+import { validateContactFields } from '@/lib/formValidation';
 
 const EMPTY_FORM = {
   school_name: '', school_name_te: '', slug: '', village_id: '', school_type: 'government', udise_code: '', principal_name: '', contact_number: '',
@@ -47,6 +48,13 @@ export default function AdminSchools() {
   const handleSave = async (e) => {
     e.preventDefault();
     if (!form.village_id) return toast.error('Select a village');
+    if (!form.school_name?.trim()) return toast.error('School name is required');
+    const contactError = validateContactFields({
+      email: form.email,
+      mobile: form.contact_number,
+      website: form.website,
+    });
+    if (contactError) return toast.error(contactError);
     const payload = {
       school_name: form.school_name,
       school_name_te: form.school_name_te || null,

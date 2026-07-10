@@ -56,11 +56,11 @@ export default function MemberDirectory() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="font-heading text-4xl sm:text-5xl font-bold text-cream-50 mb-4"
+            className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4"
           >
             Member List
           </motion.h1>
-          <p className="text-cream-100/80 text-lg max-w-2xl mx-auto">
+          <p className="text-white/80 text-lg max-w-2xl mx-auto">
             Registered members of the CMSR platform — numbered by join order
           </p>
         </div>

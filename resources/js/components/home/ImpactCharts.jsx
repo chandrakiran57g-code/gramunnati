@@ -8,7 +8,7 @@ export default function ImpactCharts({ stateStats = [], donationBreakdown = [], 
   if (!loading && stateData.length === 0 && donationDist.length === 0) return null;
 
   return (
-    <section className="py-20 sm:py-24 bg-[#FFF8E7]">
+    <section className="py-20 sm:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -31,7 +31,7 @@ export default function ImpactCharts({ stateStats = [], donationBreakdown = [], 
           <div className="lg:col-span-2 home-chart-card p-6">
             <h3 className="font-heading font-bold text-[#3D2914] text-lg mb-4">State-wise development</h3>
             {loading ? (
-              <div className="h-[240px] bg-[#E8DFD0]/50 rounded-lg animate-pulse" />
+              <div className="h-[240px] bg-gray-200/50 rounded-lg animate-pulse" />
             ) : stateData.length === 0 ? (
               <p className="text-sm text-[#5C4033]/60 py-16 text-center">Data will appear once villages and schools are added.</p>
             ) : (
@@ -52,7 +52,7 @@ export default function ImpactCharts({ stateStats = [], donationBreakdown = [], 
           <div className="home-chart-card p-6">
             <h3 className="font-heading font-bold text-[#3D2914] text-lg mb-2">Donation split</h3>
             {loading ? (
-              <div className="h-[170px] bg-[#E8DFD0]/50 rounded-lg animate-pulse" />
+              <div className="h-[170px] bg-gray-200/50 rounded-lg animate-pulse" />
             ) : donationDist.length === 0 ? (
               <p className="text-sm text-[#5C4033]/60 py-16 text-center">Donation data will appear once donations are received.</p>
             ) : (

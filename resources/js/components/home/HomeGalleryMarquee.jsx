@@ -13,7 +13,7 @@ export default function HomeGalleryMarquee({ images = [], loading }) {
       <section className="py-12 overflow-hidden">
         <div className="flex gap-4 px-4 animate-pulse">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="shrink-0 w-48 h-32 bg-[#E8DFD0] rounded-lg" />
+            <div key={i} className="shrink-0 w-48 h-32 bg-gray-200 rounded-lg" />
           ))}
         </div>
       </section>

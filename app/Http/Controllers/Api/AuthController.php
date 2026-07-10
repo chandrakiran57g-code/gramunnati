@@ -11,6 +11,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -24,9 +25,16 @@ class AuthController extends Controller
             'mobile' => 'required|string|min:10|max:20',
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
+            'profession' => 'nullable|string|max:255',
+            'state_id' => 'required|integer|exists:states,id',
+            'district_id' => 'required|integer|exists:districts,id',
+            'mandal_name' => 'nullable|string|max:255',
         ]);
 
         $mobile = preg_replace('/\D/', '', $data['mobile']);
+        if (! preg_match('/^[6-9]\d{9}$/', $mobile)) {
+            throw ValidationException::withMessages(['mobile' => 'Enter a valid 10-digit Indian mobile number']);
+        }
         $email = $data['email'] ?? "{$mobile}@cmsr.local";
         $fullName = $data['full_name'] ?? trim(($data['first_name'] ?? '').' '.($data['last_name'] ?? ''));
 
@@ -45,6 +53,10 @@ class AuthController extends Controller
             'full_name' => $fullName,
             'mobile' => $mobile,
             'email' => $data['email'] ?? null,
+            'profession' => $data['profession'] ?? null,
+            'state_id' => $data['state_id'],
+            'district_id' => $data['district_id'],
+            'mandal_name' => $data['mandal_name'] ?? null,
         ]);
 
         $memberRole = Role::query()->where('name', 'Member')->first();

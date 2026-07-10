@@ -1,7 +1,7 @@
 import { apiFetch } from './apiClient';
 
 export const authService = {
-  async signUp({ email, password, fullName, mobile, firstName, lastName }) {
+  async signUp({ email, password, fullName, mobile, firstName, lastName, profession, stateId, districtId, mandalName }) {
     const cleanMobile = String(mobile || '').replace(/\D/g, '');
     if (!cleanMobile || cleanMobile.length < 10) throw new Error('Valid mobile number is required');
     const payload = await apiFetch('/auth/register', {
@@ -13,6 +13,10 @@ export const authService = {
         mobile: cleanMobile,
         first_name: firstName,
         last_name: lastName,
+        profession: profession?.trim() || undefined,
+        state_id: stateId,
+        district_id: districtId,
+        mandal_name: mandalName?.trim() || undefined,
       },
     });
     return payload;

@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class AdminTableController extends Controller
 {
@@ -52,6 +54,38 @@ class AdminTableController extends Controller
         'states' => \App\Models\State::class,
         'districts' => \App\Models\District::class,
         'mandals' => \App\Models\Mandal::class,
+    ];
+
+    /** CMS pages that cannot be edited or deleted from admin. */
+    private const LOCKED_CMS_SLUGS = ['about-cmsr'];
+
+    /** Per-table Laravel validation rules for admin CRUD. */
+    private const TABLE_RULES = [
+        'partners' => [
+            'email' => 'nullable|email|max:255',
+            'mobile' => 'nullable|string|max:20',
+            'website' => 'nullable|string|max:500',
+        ],
+        'team_members' => [
+            'email' => 'nullable|email|max:255',
+            'mobile' => 'nullable|string|max:20',
+        ],
+        'volunteers' => [
+            'email' => 'nullable|email|max:255',
+            'mobile' => 'nullable|string|max:20',
+        ],
+        'schools' => [
+            'email' => 'nullable|email|max:255',
+            'website' => 'nullable|string|max:500',
+            'contact_number' => 'nullable|string|max:20',
+        ],
+        'events' => [
+            'registration_link' => 'nullable|string|max:500',
+        ],
+        'profiles' => [
+            'email' => 'nullable|email|max:255',
+            'mobile' => 'nullable|string|max:20',
+        ],
     ];
 
     private const WITH = [
@@ -159,6 +193,13 @@ class AdminTableController extends Controller
 
             $model = $this->resolveModel($table);
             $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
+            $payload = $this->validateTablePayload($table, $payload);
+
+            if ($table === 'cms_pages' && in_array($payload['slug'] ?? '', self::LOCKED_CMS_SLUGS, true)) {
+                throw ValidationException::withMessages([
+                    'slug' => 'This slug is reserved for the system About CMSR page.',
+                ]);
+            }
 
             // Slugs must be unique even against soft-deleted rows — append -2, -3, …
             // instead of crashing with a duplicate-key error.
@@ -188,6 +229,8 @@ class AdminTableController extends Controller
             $this->transformRows($table, collect([$row]));
 
             return response()->json(['data' => $row, 'error' => null], 201);
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
         }
@@ -198,7 +241,15 @@ class AdminTableController extends Controller
         try {
             $model = $this->resolveModel($table);
             $row = $model::query()->findOrFail($id);
+
+            if ($table === 'cms_pages' && in_array($row->slug, self::LOCKED_CMS_SLUGS, true)) {
+                throw ValidationException::withMessages([
+                    'slug' => 'This page is managed by the system and cannot be edited.',
+                ]);
+            }
+
             $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
+            $payload = $this->validateTablePayload($table, $payload);
             $row->fill($payload)->save();
 
             $row = $row->fresh();
@@ -209,6 +260,8 @@ class AdminTableController extends Controller
             $this->transformRows($table, collect([$row]));
 
             return response()->json(['data' => $row, 'error' => null]);
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
         }
@@ -232,6 +285,52 @@ class AdminTableController extends Controller
         // rejects for timestamp columns — normalize them to Y-m-d H:i:s.
         foreach ($payload as $key => $value) {
             $payload[$key] = $this->normalizeDateValue($value);
+        }
+
+        return $payload;
+    }
+
+    /**
+     * @param  array<string, mixed>  $payload
+     * @return array<string, mixed>
+     */
+    private function validateTablePayload(string $table, array $payload): array
+    {
+        $rules = self::TABLE_RULES[$table] ?? [];
+        if (empty($rules)) {
+            return $payload;
+        }
+
+        $applicable = array_intersect_key($rules, $payload);
+        if (empty($applicable)) {
+            return $payload;
+        }
+
+        $validator = Validator::make($payload, $applicable);
+
+        $validator->after(function ($v) use ($payload) {
+            foreach (['mobile', 'contact_number'] as $field) {
+                if (empty($payload[$field])) {
+                    continue;
+                }
+                $digits = preg_replace('/\D/', '', (string) $payload[$field]);
+                if ($digits && ! preg_match('/^[6-9]\d{9}$/', $digits)) {
+                    $v->errors()->add($field, 'Enter a valid 10-digit Indian mobile number.');
+                }
+            }
+            foreach (['website', 'registration_link'] as $field) {
+                if (empty($payload[$field])) {
+                    continue;
+                }
+                $url = (string) $payload[$field];
+                if (! filter_var($url, FILTER_VALIDATE_URL) && ! filter_var("https://{$url}", FILTER_VALIDATE_URL)) {
+                    $v->errors()->add($field, 'Enter a valid URL.');
+                }
+            }
+        });
+
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
         }
 
         return $payload;
@@ -268,36 +367,48 @@ class AdminTableController extends Controller
 
     public function destroy(string $table, int $id): JsonResponse
     {
-        $model = $this->resolveModel($table);
-        $row = $model::query()->findOrFail($id);
+        try {
+            $model = $this->resolveModel($table);
+            $row = $model::query()->findOrFail($id);
 
-        $user = $table === 'profiles' ? $row->user : null;
-
-        // Deleting a profile cascade-deletes its user account. Never allow that
-        // for admin accounts — it would lock everyone out of /admin.
-        if ($user && $user->roles()->whereIn('name', ['Super Admin', 'SuperAdmin'])->exists()) {
-            return response()->json([
-                'message' => 'Admin accounts cannot be deleted from the member list.',
-                'data' => null,
-                'error' => ['message' => 'Admin accounts cannot be deleted from the member list.'],
-            ], 422);
-        }
-
-        if ($table === 'donations' && method_exists($row, 'receipts')) {
-            $row->receipts()->delete();
-        }
-
-        $row->delete();
-
-        if ($user) {
-            try {
-                $user->delete();
-            } catch (\Throwable) {
-                // User row may be referenced elsewhere (donations, etc.) — profile removal is enough
+            if ($table === 'cms_pages' && in_array($row->slug, self::LOCKED_CMS_SLUGS, true)) {
+                throw ValidationException::withMessages([
+                    'slug' => 'This page is managed by the system and cannot be deleted.',
+                ]);
             }
-        }
 
-        return response()->json(['data' => null, 'error' => null]);
+            $user = $table === 'profiles' ? $row->user : null;
+
+            // Deleting a profile cascade-deletes its user account. Never allow that
+            // for admin accounts — it would lock everyone out of /admin.
+            if ($user && $user->roles()->whereIn('name', ['Super Admin', 'SuperAdmin'])->exists()) {
+                return response()->json([
+                    'message' => 'Admin accounts cannot be deleted from the member list.',
+                    'data' => null,
+                    'error' => ['message' => 'Admin accounts cannot be deleted from the member list.'],
+                ], 422);
+            }
+
+            if ($table === 'donations' && method_exists($row, 'receipts')) {
+                $row->receipts()->delete();
+            }
+
+            $row->delete();
+
+            if ($user) {
+                try {
+                    $user->delete();
+                } catch (\Throwable) {
+                    // User row may be referenced elsewhere (donations, etc.) — profile removal is enough
+                }
+            }
+
+            return response()->json(['data' => null, 'error' => null]);
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage()]], 500);
+        }
     }
 
     public function upsertSetting(Request $request): JsonResponse

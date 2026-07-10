@@ -11,6 +11,7 @@ import toast from 'react-hot-toast';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
+import { isValidUrl } from '@/lib/formValidation';
 
 const EMPTY = { title:'',title_te:'',slug:'',description:'',description_te:'',location:'',location_te:'',start_date:'',end_date:'',featured_image:'',is_published:false,registration_link:'' };
 
@@ -24,7 +25,16 @@ export default function AdminEvents() {
   useEffect(() => { load(); }, []);
   const load = () => { setLoading(true); base44.entities.EventItem.list('-created_date',100).then(setItems).catch(()=>[]).finally(()=>setLoading(false)); };
   const del = async(id) => { if(!confirm('Delete?'))return; try{await base44.entities.EventItem.delete(id);toast.success('Deleted');load();}catch{toast.error('Error');} };
-  const save = async(e) => { e.preventDefault(); const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-')}; try{ if(editing){await base44.entities.EventItem.update(editing.id,d);toast.success('Updated');}else{await base44.entities.EventItem.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');} };
+  const save = async(e) => {
+    e.preventDefault();
+    if (!form.title?.trim()) return toast.error('Title is required');
+    if (!form.start_date) return toast.error('Start date is required');
+    if (form.registration_link?.trim() && !isValidUrl(form.registration_link)) {
+      return toast.error('Enter a valid registration link URL');
+    }
+    const d={...form,slug:form.slug||form.title.toLowerCase().replace(/\s+/g,'-')};
+    try{ if(editing){await base44.entities.EventItem.update(editing.id,d);toast.success('Updated');}else{await base44.entities.EventItem.create(d);toast.success('Created');} setShowForm(false);setEditing(null);setForm(EMPTY);load(); }catch{toast.error('Error');}
+  };
 
   const upcoming = items.filter(i => new Date(i.start_date) >= new Date());
   const past = items.filter(i => new Date(i.start_date) < new Date());

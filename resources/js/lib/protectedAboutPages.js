@@ -3,6 +3,20 @@
  * Each renders admin-editable content on top plus a live directory list
  * (villages / schools / volunteers) — see lib/serviceDirectory.js.
  */
+
+/** Fixed public page — not editable or deletable from admin. */
+export const SYSTEM_ABOUT_CMSR = {
+  slug: 'about-cmsr',
+  title: 'About CMSR',
+  path: '/about',
+};
+
+export const LOCKED_CMS_SLUGS = [SYSTEM_ABOUT_CMSR.slug];
+
+export function isLockedCmsSlug(slug) {
+  return LOCKED_CMS_SLUGS.includes(slug);
+}
+
 export const PROTECTED_ABOUT_PAGES = [
   {
     slug: 'about-villages',

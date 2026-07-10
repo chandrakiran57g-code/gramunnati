@@ -51,7 +51,7 @@ export function ActiveWorkCard({ item, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.08 }}
-      className="home-feature-card group bg-[#FFF8E7] rounded-2xl border border-[#D4B896] overflow-hidden flex flex-col h-full min-h-[380px]"
+      className="home-feature-card group bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden flex flex-col h-full min-h-[380px]"
     >
       <div className="relative h-44 shrink-0 overflow-hidden">
         <SafeImage src={cover} alt={item.name} fallbackIndex={index} width={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -115,7 +115,7 @@ function SkeletonGrid() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="home-feature-card min-h-[380px] bg-[#E8DFD0] animate-pulse rounded-2xl" />
+        <div key={i} className="home-feature-card min-h-[380px] bg-gray-200 animate-pulse rounded-2xl" />
       ))}
     </div>
   );
@@ -143,7 +143,7 @@ export default function HomeActiveWorks() {
   const isLoading = loading && sections.length === 0;
 
   return (
-    <section className="py-20 sm:py-24 bg-cream-50">
+    <section className="py-20 sm:py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="mb-10">
           <h2

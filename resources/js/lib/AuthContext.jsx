@@ -66,8 +66,8 @@ export const AuthProvider = ({ children }) => {
     return result;
   };
 
-  const register = async ({ email, password, fullName, mobile, firstName, lastName }) => {
-    return authService.signUp({ email, password, fullName, mobile, firstName, lastName });
+  const register = async ({ email, password, fullName, mobile, firstName, lastName, profession, stateId, districtId, mandalName }) => {
+    return authService.signUp({ email, password, fullName, mobile, firstName, lastName, profession, stateId, districtId, mandalName });
   };
 
   const loginWithGoogle = async () => authService.signInWithGoogle();

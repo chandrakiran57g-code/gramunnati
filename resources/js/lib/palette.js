@@ -4,11 +4,11 @@
  */
 
 export const cream = {
-  50: '#FFFFFF',
+  50: '#F9FAFB',
   100: '#FFFFFF',
-  200: '#FAFAFA',
-  300: '#F5F5F5',
-  400: '#F0F0F0',
+  200: '#F9FAFB',
+  300: '#F3F4F6',
+  400: '#E5E7EB',
 };
 
 export const brown = {

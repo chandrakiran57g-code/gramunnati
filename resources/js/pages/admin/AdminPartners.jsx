@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
+import { validateContactFields } from '@/lib/formValidation';
 
 const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
 const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', is_active: true };
@@ -43,6 +44,8 @@ export default function AdminPartners() {
 
   const handleSave = async () => {
     if (!form.name || !form.slug) return toast.error('Name and slug required');
+    const contactError = validateContactFields({ email: form.email, mobile: form.mobile, website: form.website });
+    if (contactError) return toast.error(contactError);
     setSaving(true);
     const slug = form.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
     const data = { ...form, slug };

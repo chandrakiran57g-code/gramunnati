@@ -18,10 +18,10 @@ function SkeletonGrid() {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {[...Array(3)].map((_, i) => (
         <div key={i} className="home-skeleton-card">
-          <div className="h-44 bg-[#E8DFD0] animate-pulse" />
+          <div className="h-44 bg-gray-200 animate-pulse" />
           <div className="p-5 space-y-3">
-            <div className="h-4 bg-[#E8DFD0] rounded w-3/4 animate-pulse" />
-            <div className="h-3 bg-[#E8DFD0] rounded w-1/2 animate-pulse" />
+            <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse" />
+            <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse" />
           </div>
         </div>
       ))}
@@ -53,7 +53,7 @@ export default function HomeFeaturedTabs({ villages = [], schools = [], projects
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2 p-1 bg-[#EDD9B8]/60 rounded-lg border border-[#D4B896]/50">
+          <div className="flex flex-wrap gap-2 p-1 bg-gray-100 rounded-lg border border-[#D4B896]/50">
             {TAB_KEYS.map((item) => (
               <button
                 key={item.id}
@@ -66,7 +66,7 @@ export default function HomeFeaturedTabs({ villages = [], schools = [], projects
                 {tab === item.id && (
                   <motion.div
                     layoutId="home-featured-tab"
-                    className="absolute inset-0 bg-[#FFF8E7] rounded-md shadow-sm border border-[#D4B896]/40"
+                    className="absolute inset-0 bg-white rounded-md shadow-sm border border-[#D4B896]/40"
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                   />
                 )}

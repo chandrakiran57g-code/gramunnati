@@ -132,15 +132,24 @@ export async function addGalleryMedia({
       if (!embedId) throw new Error('Invalid YouTube URL — use a link like https://youtube.com/watch?v=...');
     }
 
+    if (mediaType === 'video') {
+      if (!embedId) {
+        throw new Error('Paste a valid YouTube link — video file uploads are disabled to save server storage');
+      }
+    }
+
     if (file) {
+      if (mediaType === 'video') {
+        throw new Error('Video file uploads are disabled. Use a YouTube link instead.');
+      }
       url = await uploadGalleryFile(file, category);
     }
 
     if (mediaType === 'image' && !url) {
       throw new Error('Choose an image file or paste an image URL');
     }
-    if (mediaType === 'video' && !url && !embedId) {
-      throw new Error('Choose a video file, paste a video URL, or paste a YouTube link');
+    if (mediaType === 'video' && !embedId) {
+      throw new Error('Paste a valid YouTube link');
     }
 
     const collections = await getGalleryCollections();

@@ -98,17 +98,17 @@ export default function NeedSupportDetail() {
         <img src={cover} alt={title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-brown-900/90 via-brown-900/40 to-brown-900/20" />
         <div className="absolute bottom-8 left-0 right-0 max-w-5xl mx-auto px-4 sm:px-6">
-          <Link to="/need-support" className="inline-flex items-center gap-1 text-cream-100/80 hover:text-cream-50 text-sm mb-4">
+          <Link to="/need-support" className="inline-flex items-center gap-1 text-white/80 hover:text-white text-sm mb-4">
             <ArrowLeft className="w-4 h-4" /> Back to Need Support
           </Link>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold text-white bg-[#8B6914] mb-3">
               Needs Support
             </span>
-            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-cream-50 mb-3">{title}</h1>
-            {description && <p className="text-cream-100/90 text-base max-w-2xl">{description}</p>}
+            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{title}</h1>
+            {description && <p className="text-white/90 text-base max-w-2xl">{description}</p>}
             {card.village_name && (
-              <p className="text-cream-100/70 text-sm mt-2 flex items-center gap-1">
+              <p className="text-white/70 text-sm mt-2 flex items-center gap-1">
                 <MapPin className="w-4 h-4" /> {card.village_name}
               </p>
             )}
@@ -153,7 +153,7 @@ export default function NeedSupportDetail() {
         </div>
 
         <Tabs defaultValue="overview">
-          <TabsList className="bg-cream-100 w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6 border border-brown-300">
+          <TabsList className="bg-white w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6 border border-brown-300">
             {['overview', 'objectives', 'activities', 'impact', 'gallery'].map((tab) => (
               <TabsTrigger key={tab} value={tab} className="capitalize rounded-lg text-sm py-2 px-4 whitespace-nowrap data-[state=active]:bg-white">
                 {tab}
@@ -176,7 +176,7 @@ export default function NeedSupportDetail() {
                 ) : (
                   <div className="grid sm:grid-cols-2 gap-3">
                     {objectives.map((obj) => (
-                      <div key={obj} className="flex items-start gap-3 bg-cream-100 rounded-xl p-4">
+                      <div key={obj} className="flex items-start gap-3 bg-gray-50 rounded-xl p-4">
                         <Target className="w-5 h-5 text-[#8B6914] flex-shrink-0 mt-0.5" />
                         <span className="text-sm">{stripHtml(obj)}</span>
                       </div>
@@ -198,7 +198,7 @@ export default function NeedSupportDetail() {
                 ) : (
                   <div className="grid sm:grid-cols-2 gap-3">
                     {activities.map((act) => (
-                      <div key={act} className="bg-cream-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-cream-300">
+                      <div key={act} className="bg-gray-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-gray-200">
                         <FolderOpen className="w-4 h-4 text-[#8B6914] flex-shrink-0" />
                         {stripHtml(act)}
                       </div>

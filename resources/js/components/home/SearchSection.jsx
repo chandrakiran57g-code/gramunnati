@@ -31,7 +31,7 @@ export default function SearchSection() {
   };
 
   return (
-    <section className="relative px-4 sm:px-6 pt-8 sm:pt-10 pb-8 bg-cream-50">
+    <section className="relative px-4 sm:px-6 pt-8 sm:pt-10 pb-8 bg-gray-50">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}

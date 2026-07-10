@@ -61,7 +61,7 @@ export default function ActiveWorksCategory() {
   const showSkeleton = loading && items.length === 0;
 
   return (
-    <div className="min-h-screen bg-cream-50">
+    <div className="min-h-screen bg-gray-50">
       <HeroScrollSection size="page">
         <div className="brand-gradient py-16 px-4">
           <div className="max-w-7xl mx-auto text-white">
@@ -85,7 +85,7 @@ export default function ActiveWorksCategory() {
         {showSkeleton ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="min-h-[380px] rounded-2xl bg-[#E8DFD0] animate-pulse" />
+              <div key={i} className="min-h-[380px] rounded-2xl bg-gray-200 animate-pulse" />
             ))}
           </div>
         ) : items.length === 0 ? (

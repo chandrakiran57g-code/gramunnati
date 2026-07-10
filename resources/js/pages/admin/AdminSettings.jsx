@@ -10,6 +10,7 @@ import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { BilingualSettingsField } from '@/components/admin/BilingualField';
 import { DEFAULT_FOOTER_LINKS } from '@/components/layout/Footer';
+import { validateContactFields } from '@/lib/formValidation';
 
 const GENERAL_KEYS = ['site_name', 'site_name_te', 'contact_email', 'contact_phone', 'address', 'address_te', 'logo_url', 'favicon_url'];
 const PAYMENT_KEYS = ['rzp_key', 'rzp_secret', 'upi_id', 'bank_name', 'bank_account', 'ifsc'];
@@ -121,6 +122,17 @@ export default function AdminSettings() {
     setSaving(true);
     setError(null);
     try {
+      if (keys.includes('contact_email') || keys.includes('contact_phone')) {
+        const contactError = validateContactFields({
+          email: values.contact_email,
+          mobile: values.contact_phone,
+        });
+        if (contactError) {
+          setError(contactError);
+          setSaving(false);
+          return;
+        }
+      }
       const payload = keys.reduce((acc, key) => {
         if (values[key] !== undefined) acc[key] = values[key];
         return acc;

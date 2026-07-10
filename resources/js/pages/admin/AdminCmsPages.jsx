@@ -11,6 +11,8 @@ import { FileText, Plus, Pencil, Trash2, Loader2, ExternalLink, MapPin, School, 
 import { toast } from 'sonner';
 import { CMS_STATUS, isCmsPagePublic } from '@/lib/cmsStatus';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+import { isLockedCmsSlug, SYSTEM_ABOUT_CMSR } from '@/lib/protectedAboutPages';
+import { isValidSlug } from '@/lib/formValidation';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminDbSetupBanner from '@/components/admin/AdminDbSetupBanner';
 import { cmsService } from '@/api/cms';
@@ -59,7 +61,7 @@ export default function AdminCmsPages() {
     try {
       const allPages = await cmsService.ensureProtectedAboutPages();
       const groups = await cmsService.getCmsNavGroups();
-      const aboutPages = allPages.filter((p) => (groups[p.id] || 'about_us') === 'about_us');
+      const aboutPages = allPages.filter((p) => (groups[p.id] || 'about_us') === 'about_us' && !isLockedCmsSlug(p.slug));
       setPages(aboutPages);
     } catch (err) {
       toast.error(err.message || 'Failed to load pages');
@@ -71,6 +73,10 @@ export default function AdminCmsPages() {
   useEffect(() => { loadPages(); }, []);
 
   const handleEdit = (page) => {
+    if (isLockedCmsSlug(page.slug)) {
+      toast.error('This page is managed by the system and cannot be edited.');
+      return;
+    }
     setEditing(page);
     setForm({
       title: page.title,
@@ -99,6 +105,10 @@ export default function AdminCmsPages() {
   };
 
   const handleDelete = async (page) => {
+    if (isLockedCmsSlug(page.slug)) {
+      toast.error('This page is managed by the system and cannot be deleted.');
+      return;
+    }
     if (!window.confirm('Delete this page? It will be removed from the About Us dropdown.')) return;
     try {
       await cmsService.deletePage(page.id);
@@ -114,6 +124,14 @@ export default function AdminCmsPages() {
   const handleSave = async () => {
     if (!form.title?.trim()) {
       toast.error('Title is required');
+      return;
+    }
+    if (form.slug?.trim() && !isValidSlug(form.slug.trim())) {
+      toast.error('Slug must use lowercase letters, numbers, and hyphens only');
+      return;
+    }
+    if (isLockedCmsSlug(form.slug)) {
+      toast.error('This slug is reserved for the system About CMSR page.');
       return;
     }
     setSaving(true);
@@ -157,6 +175,13 @@ export default function AdminCmsPages() {
         </Button>
       }
     >
+      <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <strong>{SYSTEM_ABOUT_CMSR.title}</strong> is always available at{' '}
+        <a href={SYSTEM_ABOUT_CMSR.path} target="_blank" rel="noreferrer" className="underline font-medium">
+          {SYSTEM_ABOUT_CMSR.path}
+        </a>{' '}
+        in the About Us dropdown. It includes the CMSR mission and eight pillars of development, and cannot be edited or deleted here.
+      </div>
       <div className="mb-8 rounded-xl border border-border bg-white p-6">
         <h2 className="mb-4 font-semibold">{editing ? 'Edit Page' : 'Create Page'}</h2>
         <div className="space-y-4">

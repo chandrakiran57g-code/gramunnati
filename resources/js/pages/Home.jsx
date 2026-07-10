@@ -11,7 +11,7 @@ export default function Home() {
   const { data, isLoading } = useHomeData();
 
   return (
-    <div className="overflow-x-hidden bg-cream-50">
+    <div className="overflow-x-hidden bg-gray-50">
       <HeroSection />
 
       <ImpactCounter stats={data?.stats} loading={isLoading} />

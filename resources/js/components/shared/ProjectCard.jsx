@@ -18,8 +18,8 @@ const categoryColors = {
   Healthcare: 'bg-service-healthcare-tint text-service-healthcare border-service-healthcare/30',
   'Skill Development': 'bg-service-skill-tint text-service-skill border-service-skill/30',
   'Women SHG': 'bg-service-women-tint text-service-women border-service-women/30',
-  Infrastructure: 'bg-cream-300 text-brown-700 border-brown-300',
-  'Employment Generation': 'bg-cream-200 text-brown-600 border-brown-300',
+  Infrastructure: 'bg-gray-100 text-brown-700 border-brown-300',
+  'Employment Generation': 'bg-gray-50 text-brown-600 border-brown-300',
 };
 
 const categoryProgress = {
@@ -36,7 +36,7 @@ const categoryProgress = {
 const statusColors = {
   upcoming: 'bg-service-school-tint text-service-school',
   active: 'bg-service-tree-tint text-service-tree',
-  completed: 'bg-cream-200 text-brown-500',
+  completed: 'bg-gray-50 text-brown-500',
   cancelled: 'bg-service-healthcare-tint text-service-healthcare',
 };
 
@@ -79,7 +79,7 @@ export default function ProjectCard({ project, index = 0 }) {
             </div>
           )}
           {categoryName && (
-            <Badge className={`absolute top-3 right-3 text-xs border ${categoryColors[categoryName] || 'bg-cream-100 text-brown-600'}`}>
+            <Badge className={`absolute top-3 right-3 text-xs border ${categoryColors[categoryName] || 'bg-white text-brown-600'}`}>
               {categoryName}
             </Badge>
           )}
@@ -107,7 +107,7 @@ export default function ProjectCard({ project, index = 0 }) {
             <span className="text-muted-foreground">Progress</span>
             <span className="font-semibold text-primary">{raisedPct}%</span>
           </div>
-          <Progress value={raisedPct} className={`h-2 bg-cream-200 ${progressClass}`} />
+          <Progress value={raisedPct} className={`h-2 bg-gray-100 ${progressClass}`} />
           <div className="flex justify-between text-xs mt-1.5">
             <span className="text-primary font-medium">
               ₹{(project.raised_amount || 0).toLocaleString('en-IN')} raised

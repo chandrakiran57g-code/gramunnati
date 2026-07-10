@@ -54,7 +54,7 @@ export default function StructuredContentEditor({
   };
 
   return (
-    <div className="space-y-6 rounded-xl border border-border bg-cream-50/40 p-4 sm:p-5">
+    <div className="space-y-6 rounded-xl border border-border bg-gray-50/40 p-4 sm:p-5">
       <div>
         <h3 className="font-semibold text-foreground">Page content structure</h3>
         <p className="mt-1 text-xs text-muted-foreground">

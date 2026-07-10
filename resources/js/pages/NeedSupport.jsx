@@ -39,7 +39,7 @@ function NeedSupportCard({ project, index = 0 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       whileHover={{ y: -4 }}
-      className="home-feature-card flex flex-col h-full min-h-[320px] bg-[#FFF8E7] rounded-2xl border border-[#D4B896] overflow-hidden"
+      className="home-feature-card flex flex-col h-full min-h-[320px] bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden"
     >
       <Link to={detailHref || donateHref} className="relative h-40 overflow-hidden block">
         <SafeImage src={image} alt={name} fallbackIndex={index} width={480} className="w-full h-full object-cover" />
@@ -69,7 +69,7 @@ function NeedSupportCard({ project, index = 0 }) {
           {detailHref && (
             <Link
               to={detailHref}
-              className="flex items-center justify-center w-full py-2 rounded-lg border border-[#8B6914] text-[#8B6914] text-sm font-semibold hover:bg-[#FFF8E7] transition-colors"
+              className="flex items-center justify-center w-full py-2 rounded-lg border border-[#8B6914] text-[#8B6914] text-sm font-semibold hover:bg-white transition-colors"
             >
               View details
             </Link>
@@ -109,7 +109,7 @@ export default function NeedSupport() {
   const showSkeleton = loading && projects.length === 0;
 
   return (
-    <div className="min-h-screen bg-cream-50">
+    <div className="min-h-screen bg-gray-50">
       <HeroScrollSection size="page">
         <div className="brand-gradient py-16 px-4">
           <div className="max-w-7xl mx-auto text-white">
@@ -128,7 +128,7 @@ export default function NeedSupport() {
         {showSkeleton ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="min-h-[320px] rounded-2xl bg-[#E8DFD0] animate-pulse" />
+              <div key={i} className="min-h-[320px] rounded-2xl bg-gray-200 animate-pulse" />
             ))}
           </div>
         ) : projects.length === 0 ? (

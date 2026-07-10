@@ -36,7 +36,7 @@ function ProjectCard({ project }) {
           {village && <p className="text-amber-100/60 text-[10px] mt-0.5 truncate">{village}</p>}
         </div>
       </Link>
-      <div className="p-3 bg-[#FFF8E7] border border-t-0 border-[#D4B896] rounded-b-xl flex flex-col flex-1">
+      <div className="p-3 bg-gray-50 border border-t-0 border-[#D4B896] rounded-b-xl flex flex-col flex-1">
         <div className="flex justify-between text-[10px] lg:text-xs text-[#5C4033]/70 mb-1.5 font-body gap-1">
           <span className="truncate">{t('home.raised')} {homeService.formatINR(project.raised || 0)}</span>
           {project.target > 0 && <span className="truncate shrink-0">{t('home.goal')} {homeService.formatINR(project.target)}</span>}

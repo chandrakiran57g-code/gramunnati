@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import {
   VOLUNTEER_SKILLS, VOLUNTEER_STATES, VOLUNTEER_AVAILABILITY, VOLUNTEER_STATUSES,
 } from '@/lib/adminSections';
+import { validateContactFields } from '@/lib/formValidation';
 import { Loader2, Plus, Pencil, Search, Trash2, UserPlus } from 'lucide-react';
 
 async function generateVolunteerCode() {
@@ -88,6 +89,12 @@ export default function AdminVolunteers() {
     if (!form.full_name?.trim() || !form.mobile?.trim() || !form.state) {
       return toast.error('Full name, mobile, and state are required');
     }
+    const contactError = validateContactFields({
+      email: form.email,
+      mobile: form.mobile,
+      requireMobile: true,
+    });
+    if (contactError) return toast.error(contactError);
     setSaving(true);
     try {
       const payload = {

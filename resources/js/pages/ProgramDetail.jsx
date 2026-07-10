@@ -70,7 +70,7 @@ function mergeProgram(cmsRow, detailPage, staticFallback, lang = 'en') {
     stats,
     stories,
     color: staticFallback?.color || 'bg-service-agriculture',
-    lightColor: staticFallback?.lightColor || 'bg-cream-100',
+    lightColor: staticFallback?.lightColor || 'bg-white',
     textColor: staticFallback?.textColor || 'text-service-agriculture',
   };
 }
@@ -128,17 +128,17 @@ export default function ProgramDetail() {
         <img src={program.cover} alt={program.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-brown-900/90 via-brown-900/40 to-brown-900/20" />
         <div className="absolute bottom-8 left-0 right-0 max-w-5xl mx-auto px-4 sm:px-6">
-          <Link to="/programs" className="inline-flex items-center gap-1 text-cream-100/80 hover:text-cream-50 text-sm mb-4">
+          <Link to="/programs" className="inline-flex items-center gap-1 text-white/80 hover:text-white text-sm mb-4">
             <ArrowLeft className="w-4 h-4" /> Back to Programs
           </Link>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold text-white ${program.color} mb-3`}>
               {program.icon} Program
             </span>
-            <h1 className={`font-heading text-3xl sm:text-4xl font-bold text-cream-50 mb-3 ${program.textColor}`}>
+            <h1 className={`font-heading text-3xl sm:text-4xl font-bold text-white mb-3 ${program.textColor}`}>
               {program.title}
             </h1>
-            <p className="text-cream-100/90 text-base max-w-2xl">{stripHtml(program.description)}</p>
+            <p className="text-white/90 text-base max-w-2xl">{stripHtml(program.description)}</p>
           </motion.div>
         </div>
       </div>
@@ -178,7 +178,7 @@ export default function ProgramDetail() {
         </div>
 
         <Tabs defaultValue="overview">
-          <TabsList className="bg-cream-100 w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6 border border-brown-300">
+          <TabsList className="bg-white w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6 border border-brown-300">
             {['overview', 'objectives', 'activities', 'impact', 'gallery'].map((tab) => (
               <TabsTrigger key={tab} value={tab} className="capitalize rounded-lg text-sm py-2 px-4 whitespace-nowrap data-[state=active]:bg-white">
                 {tab}
@@ -228,7 +228,7 @@ export default function ProgramDetail() {
                 ) : (
                   <div className="grid sm:grid-cols-2 gap-3">
                     {program.activities.map((act) => (
-                      <div key={act} className="bg-cream-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-cream-300">
+                      <div key={act} className="bg-gray-50 rounded-xl p-4 text-sm font-medium flex items-center gap-2 border border-gray-200">
                         <FolderOpen className={`w-4 h-4 ${program.textColor} flex-shrink-0`} />
                         {stripHtml(act)}
                       </div>

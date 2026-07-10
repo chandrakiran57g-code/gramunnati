@@ -14,6 +14,7 @@ import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+import { validateContactFields } from '@/lib/formValidation';
 
 const emptyGroup = () => ({ name: '', name_te: '', slug: '', description: '', description_te: '', display_order: 0, status: 'active', banner_image: '' });
 const emptyMember = () => ({ full_name: '', email: '', mobile: '', designation: '', designation_te: '', description: '', description_te: '', photo: '', team_group_id: '', display_order: 0, is_active: true });
@@ -82,6 +83,8 @@ export default function AdminTeams() {
 
   const handleSaveMember = async () => {
     if (!form.full_name || !form.team_group_id) return toast.error('Name and team group required');
+    const contactError = validateContactFields({ email: form.email, mobile: form.mobile });
+    if (contactError) return toast.error(contactError);
     setSaving(true);
     try {
       const payload = {

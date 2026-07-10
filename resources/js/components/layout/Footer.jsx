@@ -51,9 +51,9 @@ function FooterLinkList({ links }) {
       {links.filter((l) => l.label && l.path).map((item) => (
         <li key={`${item.label}-${item.path}`}>
           {isExternalUrl(item.path) ? (
-            <a href={normalizeExternalUrl(item.path)} target="_blank" rel="noopener noreferrer" className="hover:text-cream-100 transition-colors">{item.label}</a>
+            <a href={normalizeExternalUrl(item.path)} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">{item.label}</a>
           ) : (
-            <Link to={item.path} className="hover:text-cream-100 transition-colors">{item.label}</Link>
+            <Link to={item.path} className="hover:text-white transition-colors">{item.label}</Link>
           )}
         </li>
       ))}
@@ -79,7 +79,7 @@ export default function Footer() {
   ].filter((s) => s.url);
 
   return (
-    <footer className="bg-brown-900 text-cream-200">
+    <footer className="bg-brown-900 text-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           {/* Brand */}
@@ -125,15 +125,15 @@ export default function Footer() {
             <h4 className="font-semibold text-white mb-4 text-sm uppercase tracking-wider">Contact Us</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2.5">
-                <MapPin className="w-4 h-4 text-cream-200 mt-0.5 flex-shrink-0" />
+                <MapPin className="w-4 h-4 text-gray-200 mt-0.5 flex-shrink-0" />
                 <span className="text-brown-400">{address}</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-cream-200 flex-shrink-0" />
+                <Mail className="w-4 h-4 text-gray-200 flex-shrink-0" />
                 <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors">{contactEmail}</a>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="w-4 h-4 text-cream-200 flex-shrink-0" />
+                <Phone className="w-4 h-4 text-gray-200 flex-shrink-0" />
                 <a href={`tel:${String(contactPhone || '').replace(/\s+/g, '')}`} className="hover:text-white transition-colors">{contactPhone}</a>
               </li>
             </ul>

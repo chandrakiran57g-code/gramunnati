@@ -66,7 +66,7 @@ function VillageSchool({ position }) {
     <group position={position}>
       <mesh position={[0, 0.55, 0]} castShadow receiveShadow>
         <boxGeometry args={[1.15, 0.95, 0.8]} />
-        <meshStandardMaterial color="#E8DFD0" roughness={0.92} />
+        <meshStandardMaterial color="#e5e7eb" roughness={0.92} />
       </mesh>
       <mesh position={[0, 1.12, 0]} castShadow>
         <boxGeometry args={[1.28, 0.14, 0.92]} />

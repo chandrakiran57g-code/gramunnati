@@ -35,7 +35,7 @@ function CountUp({ end, duration = 2000 }) {
 export default function ImpactCounter({ stats, loading }) {
   const { t } = useLanguage();
   return (
-    <section className="py-20 bg-[#FFF8E7] border-y border-[#D4B896]/30">
+    <section className="py-20 bg-gray-50 border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -44,12 +44,12 @@ export default function ImpactCounter({ stats, loading }) {
           className="text-center mb-14"
         >
           <h2
-            className="font-heading font-bold text-[#3D2914] mb-3"
+            className="font-heading font-bold text-gray-900 mb-3"
             style={{ fontSize: 'clamp(1.75rem, 3vw, 2.5rem)', letterSpacing: '-0.025em' }}
           >
             {t('home.impactTitle')}
           </h2>
-          <p className="text-[#5C4033]/70 max-w-xl mx-auto font-body">
+          <p className="text-gray-600 max-w-xl mx-auto font-body">
             {loading ? '…' : `${homeService.formatINR(stats?.totalAmount || 0)} ${t('home.impactSubtitle')}`}
           </p>
         </motion.div>
@@ -62,7 +62,7 @@ export default function ImpactCounter({ stats, loading }) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08, duration: 0.5 }}
-              className="text-center p-5 rounded-lg border border-[#D4B896]/50 bg-[#F5E6C8]/50 hover:shadow-md transition-all duration-300 group"
+              className="text-center p-5 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300 group"
             >
               <div className={`w-12 h-12 ${stat.bg} rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-transform`}>
                 <stat.icon className={`w-6 h-6 ${stat.color}`} />
@@ -79,7 +79,7 @@ export default function ImpactCounter({ stats, loading }) {
                   )
                 )}
               </div>
-              <div className="text-xs text-[#5C4033]/65 mt-1 leading-tight font-body">{t(`home.${stat.labelKey}`)}</div>
+              <div className="text-xs text-gray-500 mt-1 leading-tight font-body">{t(`home.${stat.labelKey}`)}</div>
             </motion.div>
           ))}
         </div>

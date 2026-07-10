@@ -13,6 +13,7 @@ import { LOGO_URL } from '@/lib/navFallbacks';
 import { usePublicSettings } from '@/hooks/usePublicSettings';
 import { localize } from '@/lib/localizedContent';
 import { normalizeExternalUrl, isExternalUrl } from '@/lib/externalUrl';
+import { SYSTEM_ABOUT_CMSR } from '@/lib/protectedAboutPages';
 
 /** Renders <a> for external URLs (YouTube, socials, …) and a router <Link> for internal paths. */
 function SmartLink({ to, children, ...props }) {
@@ -117,9 +118,14 @@ export default function Navbar() {
 
 
   const aboutChildren = useMemo(() => {
-    // Purely data-driven — only shows CMS pages that exist in DB with status=active
-    return aboutPages.map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
-  }, [aboutPages, lang]);
+    const cmsItems = aboutPages
+      .filter((p) => p.slug !== SYSTEM_ABOUT_CMSR.slug)
+      .map((p) => ({ label: localize(p, 'title', lang), path: `/page/${p.slug}` }));
+    return [
+      { label: t('nav.aboutCMSR') || SYSTEM_ABOUT_CMSR.title, path: SYSTEM_ABOUT_CMSR.path },
+      ...cmsItems,
+    ];
+  }, [aboutPages, lang, t]);
 
   const programChildren = useMemo(
     () => programs.map((p) => ({ label: localize(p, 'title', lang), path: `/programs/${p.slug}` })),
@@ -140,7 +146,7 @@ export default function Navbar() {
       if (item.source === 'cms') {
         return {
           label: item.label,
-          path: aboutPages.length > 0 ? `/page/${aboutPages[0].slug}` : '/about',
+          path: aboutChildren.length > 0 ? aboutChildren[0].path : '/about',
           children: aboutChildren,
         };
       }
@@ -330,7 +336,7 @@ export default function Navbar() {
 
     <nav className={`fixed top-0 left-0 right-0 z-50 overflow-visible transition-all duration-300 ${
 
-      scrolled ? 'bg-cream-50/95 backdrop-blur-md shadow-md border-b border-brown-300' : 'bg-cream-50/90 backdrop-blur-sm'
+      scrolled ? 'bg-white/95 backdrop-blur-md shadow-md border-b border-brown-300' : 'bg-white/90 backdrop-blur-sm'
 
     }`}>
 
@@ -412,7 +418,7 @@ export default function Navbar() {
 
             exit={{ opacity: 0, height: 0 }}
 
-            className="lg:hidden bg-cream-50 border-t border-border overflow-hidden"
+            className="lg:hidden bg-white border-t border-border overflow-hidden"
 
           >
 
