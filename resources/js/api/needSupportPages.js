@@ -21,6 +21,27 @@ export function emptyNeedSupportPage(cardSlug = '') {
     gallery_images: '',
     hero_image: '',
     stats: { villages: 0, schools: 0, volunteers: 0, donations: 0 },
+    development_score: {
+      education: 0,
+      infrastructure: 0,
+      environment: 0,
+      agriculture: 0,
+      community: 0,
+    },
+    statistics: {
+      population: '',
+      literacy_rate: '',
+      beneficiaries: '',
+      projects_count: '',
+    },
+    location: { district: '', state: '', pincode: '' },
+    donations: { goal: 0, raised: 0 },
+    card: {
+      enable_donate: true,
+      enable_details: true,
+      enable_follow: false,
+      enable_compare: false,
+    },
   };
 }
 

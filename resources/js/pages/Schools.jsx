@@ -7,21 +7,25 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { getRouteCache, setRouteCache } from '@/lib/routeMemoryCache';
+import { useMotionEnter } from '@/lib/instantNavigation';
 
 const STATES = ['Andhra Pradesh','Telangana','Karnataka','Tamil Nadu','Maharashtra','Gujarat','Rajasthan','Uttar Pradesh','Madhya Pradesh','West Bengal','Bihar','Odisha','Kerala','Punjab','Haryana','Delhi','Other'];
 const SCHOOL_TYPES = ['government', 'private', 'aided', 'model'];
+const SCHOOLS_CACHE_KEY = 'schools-list';
 
 export default function Schools() {
-  const [schools, setSchools] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const heroEnter = useMotionEnter({ opacity: 0, y: 20 });
+  const [schools, setSchools] = useState(() => getRouteCache(SCHOOLS_CACHE_KEY) ?? []);
+  const [filtered, setFiltered] = useState(() => getRouteCache(SCHOOLS_CACHE_KEY) ?? []);
+  const [loading, setLoading] = useState(() => !getRouteCache(SCHOOLS_CACHE_KEY));
   const [search, setSearch] = useState('');
   const [stateFilter, setStateFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
 
   useEffect(() => {
     base44.entities.School.list('-created_date', 50)
-      .then(data => { setSchools(data); setFiltered(data); })
+      .then(data => { const rows = data || []; setRouteCache(SCHOOLS_CACHE_KEY, rows); setSchools(rows); setFiltered(rows); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -47,7 +51,7 @@ export default function Schools() {
       <HeroScrollSection size="page">
         <div className="school-gradient py-16 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={heroEnter} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
                 <School className="w-4 h-4" /> Schools Directory
               </div>

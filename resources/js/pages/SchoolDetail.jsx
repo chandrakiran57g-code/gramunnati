@@ -1,49 +1,123 @@
 import { useState, useEffect } from 'react';
 import { safeText } from '@/lib/safeText';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { schoolsService } from '@/api/entities';
 import { supabase } from '@/api/supabaseClient';
-import { MapPin, Users, BookOpen, Heart, ChevronLeft, CheckCircle, XCircle, Star } from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext';
+import { toast } from 'sonner';
+import { MapPin, Heart, ChevronLeft, CheckCircle, XCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
 import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { groupGalleryRows } from '@/lib/beforeAfterGallery';
 import RichContent from '@/components/shared/RichContent';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { SCHOOL_DETAIL_TABS } from '@/lib/detailPageTabs';
+import { normalizeSchoolRecord } from '@/lib/villageDisplay';
+import { activityLogToTimelineEvent, formatTimelineDate } from '@/lib/villageTimeline';
+import { requirementRowToEditor } from '@/lib/schoolRequirements';
+import { fetchDonationTotal } from '@/lib/donationTotals';
+import { useRoutePageCache } from '@/hooks/useRoutePageCache';
+import { useBreadcrumbLabel } from '@/lib/BreadcrumbContext';
 
 const schoolTypeLabel = { government: 'Government', private: 'Private', aided: 'Aided', model: 'Model School' };
 const schoolTypeColor = { government: 'bg-primary/10 text-primary', private: 'bg-school/10 text-school', aided: 'bg-purple-100 text-purple-700', model: 'bg-donation/10 text-donation' };
 
 export default function SchoolDetail() {
   const { slug } = useParams();
-  const [school, setSchool] = useState(null);
-  const [gallery, setGallery] = useState({ before: [], after: [] });
-  const [loading, setLoading] = useState(true);
+  const { user, isAuthenticated, navigateToLogin } = useAuth();
+  const { data, showBlockingLoader } = useRoutePageCache(
+    `school-detail:${slug}`,
+    async () => {
+      const all = await base44.entities.School.list('-created_date', 200);
+      const found = all.find(s => s.slug === slug || s.id === slug || s.school_name?.toLowerCase().replace(/\s+/g, '-') === slug);
+      const normalized = found ? normalizeSchoolRecord(found) : null;
+      if (!normalized?.id) {
+        return {
+          school: null,
+          gallery: { before: [], after: [] },
+          timeline: [],
+          requirements: [],
+          totalDonations: 0,
+        };
+      }
+
+      const [{ data: galleryRows }, { data: timelineRows }, { data: requirementRows }, donationTotal] = await Promise.all([
+        supabase
+          .from('galleries')
+          .select('*')
+          .eq('galleryable_type', 'school')
+          .eq('galleryable_id', normalized.id)
+          .order('sort_order', { ascending: true }),
+        supabase
+          .from('activity_logs')
+          .select('*')
+          .eq('loggable_type', 'school')
+          .eq('loggable_id', normalized.id)
+          .order('activity_date', { ascending: false }),
+        supabase
+          .from('school_requirements')
+          .select('*')
+          .eq('school_id', normalized.id)
+          .order('sort_order', { ascending: true }),
+        fetchDonationTotal({ schoolId: normalized.id }).catch(() => 0),
+      ]);
+
+      return {
+        school: normalized,
+        gallery: groupGalleryRows(galleryRows),
+        timeline: (timelineRows || []).map(activityLogToTimelineEvent),
+        requirements: (requirementRows || []).map(requirementRowToEditor),
+        totalDonations: donationTotal || 0,
+      };
+    },
+    [slug],
+  );
+  const school = data?.school ?? null;
+  const gallery = data?.gallery ?? { before: [], after: [] };
+  const timeline = data?.timeline ?? [];
+  const requirements = data?.requirements ?? [];
+  const totalDonations = data?.totalDonations ?? 0;
+  useBreadcrumbLabel(school?.school_name || slug);
+  const [following, setFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
 
   useEffect(() => {
-    base44.entities.School.list('-created_date', 200)
-      .then(async (all) => {
-        const found = all.find(s => s.slug === slug || s.id === slug || s.school_name?.toLowerCase().replace(/\s+/g, '-') === slug);
-        setSchool(found || null);
-        if (found?.id) {
-          const { data } = await supabase
-            .from('galleries')
-            .select('*')
-            .eq('galleryable_type', 'school')
-            .eq('galleryable_id', found.id)
-            .order('sort_order', { ascending: true });
-          setGallery(groupGalleryRows(data));
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
+    if (!school?.id || !isAuthenticated || !user?.id) {
+      setFollowing(false);
+      return;
+    }
+    schoolsService.isFollowing(school.id, user.id).then(setFollowing).catch(() => setFollowing(false));
+  }, [school?.id, isAuthenticated, user?.id]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-school/30 border-t-school rounded-full animate-spin" /></div>;
+  const handleFollow = async () => {
+    if (!school?.id) return;
+    if (!isAuthenticated || !user?.id) {
+      navigateToLogin();
+      return;
+    }
+    setFollowLoading(true);
+    try {
+      if (following) {
+        await schoolsService.unfollow(school.id, user.id);
+        setFollowing(false);
+        toast.success('Unfollowed school');
+      } else {
+        await schoolsService.follow(school.id, user.id);
+        setFollowing(true);
+        toast.success('You are now following this school');
+      }
+    } catch (e) {
+      toast.error(e.message || 'Could not update follow status');
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  if (showBlockingLoader) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-school/30 border-t-school rounded-full animate-spin" /></div>;
 
   if (!school) return (
     <div className="min-h-screen flex items-center justify-center text-center px-4">
@@ -126,15 +200,22 @@ export default function SchoolDetail() {
               <Heart className="w-4 h-4 mr-2" /> Support This School
             </Button>
           </Link>
-          <Button variant="outline" className="border-school text-school hover:bg-school hover:text-white rounded-xl">
-            <Star className="w-4 h-4 mr-1.5" /> Follow School
+          <Button
+            type="button"
+            variant="outline"
+            disabled={followLoading}
+            onClick={handleFollow}
+            className={`rounded-xl ${following ? 'border-school bg-school/10 text-school' : 'border-school text-school hover:bg-school hover:text-white'}`}
+          >
+            <Star className={`w-4 h-4 mr-1.5 ${following ? 'fill-school' : ''}`} />
+            {followLoading ? 'Please wait…' : following ? 'Following' : 'Follow School'}
           </Button>
         </div>
 
         <Tabs defaultValue="overview">
           <TabsList className="bg-muted w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6">
-            {['overview','infrastructure','academics','requirements','timeline','gallery','donations'].map(tab => (
-              <TabsTrigger key={tab} value={tab} className="capitalize rounded-lg text-sm py-2 px-3 whitespace-nowrap">{tab}</TabsTrigger>
+            {SCHOOL_DETAIL_TABS.map((tab) => (
+              <TabsTrigger key={tab.id} value={tab.id} className="rounded-lg text-sm py-2 px-3 whitespace-nowrap">{tab.label}</TabsTrigger>
             ))}
           </TabsList>
 
@@ -246,61 +327,60 @@ export default function SchoolDetail() {
             <div className="bg-white rounded-xl border border-border p-6">
               <h3 className="font-heading font-bold text-lg mb-4">School Requirements</h3>
               <p className="text-muted-foreground text-sm mb-4">Items needed by this school. Your donation can help fulfill these requirements.</p>
-              {[
-                { name: 'Furniture', needed: 50000, raised: 20000 },
-                { name: 'Computers', needed: 150000, raised: 45000 },
-                { name: 'Books & Stationery', needed: 30000, raised: 15000 },
-                { name: 'Infrastructure Repairs', needed: 80000, raised: 10000 },
-                { name: 'Sports Equipment', needed: 20000, raised: 8000 },
-                { name: 'Science Lab Equipment', needed: 60000, raised: 0 },
-              ].map((req, i) => {
-                const pct = req.needed > 0 ? Math.round((req.raised / req.needed) * 100) : 0;
-                return (
-                  <div key={req.name} className="py-3 border-b border-border last:border-0">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-sm font-medium">{req.name}</span>
-                      <span className="text-xs text-muted-foreground">₹{req.raised.toLocaleString('en-IN')} / ₹{req.needed.toLocaleString('en-IN')}</span>
+              {requirements.length > 0 ? (
+                requirements.map((req) => {
+                  const needed = Number(req.needed_amount) || 0;
+                  const raised = Number(req.raised_amount) || 0;
+                  const pct = needed > 0 ? Math.round((raised / needed) * 100) : 0;
+                  return (
+                    <div key={req.id || req.title} className="py-3 border-b border-border last:border-0">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="text-sm font-medium">{req.title}</span>
+                        <span className="text-xs text-muted-foreground">₹{raised.toLocaleString('en-IN')} / ₹{needed.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <Progress value={pct} className="h-1.5 flex-1" />
+                        <span className="text-xs font-semibold w-8 text-right">{pct}%</span>
+                        <Link to={`/donate?type=school&school_id=${school.id}`}>
+                          <Button size="sm" variant="outline" className="text-xs border-donation text-donation hover:bg-donation hover:text-white h-7 px-2">Donate</Button>
+                        </Link>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Progress value={pct} className="h-1.5 flex-1" />
-                      <span className="text-xs font-semibold w-8 text-right">{pct}%</span>
-                      <Link to={`/donate?type=school&school_id=${school.id}`}>
-                        <Button size="sm" variant="outline" className="text-xs border-donation text-donation hover:bg-donation hover:text-white h-7 px-2">Donate</Button>
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              ) : (
+                <p className="text-muted-foreground text-sm">No requirements listed yet.</p>
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="timeline">
             <div className="bg-white rounded-xl border border-border p-6">
               <h3 className="font-heading font-bold text-lg mb-6">School Development Timeline</h3>
-              <div className="relative">
-                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-school/20" />
-                <div className="space-y-6 pl-12">
-                  {[
-                    { date: 'Jun 2026', title: 'School Registered on CMSR', desc: `${school.school_name} was officially registered on the CMSR digital platform.`, type: 'milestone', icon: '🏫' },
-                    { date: 'May 2026', title: 'Infrastructure Audit Completed', desc: 'Full audit of existing infrastructure completed — library, computer lab, playground status documented.', type: 'assessment', icon: '📋' },
-                    { date: 'Apr 2026', title: 'First Digital Classroom Initiated', desc: 'Planning began for the first digital classroom setup with smart board and internet connectivity.', type: 'education', icon: '💻' },
-                    { date: 'Mar 2026', title: 'Teacher Training Workshop', desc: '12 teachers attended a professional development workshop on digital teaching tools.', type: 'education', icon: '👩‍🏫' },
-                    { date: 'Feb 2026', title: 'Enrollment Drive', desc: `Community-led enrollment drive brought ${school.student_count || 'hundreds of'} students to the school.`, type: 'community', icon: '📣' },
-                  ].map((event, i) => (
-                    <div key={i} className="relative">
-                      <div className="absolute -left-8 w-8 h-8 bg-school/10 rounded-full flex items-center justify-center text-sm border-2 border-white">{event.icon}</div>
-                      <div className="bg-muted/30 rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-xs font-semibold text-school">{event.date}</span>
-                          <span className="text-xs bg-school/10 text-school px-2 py-0.5 rounded-full capitalize">{event.type}</span>
+              {timeline.length > 0 ? (
+                <div className="relative">
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-school/20" />
+                  <div className="space-y-6 pl-12">
+                    {timeline.map((event) => (
+                      <div key={event.id || `${event.title}-${event.date}`} className="relative">
+                        <div className="absolute -left-8 w-8 h-8 bg-school/10 rounded-full flex items-center justify-center text-sm border-2 border-white">{event.icon}</div>
+                        <div className="bg-muted/30 rounded-xl p-4">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-xs font-semibold text-school">{formatTimelineDate(event.date)}</span>
+                            {event.type && (
+                              <span className="text-xs bg-school/10 text-school px-2 py-0.5 rounded-full capitalize">{event.type}</span>
+                            )}
+                          </div>
+                          <h4 className="font-semibold text-sm mb-1">{event.title}</h4>
+                          {event.desc && <p className="text-xs text-muted-foreground leading-relaxed">{event.desc}</p>}
                         </div>
-                        <h4 className="font-semibold text-sm mb-1">{event.title}</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{event.desc}</p>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">No timeline events yet. Milestones will appear here once added in admin.</p>
+              )}
             </div>
           </TabsContent>
 
@@ -309,15 +389,24 @@ export default function SchoolDetail() {
           </TabsContent>
 
           <TabsContent value="donations">
-            <div className="bg-white rounded-xl border border-border p-6 text-center">
-              <Heart className="w-12 h-12 text-donation/30 mx-auto mb-3" />
-              <h3 className="font-heading font-bold text-xl mb-2">Support {school.school_name}</h3>
-              <p className="text-muted-foreground text-sm mb-6">Your donation directly helps provide better education resources to {school.student_count || 'hundreds of'} students.</p>
-              <Link to={`/donate?type=school&school_id=${school.id}`}>
-                <Button className="donation-gradient text-white border-0 px-10 rounded-xl font-semibold">
-                  <Heart className="w-4 h-4 mr-2" /> Donate to This School
-                </Button>
-              </Link>
+            <div className="bg-white rounded-xl border border-border p-6">
+              {totalDonations > 0 ? (
+                <div className="text-center mb-6">
+                  <div className="text-4xl font-bold text-donation mb-1">₹{totalDonations.toLocaleString('en-IN')}</div>
+                  <div className="text-muted-foreground">Total donations received</div>
+                </div>
+              ) : (
+                <Heart className="w-12 h-12 text-donation/30 mx-auto mb-3" />
+              )}
+              <div className="text-center">
+                <h3 className="font-heading font-bold text-xl mb-2">Support {school.school_name}</h3>
+                <p className="text-muted-foreground text-sm mb-6">Your donation directly helps provide better education resources to {school.student_count || 'hundreds of'} students.</p>
+                <Link to={`/donate?type=school&school_id=${school.id}`}>
+                  <Button className="donation-gradient text-white border-0 px-10 rounded-xl font-semibold">
+                    <Heart className="w-4 h-4 mr-2" /> Donate to This School
+                  </Button>
+                </Link>
+              </div>
             </div>
           </TabsContent>
         </Tabs>

@@ -20,8 +20,6 @@ const EMPTY_FORM = {
   village_name: '',
   village_name_te: '',
   slug: '',
-  short_description: '',
-  short_description_te: '',
   description: '',
   description_te: '',
   population: '',
@@ -80,10 +78,8 @@ export default function AdminVillages() {
       village_name: v.village_name || '',
       village_name_te: v.village_name_te || '',
       slug: v.slug || '',
-      short_description: v.short_description || '',
-      short_description_te: v.short_description_te || '',
-      description: v.description || '',
-      description_te: v.description_te || '',
+      description: v.description || v.short_description || '',
+      description_te: v.description_te || v.short_description_te || '',
       population: v.population ?? '',
       cover_image: v.cover_image || '',
       is_featured: Boolean(v.is_featured),
@@ -104,8 +100,8 @@ export default function AdminVillages() {
     const payload = {
       village_name: form.village_name.trim(),
       slug: form.slug.trim() || slugifyName(form.village_name),
-      short_description: form.short_description.trim() || null,
       description: form.description.trim() || null,
+      description_te: form.description_te?.trim() || null,
       population: form.population ? Number(form.population) : null,
       cover_image: form.cover_image.trim() || null,
       is_featured: form.is_featured,
@@ -272,8 +268,7 @@ export default function AdminVillages() {
                   </select>
                 </div>
               </div>
-              <BilingualRichText name="short_description" label="Short Description" form={form} setForm={setForm} />
-              <BilingualRichText name="description" label="Full Description" form={form} setForm={setForm} />
+              <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <Label>Population</Label>

@@ -7,13 +7,22 @@ import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { adminRoutes } from '@/lib/adminRoutes';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import StructuredContentEditor from '@/components/admin/StructuredContentEditor';
+import { PROGRAM_STYLE_TABS } from '@/lib/detailPageTabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { BookOpen, Layers, Loader2, Save, X } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+
+const IMPACT_STATS = [
+  { key: 'villages', label: 'Villages impacted' },
+  { key: 'schools', label: 'Schools impacted' },
+  { key: 'volunteers', label: 'Volunteers' },
+  { key: 'donations', label: 'Donations raised (₹)' },
+];
 
 function galleryList(value) {
   return String(value || '')
@@ -94,12 +103,18 @@ export default function AdminProgramPages() {
     setSelectedSlug(slug);
     const card = programs.find((p) => p.slug === slug);
     const saved = await programPagesService.getPage(slug);
+    const base = emptyProgramPage(slug);
     setForm({
-      ...emptyProgramPage(slug),
+      ...base,
       ...saved,
       program_slug: slug,
       content_sections: Array.isArray(saved?.content_sections) ? saved.content_sections : [],
-      stats: { ...emptyProgramPage(slug).stats, ...(saved?.stats || {}) },
+      stats: { ...base.stats, ...(saved?.stats || {}) },
+      development_score: { ...base.development_score, ...(saved?.development_score || {}) },
+      statistics: { ...base.statistics, ...(saved?.statistics || {}) },
+      location: { ...base.location, ...(saved?.location || {}) },
+      donations: { ...base.donations, ...(saved?.donations || {}) },
+      card: { ...base.card, ...(saved?.card || {}) },
     });
     if (card && !saved?.long_description) {
       setForm((f) => ({
@@ -120,6 +135,10 @@ export default function AdminProgramPages() {
 
   const setStat = (key, value) => {
     setForm((f) => ({ ...f, stats: { ...(f.stats || {}), [key]: Number(value) || 0 } }));
+  };
+
+  const setNested = (key, subKey, value) => {
+    setForm((f) => ({ ...f, [key]: { ...(f[key] || {}), [subKey]: value } }));
   };
 
   const handleSave = async () => {
@@ -149,7 +168,7 @@ export default function AdminProgramPages() {
           <Button variant="outline" size="sm"><Layers className="mr-1.5 h-4 w-4" />Cards</Button>
         </Link>
       }
-      maxWidth="max-w-5xl"
+      maxWidth="max-w-7xl"
     >
       <div className="mb-6 rounded-xl border border-border bg-white p-6">
         <Label>Select program category *</Label>
@@ -178,52 +197,81 @@ export default function AdminProgramPages() {
       ) : loading ? (
         <div className="flex justify-center py-20"><Loader2 className="h-8 w-8 animate-spin" /></div>
       ) : (
-        <div className="space-y-6 rounded-xl border border-border bg-white p-6">
-          <BilingualRichText name="long_description" label="About (overview) — or use structured sections below" form={form} setForm={setForm} />
-          <StructuredContentEditor
-            form={form}
-            setForm={setForm}
-            titleField="content_title"
-            headingField="content_heading"
-            sectionsField="content_sections"
-            legacyField="long_description"
-            showLegacyFallback={false}
-          />
-          <BilingualRichText name="objectives" label="Objectives" form={form} setForm={setForm} />
-          <BilingualRichText name="activities" label="Activities" form={form} setForm={setForm} />
-          <BilingualRichText name="impact_highlights" label="Impact highlights" form={form} setForm={setForm} />
-          <GalleryImagesEditor
-            value={form.gallery_images || ''}
-            onChange={(v) => setForm((f) => ({ ...f, gallery_images: v }))}
-          />
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { key: 'villages', label: 'Villages impacted' },
-              { key: 'schools', label: 'Schools impacted' },
-              { key: 'volunteers', label: 'Volunteers' },
-              { key: 'donations', label: 'Donations raised (₹)' },
-            ].map(({ key, label }) => (
-              <div key={key}>
-                <Label>{label}</Label>
-                <Input
-                  type="number"
-                  className="mt-1"
-                  value={form.stats?.[key] ?? ''}
-                  onChange={(e) => setStat(key, e.target.value)}
-                />
+        <div className="rounded-xl border border-border bg-white p-6">
+          <Tabs defaultValue="overview">
+            <TabsList className="mb-4 flex h-auto flex-wrap">
+              {PROGRAM_STYLE_TABS.map((tab) => (
+                <TabsTrigger key={tab.id} value={tab.id}>{tab.label}</TabsTrigger>
+              ))}
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-4">
+              <BilingualRichText name="long_description" label="Description" form={form} setForm={setForm} />
+              <StructuredContentEditor
+                form={form}
+                setForm={setForm}
+                titleField="content_title"
+                headingField="content_heading"
+                sectionsField="content_sections"
+                legacyField="long_description"
+                showLegacyFallback={false}
+              />
+              <div className="rounded-lg border border-border p-4">
+                <h4 className="mb-1 text-sm font-semibold">Stats strip (above tabs on public page)</h4>
+                <p className="mb-3 text-xs text-muted-foreground">These four numbers appear in the hero stats row, not inside a tab.</p>
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {IMPACT_STATS.map(({ key, label }) => (
+                    <div key={key}>
+                      <Label>{label}</Label>
+                      <Input
+                        type="number"
+                        className="mt-1"
+                        value={form.stats?.[key] ?? ''}
+                        onChange={(e) => setStat(key, e.target.value)}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
+              <AdminImageUpload
+                label="Optional hero image override"
+                value={form.hero_image || ''}
+                onChange={(url) => setForm({ ...form, hero_image: url })}
+                subPath="programs"
+              />
+            </TabsContent>
+
+            <TabsContent value="objectives" className="space-y-4">
+              <BilingualRichText name="objectives" label="Objectives" form={form} setForm={setForm} />
+            </TabsContent>
+
+            <TabsContent value="activities" className="space-y-4">
+              <BilingualRichText name="activities" label="Activities" form={form} setForm={setForm} />
+            </TabsContent>
+
+            <TabsContent value="impact" className="space-y-4">
+              <BilingualRichText name="impact_highlights" label="Impact highlights" form={form} setForm={setForm} />
+            </TabsContent>
+
+            <TabsContent value="gallery">
+              <GalleryImagesEditor
+                value={form.gallery_images || ''}
+                onChange={(v) => setForm((f) => ({ ...f, gallery_images: v }))}
+              />
+            </TabsContent>
+          </Tabs>
+
+          <div className="mt-6 flex gap-2 border-t pt-4">
+            <Button onClick={handleSave} disabled={saving}>
+              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              Save Detail Page
+            </Button>
+            {selectedProgram && (
+              <a href={`/programs/${selectedProgram.slug}`} target="_blank" rel="noreferrer">
+                <Button variant="outline" type="button">Preview</Button>
+              </a>
+            )}
           </div>
-          <AdminImageUpload
-            label="Optional hero override"
-            value={form.hero_image || ''}
-            onChange={(url) => setForm({ ...form, hero_image: url })}
-            subPath="programs"
-          />
-          <Button onClick={handleSave} disabled={saving}>
-            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-            Save Detail Page
-          </Button>
         </div>
       )}
     </AdminShell>

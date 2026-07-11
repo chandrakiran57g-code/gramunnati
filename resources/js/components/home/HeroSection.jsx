@@ -94,6 +94,7 @@ export default function HeroSection() {
         </p>
 
         <div className="hero-section-cta flex w-full flex-wrap items-center justify-center">
+          <div id="home-hero-villages" data-home-section="home-hero-villages">
           <Link
             to="/villages"
             className="hero-section-cta-link inline-flex items-center gap-1.5 rounded-xl bg-service-village font-semibold text-white shadow-lg shadow-black/20 transition-colors hover:bg-service-village/90 group"
@@ -112,6 +113,8 @@ export default function HeroSection() {
             />
             <ArrowRight className="h-3.5 w-3.5 shrink-0 transition-transform group-hover:translate-x-0.5" />
           </Link>
+          </div>
+          <div id="home-hero-schools" data-home-section="home-hero-schools">
           <Link
             to="/schools"
             className="hero-section-cta-link inline-flex items-center gap-1.5 rounded-xl bg-service-school font-semibold text-white shadow-lg shadow-black/20 transition-colors hover:bg-service-school/90"
@@ -129,6 +132,8 @@ export default function HeroSection() {
               staggerDelay={22}
             />
           </Link>
+          </div>
+          <div id="home-hero-donate" data-home-section="home-hero-donate">
           <Link
             to="/donate"
             className="hero-section-cta-link inline-flex items-center gap-1.5 rounded-xl bg-service-agriculture font-semibold text-white shadow-lg shadow-black/20 transition-colors hover:bg-service-agriculture/90"
@@ -146,8 +151,10 @@ export default function HeroSection() {
               staggerDelay={22}
             />
           </Link>
+          </div>
         </div>
 
+        <div id="home-hero-volunteer" data-home-section="home-hero-volunteer">
         <Link
           to="/volunteer"
           className="hero-section-volunteer inline-flex items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 font-semibold text-white backdrop-blur-sm transition-colors hover:bg-white/15"
@@ -165,6 +172,7 @@ export default function HeroSection() {
             staggerDelay={22}
           />
         </Link>
+        </div>
 
         <HeroScrollHint />
       </div>

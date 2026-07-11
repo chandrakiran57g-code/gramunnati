@@ -100,10 +100,12 @@ export function emptyActiveWorkPage(templateType = 'village') {
     program_slug: isProgramTemplate(templateType) ? templateType : '',
     program_icon: getProgramTemplateMeta(templateType)?.icon || '',
     name: '',
+    name_te: '',
     cover_image: '',
     description: '',
+    description_te: '',
     location: { district: '', state: '', pincode: '' },
-    overview: { about: '', vision: '', challenges: '', achievements: '' },
+    overview: {},
     development_score: {
       education: 0,
       infrastructure: 0,
@@ -126,13 +128,8 @@ export function emptyActiveWorkPage(templateType = 'village') {
     const prog = getProgramTemplateMeta(templateType);
     return {
       ...base,
-      description: prog?.description || '',
-      overview: {
-        about: prog?.longDescription || prog?.description || '',
-        vision: '',
-        challenges: '',
-        achievements: '',
-      },
+      description: prog?.longDescription || prog?.description || '',
+      overview: {},
       impact: {
         beneficiaries: 0,
         villages_reached: prog?.stats?.villages || 0,
@@ -171,8 +168,15 @@ export function emptyActiveWorkPage(templateType = 'village') {
         male_population: '',
         female_population: '',
         literacy_rate: '',
+        farmer_count: '',
         cultivable_land: '',
+        trees_count: '',
+        water_bodies_count: '',
       },
+      history: '',
+      history_te: '',
+      village_code: '',
+      crops: [],
     };
   }
 
@@ -193,6 +197,23 @@ export function emptyActiveWorkPage(templateType = 'village') {
       pass_percentage: '',
       infrastructure_score: '',
     },
+    infrastructure: {
+      library_available: false,
+      computer_lab_available: false,
+      playground_available: false,
+      drinking_water_available: false,
+      toilet_available: false,
+      electricity_available: false,
+      digital_classroom_available: false,
+      boundary_wall_available: false,
+    },
+    administration: {
+      principal_name: '',
+      contact_number: '',
+      email: '',
+      website: '',
+    },
+    requirements: [],
   };
 }
 
@@ -232,11 +253,39 @@ export const DEVELOPMENT_SCORE_FIELDS = [
 ];
 
 export const VILLAGE_STAT_FIELDS = [
-  { key: 'population', label: 'Population' },
-  { key: 'male_population', label: 'Male Population' },
-  { key: 'female_population', label: 'Female Population' },
-  { key: 'literacy_rate', label: 'Literacy Rate (%)' },
+  { key: 'population', label: 'Population', type: 'number' },
+  { key: 'male_population', label: 'Male Population', type: 'number' },
+  { key: 'female_population', label: 'Female Population', type: 'number' },
+  { key: 'literacy_rate', label: 'Literacy Rate (%)', type: 'number' },
+  { key: 'farmer_count', label: 'Farmer Count', type: 'number' },
   { key: 'cultivable_land', label: 'Cultivable Land' },
+  { key: 'trees_count', label: 'Trees Planted', type: 'number' },
+  { key: 'water_bodies_count', label: 'Water Bodies', type: 'number' },
+];
+
+export const SCHOOL_INFRA_FIELDS = [
+  { key: 'library_available', label: 'Library' },
+  { key: 'computer_lab_available', label: 'Computer Lab' },
+  { key: 'playground_available', label: 'Playground' },
+  { key: 'drinking_water_available', label: 'Drinking Water' },
+  { key: 'toilet_available', label: 'Toilets' },
+  { key: 'electricity_available', label: 'Electricity' },
+  { key: 'digital_classroom_available', label: 'Digital Classroom' },
+  { key: 'boundary_wall_available', label: 'Boundary Wall' },
+];
+
+export const SCHOOL_ACADEMIC_FIELDS = [
+  { key: 'students_count', label: 'Total Students', type: 'number' },
+  { key: 'teachers_count', label: 'Teaching Staff', type: 'number' },
+  { key: 'classrooms', label: 'Classrooms', type: 'number' },
+];
+
+export const SCHOOL_OVERVIEW_FIELDS = [
+  { key: 'udise_code', label: 'UDISE Code' },
+  { key: 'principal_name', label: 'Principal' },
+  { key: 'contact_number', label: 'Contact Number' },
+  { key: 'email', label: 'Email' },
+  { key: 'website', label: 'Website' },
 ];
 
 export const SCHOOL_STAT_FIELDS = [

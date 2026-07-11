@@ -24,7 +24,29 @@ export function emptyProgramPage(programSlug = '') {
     impact_highlights: '',
     impact_highlights_te: '',
     gallery_images: '',
+    hero_image: '',
     stats: { villages: 0, schools: 0, volunteers: 0, donations: 0 },
+    development_score: {
+      education: 0,
+      infrastructure: 0,
+      environment: 0,
+      agriculture: 0,
+      community: 0,
+    },
+    statistics: {
+      villages: '',
+      schools: '',
+      volunteers: '',
+      donations: '',
+    },
+    location: { district: '', state: '', pincode: '' },
+    donations: { goal: 0, raised: 0 },
+    card: {
+      enable_donate: true,
+      enable_details: true,
+      enable_follow: false,
+      enable_compare: false,
+    },
   };
 }
 

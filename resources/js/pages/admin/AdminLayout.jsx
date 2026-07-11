@@ -231,7 +231,9 @@ export default function AdminLayout() {
           </span>
           <div className="w-8" />
         </div>
-        <main className="flex-1 overflow-y-auto"><Outlet /></main>
+        <main className="flex-1 overflow-y-auto">
+          <Outlet />
+        </main>
       </div>
       <AdminSaveIndicator />
     </div>

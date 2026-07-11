@@ -1,26 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
-import { School, Users, Heart, CheckCircle, XCircle, ExternalLink } from 'lucide-react';
+import { supabase } from '@/api/supabaseClient';
+import { authService } from '@/api/auth';
+import { School, Heart, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { safeText } from '@/lib/safeText';
+import { normalizeSchoolRecord } from '@/lib/villageDisplay';
 
 export default function MySchools() {
-  const [follows, setFollows] = useState([]);
   const [schools, setSchools] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
-      const u = await base44.auth.me().catch(() => null);
-      if (!u) { setLoading(false); return; }
-      const f = await base44.entities.Follow.filter({ user_email: u.email, followable_type: 'school' }, '-created_date', 50).catch(() => []);
-      setFollows(f);
-      if (f.length > 0) {
-        const ids = f.map(fw => fw.followable_id);
-        const allSchools = await base44.entities.School.list('-created_date', 200);
-        setSchools(allSchools.filter(s => ids.includes(s.id)));
+      const session = await authService.getSession().catch(() => null);
+      const userId = session?.user?.id;
+      if (!userId) { setLoading(false); return; }
+      const { data: follows } = await supabase
+        .from('school_followers')
+        .select('school_id')
+        .eq('user_id', userId);
+      const rows = follows || [];
+      if (rows.length > 0) {
+        const ids = rows.map((fw) => fw.school_id);
+        const { data: schoolRows } = await supabase
+          .from('schools')
+          .select('*, villages(id, village_name, slug, states(name), districts(name))')
+          .in('id', ids)
+          .is('deleted_at', null);
+        setSchools((schoolRows || []).map(normalizeSchoolRecord));
       }
       setLoading(false);
     };

@@ -20,7 +20,7 @@ const EMPTY_FORM = {
   library_available: false, computer_lab_available: false, playground_available: false,
   drinking_water_available: false, toilet_available: false, electricity_available: false,
   digital_classroom_available: false, boundary_wall_available: false,
-  cover_image: '', logo: '', short_description: '', short_description_te: '', is_featured: false, is_active: true,
+  cover_image: '', logo: '', description: '', description_te: '', is_featured: false, is_active: true,
 };
 
 export default function AdminSchools() {
@@ -58,7 +58,8 @@ export default function AdminSchools() {
     const payload = {
       school_name: form.school_name,
       school_name_te: form.school_name_te || null,
-      short_description_te: form.short_description_te || null,
+      short_description: form.description || null,
+      short_description_te: form.description_te || null,
       slug: form.slug || slugifyName(form.school_name),
       village_id: Number(form.village_id),
       school_type: form.school_type,
@@ -95,6 +96,8 @@ export default function AdminSchools() {
     setForm({
       ...EMPTY_FORM,
       ...item,
+      description: item.description || item.short_description || '',
+      description_te: item.description_te || item.short_description_te || '',
       village_id: item.village_id ? String(item.village_id) : item.villages?.id ? String(item.villages.id) : '',
     });
     setShowForm(true);
@@ -207,7 +210,7 @@ export default function AdminSchools() {
                 <div><Label>Principal Name</Label><Input value={form.principal_name} onChange={e => setForm(f => ({...f, principal_name: e.target.value}))} className="mt-1" /></div>
                 <div><Label>UDISE Code</Label><Input value={form.udise_code} onChange={e => setForm(f => ({...f, udise_code: e.target.value}))} className="mt-1" /></div>
               </div>
-              <BilingualRichText name="short_description" label="Short Description" form={form} setForm={setForm} />
+              <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
               <div><Label>Cover Image URL</Label><Input value={form.cover_image} onChange={e => setForm(f => ({...f, cover_image: e.target.value}))} className="mt-1" /></div>
               <div>
                 <Label className="mb-3 block font-semibold">Infrastructure</Label>

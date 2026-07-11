@@ -237,13 +237,21 @@ const entities = {
   Follow: {
     async list() { return []; },
     async filter(filters) {
-      if (filters.type === 'village') {
+      if (filters.user_id && (filters.type === 'village' || filters.followable_type === 'village')) {
         const { data } = await supabase.from('village_followers').select('*, villages(*)').eq('user_id', filters.user_id);
-        return data || [];
+        return (data || []).map((row) => ({
+          ...row,
+          followable_id: row.village_id,
+          followable_type: 'village',
+        }));
       }
-      if (filters.type === 'school') {
+      if (filters.user_id && (filters.type === 'school' || filters.followable_type === 'school')) {
         const { data } = await supabase.from('school_followers').select('*, schools(*)').eq('user_id', filters.user_id);
-        return data || [];
+        return (data || []).map((row) => ({
+          ...row,
+          followable_id: row.school_id,
+          followable_type: 'school',
+        }));
       }
       return [];
     },

@@ -172,7 +172,7 @@ export default function AdminNeedSupport() {
             />
           </div>
           <div className="sm:col-span-2">
-            <BilingualRichText name="description" label="Short description (card text)" form={form} setForm={setForm} />
+            <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
           </div>
           <div>
             <Label>Funding goal (₹)</Label>

@@ -9,6 +9,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import SplashGate from '@/components/splash/SplashGate';
+import { BreadcrumbProvider } from '@/lib/BreadcrumbContext';
 
 // Layout
 import PublicLayout from '@/components/layout/PublicLayout';
@@ -287,7 +288,9 @@ function App() {
         <QueryClientProvider client={queryClientInstance}>
           <Router>
             <SplashGate>
-              <AuthenticatedApp />
+              <BreadcrumbProvider>
+                <AuthenticatedApp />
+              </BreadcrumbProvider>
             </SplashGate>
           </Router>
           <Toaster />

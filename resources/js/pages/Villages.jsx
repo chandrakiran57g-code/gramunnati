@@ -7,19 +7,24 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { normalizeVillageRecord } from '@/lib/villageDisplay';
+import { getRouteCache, setRouteCache } from '@/lib/routeMemoryCache';
+import { useMotionEnter } from '@/lib/instantNavigation';
 
 const STATES = ['Andhra Pradesh','Telangana','Karnataka','Tamil Nadu','Maharashtra','Gujarat','Rajasthan','Uttar Pradesh','Madhya Pradesh','West Bengal','Bihar','Odisha','Kerala','Punjab','Haryana','Delhi','Other'];
+const VILLAGES_CACHE_KEY = 'villages-list';
 
 export default function Villages() {
-  const [villages, setVillages] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const heroEnter = useMotionEnter({ opacity: 0, y: 20 });
+  const [villages, setVillages] = useState(() => getRouteCache(VILLAGES_CACHE_KEY) ?? []);
+  const [filtered, setFiltered] = useState(() => getRouteCache(VILLAGES_CACHE_KEY) ?? []);
+  const [loading, setLoading] = useState(() => !getRouteCache(VILLAGES_CACHE_KEY));
   const [search, setSearch] = useState('');
   const [stateFilter, setStateFilter] = useState('all');
 
   useEffect(() => {
     base44.entities.Village.list('-created_date', 50)
-      .then(data => { setVillages(data); setFiltered(data); })
+      .then(data => { const rows = (data || []).map(normalizeVillageRecord); setRouteCache(VILLAGES_CACHE_KEY, rows); setVillages(rows); setFiltered(rows); })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -45,7 +50,7 @@ export default function Villages() {
       <HeroScrollSection size="page">
         <div className="brand-gradient py-16 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <motion.div initial={heroEnter} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
                 <MapPin className="w-4 h-4" /> Villages Directory
               </div>

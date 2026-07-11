@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
-import { MapPin, Users, Heart, TrendingUp, ExternalLink } from 'lucide-react';
+import { supabase } from '@/api/supabaseClient';
+import { authService } from '@/api/auth';
+import { MapPin, Users, Heart, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { safeText } from '@/lib/safeText';
+import { normalizeVillageRecord } from '@/lib/villageDisplay';
+import { fetchDonationTotalsByVillageIds } from '@/lib/donationTotals';
 
 export default function MyVillages() {
   const [follows, setFollows] = useState([]);
@@ -13,14 +16,28 @@ export default function MyVillages() {
 
   useEffect(() => {
     const load = async () => {
-      const u = await base44.auth.me().catch(() => null);
-      if (!u) { setLoading(false); return; }
-      const f = await base44.entities.Follow.filter({ user_email: u.email, followable_type: 'village' }, '-created_date', 50).catch(() => []);
-      setFollows(f);
-      if (f.length > 0) {
-        const ids = f.map(fw => fw.followable_id);
-        const allVillages = await base44.entities.Village.list('-created_date', 200);
-        setVillages(allVillages.filter(v => ids.includes(v.id)));
+      const session = await authService.getSession().catch(() => null);
+      const userId = session?.user?.id;
+      if (!userId) { setLoading(false); return; }
+      const { data: follows } = await supabase
+        .from('village_followers')
+        .select('village_id')
+        .eq('user_id', userId);
+      const rows = follows || [];
+      setFollows(rows);
+      if (rows.length > 0) {
+        const ids = rows.map((fw) => fw.village_id);
+        const { data: villageRows } = await supabase
+          .from('villages')
+          .select('*, districts(name), states(name), mandals(name)')
+          .in('id', ids)
+          .is('deleted_at', null);
+        const normalized = (villageRows || []).map(normalizeVillageRecord);
+        const donationTotals = await fetchDonationTotalsByVillageIds(ids).catch(() => ({}));
+        setVillages(normalized.map((v) => ({
+          ...v,
+          total_donations: donationTotals[v.id] || 0,
+        })));
       }
       setLoading(false);
     };

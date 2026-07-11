@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
@@ -10,6 +9,8 @@ import BeforeAfterSlider from '@/components/shared/BeforeAfterSlider';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import RichContent from '@/components/shared/RichContent';
 import { safeText } from '@/lib/safeText';
+import { useRoutePageCache } from '@/hooks/useRoutePageCache';
+import { useBreadcrumbLabel } from '@/lib/BreadcrumbContext';
 
 const categoryColors = {
   'Village Development': 'text-village bg-village/10',
@@ -29,20 +30,18 @@ const statusColors = { upcoming: 'bg-yellow-100 text-yellow-700', active: 'bg-gr
 
 export default function ProjectDetail() {
   const { slug } = useParams();
-  const [project, setProject] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data: project, showBlockingLoader } = useRoutePageCache(
+    `project-detail:${slug}`,
+    async () => {
+      const all = await base44.entities.Project.list('-created_date', 200);
+      return all.find(p => p.slug === slug || p.id === slug || p.project_name?.toLowerCase().replace(/\s+/g, '-') === slug) || null;
+    },
+    [slug],
+  );
 
-  useEffect(() => {
-    base44.entities.Project.list('-created_date', 200)
-      .then(all => {
-        const found = all.find(p => p.slug === slug || p.id === slug || p.project_name?.toLowerCase().replace(/\s+/g, '-') === slug);
-        setProject(found || null);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [slug]);
+  useBreadcrumbLabel(project?.project_name || slug);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-projects/30 border-t-projects rounded-full animate-spin" /></div>;
+  if (showBlockingLoader) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-projects/30 border-t-projects rounded-full animate-spin" /></div>;
 
   if (!project) return (
     <div className="min-h-screen flex items-center justify-center px-4 text-center">

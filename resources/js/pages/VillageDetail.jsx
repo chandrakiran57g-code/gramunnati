@@ -3,7 +3,10 @@ import { safeText } from '@/lib/safeText';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { villagesService } from '@/api/entities';
 import { supabase } from '@/api/supabaseClient';
+import { useAuth } from '@/lib/AuthContext';
+import { toast } from 'sonner';
 import { MapPin, Users, School, FolderOpen, Heart, TreePine, Droplets, ChevronLeft, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -14,33 +17,106 @@ import BeforeAfterGallery from '@/components/shared/BeforeAfterGallery';
 import { groupGalleryRows } from '@/lib/beforeAfterGallery';
 import RichContent from '@/components/shared/RichContent';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { activityLogToTimelineEvent, formatTimelineDate } from '@/lib/villageTimeline';
+import { availabilityLabel, cropRowToEditor } from '@/lib/villageCrops';
+import { VILLAGE_DETAIL_TABS } from '@/lib/detailPageTabs';
+import { normalizeVillageRecord } from '@/lib/villageDisplay';
+import { fetchDonationTotal } from '@/lib/donationTotals';
+import { useRoutePageCache } from '@/hooks/useRoutePageCache';
+import { useBreadcrumbLabel } from '@/lib/BreadcrumbContext';
 
 export default function VillageDetail() {
   const { slug } = useParams();
-  const [village, setVillage] = useState(null);
-  const [gallery, setGallery] = useState({ before: [], after: [] });
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadVillage = async () => {
+  const { user, isAuthenticated, navigateToLogin } = useAuth();
+  const { data, showBlockingLoader } = useRoutePageCache(
+    `village-detail:${slug}`,
+    async () => {
       const all = await base44.entities.Village.list('-created_date', 200);
       const found = all.find(v => v.slug === slug || v.id === slug || v.village_name?.toLowerCase().replace(/\s+/g, '-') === slug);
-      setVillage(found || null);
-      setLoading(false);
-      if (found?.id) {
-        const { data } = await supabase
+      const normalized = found ? normalizeVillageRecord(found) : null;
+      if (!normalized?.id) {
+        return {
+          village: null,
+          gallery: { before: [], after: [] },
+          timeline: [],
+          crops: [],
+          totalDonations: 0,
+        };
+      }
+
+      const [{ data: galleryRows }, { data: timelineRows }, { data: cropRows }, donationTotal] = await Promise.all([
+        supabase
           .from('galleries')
           .select('*')
           .eq('galleryable_type', 'village')
-          .eq('galleryable_id', found.id)
-          .order('sort_order', { ascending: true });
-        setGallery(groupGalleryRows(data));
-      }
-    };
-    loadVillage().catch(() => setLoading(false));
-  }, [slug]);
+          .eq('galleryable_id', normalized.id)
+          .order('sort_order', { ascending: true }),
+        supabase
+          .from('activity_logs')
+          .select('*')
+          .eq('loggable_type', 'village')
+          .eq('loggable_id', normalized.id)
+          .order('activity_date', { ascending: false }),
+        supabase
+          .from('village_crops')
+          .select('*')
+          .eq('village_id', normalized.id)
+          .order('sort_order', { ascending: true }),
+        fetchDonationTotal({ villageId: normalized.id }).catch(() => 0),
+      ]);
 
-  if (loading) return (
+      return {
+        village: normalized,
+        gallery: groupGalleryRows(galleryRows),
+        timeline: (timelineRows || []).map(activityLogToTimelineEvent),
+        crops: (cropRows || []).map(cropRowToEditor),
+        totalDonations: donationTotal || 0,
+      };
+    },
+    [slug],
+  );
+  const village = data?.village ?? null;
+  const gallery = data?.gallery ?? { before: [], after: [] };
+  const timeline = data?.timeline ?? [];
+  const crops = data?.crops ?? [];
+  const totalDonations = data?.totalDonations ?? 0;
+  useBreadcrumbLabel(village?.village_name || slug);
+  const [following, setFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+
+  useEffect(() => {
+    if (!village?.id || !isAuthenticated || !user?.id) {
+      setFollowing(false);
+      return;
+    }
+    villagesService.isFollowing(village.id, user.id).then(setFollowing).catch(() => setFollowing(false));
+  }, [village?.id, isAuthenticated, user?.id]);
+
+  const handleFollow = async () => {
+    if (!village?.id) return;
+    if (!isAuthenticated || !user?.id) {
+      navigateToLogin();
+      return;
+    }
+    setFollowLoading(true);
+    try {
+      if (following) {
+        await villagesService.unfollow(village.id, user.id);
+        setFollowing(false);
+        toast.success('Unfollowed village');
+      } else {
+        await villagesService.follow(village.id, user.id);
+        setFollowing(true);
+        toast.success('You are now following this village');
+      }
+    } catch (e) {
+      toast.error(e.message || 'Could not update follow status');
+    } finally {
+      setFollowLoading(false);
+    }
+  };
+
+  if (showBlockingLoader) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
     </div>
@@ -113,8 +189,15 @@ export default function VillageDetail() {
               <Heart className="w-4 h-4 mr-2" /> Donate to this Village
             </Button>
           </Link>
-          <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white rounded-xl">
-            <Star className="w-4 h-4 mr-1.5" /> Follow Village
+          <Button
+            type="button"
+            variant="outline"
+            disabled={followLoading}
+            onClick={handleFollow}
+            className={`rounded-xl ${following ? 'border-primary bg-primary/10 text-primary' : 'border-primary text-primary hover:bg-primary hover:text-white'}`}
+          >
+            <Star className={`w-4 h-4 mr-1.5 ${following ? 'fill-primary' : ''}`} />
+            {followLoading ? 'Please wait…' : following ? 'Following' : 'Follow Village'}
           </Button>
           <Link to={`/compare`}><Button variant="outline" className="border-projects text-projects hover:bg-projects hover:text-white rounded-xl">Compare</Button></Link>
         </div>
@@ -135,57 +218,61 @@ export default function VillageDetail() {
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="bg-muted w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6">
-            {['overview','statistics','development','timeline','gallery','donations','insights'].map(tab => (
-              <TabsTrigger key={tab} value={tab} className="capitalize rounded-lg text-sm py-2 px-4 whitespace-nowrap">{tab}</TabsTrigger>
+            {VILLAGE_DETAIL_TABS.map((tab) => (
+              <TabsTrigger key={tab.id} value={tab.id} className="rounded-lg text-sm py-2 px-4 whitespace-nowrap">{tab.label}</TabsTrigger>
             ))}
           </TabsList>
 
           <TabsContent value="overview">
-            <div className="grid sm:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl border border-border p-6">
-                <h3 className="font-heading font-bold text-lg mb-3">About {village.village_name}</h3>
-                <RichContent content={village.description || village.short_description || 'Village description not yet available. Contact the village representative to add information.'} className="text-muted-foreground leading-relaxed text-sm" />
-                {village.history && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <h4 className="font-semibold text-sm mb-2">History</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{village.history}</p>
-                  </div>
-                )}
-                {village.vision && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <h4 className="font-semibold text-sm mb-2">Vision</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{village.vision}</p>
-                  </div>
-                )}
-                {village.challenges && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <h4 className="font-semibold text-sm mb-2">Challenges</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{village.challenges}</p>
-                  </div>
-                )}
-                {village.achievements && (
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <h4 className="font-semibold text-sm mb-2">Achievements</h4>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{village.achievements}</p>
-                  </div>
-                )}
-              </div>
-              <div className="bg-white rounded-xl border border-border p-6">
-                <h3 className="font-heading font-bold text-lg mb-4">Location</h3>
-                <div className="space-y-2 text-sm">
-                  {[
-                    { label: 'State', value: safeText(village.state) },
-                    { label: 'District', value: safeText(village.district) },
-                    { label: 'Mandal', value: safeText(village.mandal) },
-                    { label: 'Pincode', value: village.pincode },
-                    { label: 'Village Code', value: village.village_code },
-                  ].map(item => item.value && (
-                    <div key={item.label} className="flex justify-between py-1.5 border-b border-border/50">
-                      <span className="text-muted-foreground">{item.label}</span>
-                      <span className="font-medium">{item.value}</span>
-                    </div>
-                  ))}
+            <div className="bg-white rounded-xl border border-border p-6">
+              <h3 className="font-heading font-bold text-lg mb-3">About {village.village_name}</h3>
+              <RichContent content={village.description || village.short_description || 'Village description not yet available. Contact the village representative to add information.'} className="text-muted-foreground leading-relaxed text-sm" />
+              {village.history && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <h4 className="font-semibold text-sm mb-2">History</h4>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{village.history}</p>
                 </div>
+              )}
+              {village.vision && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <h4 className="font-semibold text-sm mb-2">Vision</h4>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{village.vision}</p>
+                </div>
+              )}
+              {village.challenges && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <h4 className="font-semibold text-sm mb-2">Challenges</h4>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{village.challenges}</p>
+                </div>
+              )}
+              {village.achievements && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <h4 className="font-semibold text-sm mb-2">Achievements</h4>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{village.achievements}</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="location">
+            <div className="bg-white rounded-xl border border-border p-6 max-w-xl">
+              <h3 className="font-heading font-bold text-lg mb-4">Location</h3>
+              <div className="space-y-2 text-sm">
+                {[
+                  { label: 'State', value: safeText(village.state) },
+                  { label: 'District', value: safeText(village.district) },
+                  { label: 'Mandal', value: safeText(village.mandal) },
+                  { label: 'Pincode', value: village.pincode },
+                  { label: 'Village Code', value: village.village_code },
+                ].map(item => item.value ? (
+                  <div key={item.label} className="flex justify-between py-1.5 border-b border-border/50">
+                    <span className="text-muted-foreground">{item.label}</span>
+                    <span className="font-medium">{item.value}</span>
+                  </div>
+                ) : null)}
+                {!safeText(village.state) && !safeText(village.district) && !safeText(village.mandal) && !village.pincode && !village.village_code && (
+                  <p className="text-muted-foreground text-sm">Location details not yet available for this village.</p>
+                )}
               </div>
             </div>
           </TabsContent>
@@ -224,7 +311,6 @@ export default function VillageDetail() {
                   {[
                     { label: 'Farmer Count', value: village.farmer_count },
                     { label: 'Cultivable Land', value: village.cultivable_land },
-                    { label: 'Major Crops', value: village.major_crops },
                     { label: 'Trees Planted', value: village.trees_count?.toLocaleString('en-IN') },
                     { label: 'Water Bodies', value: village.water_bodies_count },
                   ].map(item => item.value && (
@@ -257,36 +343,99 @@ export default function VillageDetail() {
             </div>
           </TabsContent>
 
-          <TabsContent value="timeline">
-            <div className="bg-white rounded-xl border border-border p-6">
-              <h3 className="font-heading font-bold text-lg mb-6">Village Development Timeline</h3>
-              <div className="relative">
-                <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-primary/20" />
-                <div className="space-y-6 pl-12">
-                  {[
-                    { date: 'Jun 2026', title: 'Solar Street Lights Installed', desc: '20 solar-powered street lights installed across main roads of the village.', type: 'infrastructure', icon: '💡' },
-                    { date: 'May 2026', title: 'Water Tank Renovation Completed', desc: 'The community overhead tank was repaired and capacity increased to serve all 450 households.', type: 'milestone', icon: '💧' },
-                    { date: 'Apr 2026', title: '500 Trees Plantation Drive', desc: 'CMSR volunteers joined villagers to plant 500 native trees around the village perimeter.', type: 'environment', icon: '🌳' },
-                    { date: 'Mar 2026', title: 'New School Library Opened', desc: 'A fully stocked library with 1,200 books was inaugurated at the government high school.', type: 'education', icon: '📚' },
-                    { date: 'Feb 2026', title: 'Women SHG Formed', desc: '32 women formed a Self-Help Group with CMSR support. First meeting held on Feb 14, 2026.', type: 'community', icon: '👩' },
-                    { date: 'Jan 2026', title: 'Village Registered on CMSR', desc: `${village.village_name} was officially registered on the CMSR digital platform.`, type: 'milestone', icon: '🏘️' },
-                  ].map((event, i) => (
-                    <div key={i} className="relative">
-                      <div className="absolute -left-8 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm border-2 border-white">
-                        {event.icon}
-                      </div>
-                      <div className="bg-muted/30 rounded-xl p-4">
-                        <div className="flex items-center gap-2 mb-1.5">
-                          <span className="text-xs font-semibold text-primary">{event.date}</span>
-                          <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full capitalize">{event.type}</span>
+          <TabsContent value="crops">
+            <div className="space-y-4">
+              {crops.length > 0 ? (
+                <div className="grid sm:grid-cols-2 gap-4">
+                  {crops.map((crop) => (
+                    <div key={crop.id || crop.name} className="bg-white rounded-xl border border-border overflow-hidden">
+                      {crop.image && (
+                        <img src={crop.image} alt={crop.name} className="h-40 w-full object-cover" />
+                      )}
+                      <div className="p-5">
+                        <div className="flex items-start justify-between gap-2 mb-3">
+                          <h4 className="font-heading font-bold text-lg">{crop.name}</h4>
+                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ${
+                            crop.availability === 'in_season' ? 'bg-green-100 text-green-700'
+                              : crop.availability === 'harvesting' ? 'bg-amber-100 text-amber-700'
+                                : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {availabilityLabel(crop.availability)}
+                          </span>
                         </div>
-                        <h4 className="font-semibold text-sm mb-1">{event.title}</h4>
-                        <p className="text-xs text-muted-foreground leading-relaxed">{event.desc}</p>
+                        <div className="space-y-2 text-sm">
+                          {crop.price_per_kg !== '' && crop.price_per_kg != null && (
+                            <div className="flex justify-between py-1 border-b border-border/50">
+                              <span className="text-muted-foreground">Price / kg</span>
+                              <span className="font-medium">₹{Number(crop.price_per_kg).toLocaleString('en-IN')}</span>
+                            </div>
+                          )}
+                          {crop.sowing_period && (
+                            <div className="flex justify-between py-1 border-b border-border/50">
+                              <span className="text-muted-foreground">Sowing period</span>
+                              <span className="font-medium">{crop.sowing_period}</span>
+                            </div>
+                          )}
+                          {crop.harvest_period && (
+                            <div className="flex justify-between py-1 border-b border-border/50">
+                              <span className="text-muted-foreground">Harvest period</span>
+                              <span className="font-medium">{crop.harvest_period}</span>
+                            </div>
+                          )}
+                          {crop.estimated_yield && (
+                            <div className="flex justify-between py-1 border-b border-border/50">
+                              <span className="text-muted-foreground">Estimated yield</span>
+                              <span className="font-medium">{crop.estimated_yield}</span>
+                            </div>
+                          )}
+                          {crop.cultivation_area && (
+                            <div className="flex justify-between py-1">
+                              <span className="text-muted-foreground">Total cultivation area</span>
+                              <span className="font-medium">{crop.cultivation_area}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              ) : (
+                <div className="bg-white rounded-xl border border-border p-6">
+                  <p className="text-muted-foreground text-sm">No crop information available yet for this village.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="timeline">
+            <div className="bg-white rounded-xl border border-border p-6">
+              <h3 className="font-heading font-bold text-lg mb-6">Village Development Timeline</h3>
+              {timeline.length > 0 ? (
+                <div className="relative">
+                  <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-primary/20" />
+                  <div className="space-y-6 pl-12">
+                    {timeline.map((event) => (
+                      <div key={event.id || `${event.title}-${event.date}`} className="relative">
+                        <div className="absolute -left-8 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center text-sm border-2 border-white">
+                          {event.icon}
+                        </div>
+                        <div className="bg-muted/30 rounded-xl p-4">
+                          <div className="flex items-center gap-2 mb-1.5">
+                            <span className="text-xs font-semibold text-primary">{formatTimelineDate(event.date)}</span>
+                            {event.type && (
+                              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full capitalize">{event.type}</span>
+                            )}
+                          </div>
+                          <h4 className="font-semibold text-sm mb-1">{event.title}</h4>
+                          {event.desc && <p className="text-xs text-muted-foreground leading-relaxed">{event.desc}</p>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-muted-foreground text-sm">No timeline events yet. Milestones will appear here once added in admin.</p>
+              )}
             </div>
           </TabsContent>
 
@@ -296,23 +445,23 @@ export default function VillageDetail() {
 
           <TabsContent value="donations">
             <div className="bg-white rounded-xl border border-border p-6">
-              {village.total_donations > 0 ? (
+              {totalDonations > 0 ? (
                 <>
                   <div className="text-center mb-6">
-                    <div className="text-4xl font-bold text-donation mb-1">₹{village.total_donations.toLocaleString('en-IN')}</div>
+                    <div className="text-4xl font-bold text-donation mb-1">₹{totalDonations.toLocaleString('en-IN')}</div>
                     <div className="text-muted-foreground">Total donations received</div>
                   </div>
                   <div className="space-y-3 max-w-md mx-auto">
                     <div>
-                      <div className="flex justify-between text-sm mb-1"><span>Donations Received</span><span className="font-bold">₹{village.total_donations.toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-sm mb-1"><span>Donations Received</span><span className="font-bold">₹{totalDonations.toLocaleString('en-IN')}</span></div>
                       <Progress value={100} className="h-2 [&>div]:bg-green-600" />
                     </div>
                     <div>
-                      <div className="flex justify-between text-sm mb-1"><span>Funds Utilized</span><span className="font-bold text-donation">₹{Math.round((village.total_donations || 0) * 0.7).toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-sm mb-1"><span>Funds Utilized</span><span className="font-bold text-donation">₹{Math.round(totalDonations * 0.7).toLocaleString('en-IN')}</span></div>
                       <Progress value={70} className="h-2 [&>div]:bg-donation" />
                     </div>
                     <div>
-                      <div className="flex justify-between text-sm mb-1"><span>Remaining</span><span className="font-bold text-projects">₹{Math.round((village.total_donations || 0) * 0.3).toLocaleString('en-IN')}</span></div>
+                      <div className="flex justify-between text-sm mb-1"><span>Remaining</span><span className="font-bold text-projects">₹{Math.round(totalDonations * 0.3).toLocaleString('en-IN')}</span></div>
                       <Progress value={30} className="h-2 [&>div]:bg-projects" />
                     </div>
                   </div>

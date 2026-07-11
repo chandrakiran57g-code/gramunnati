@@ -4,6 +4,9 @@ import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { parseSettingsValue, serializeSettingsValue } from '@/lib/settingsStore';
 import { emptyActiveWorkPage, isProgramTemplate, PROGRAM_ACTIVE_CATEGORIES, formatActiveCategoryName } from '@/lib/activeWorkTemplates';
 import { BEFORE_CMSR_TITLE, AFTER_CMSR_TITLE, groupGalleryRows, normalizeBeforeAfter } from '@/lib/beforeAfterGallery';
+import { activityLogToTimelineEvent, timelineEventToActivityLog } from '@/lib/villageTimeline';
+import { cropRowToEditor, editorCropToRow } from '@/lib/villageCrops';
+import { requirementRowToEditor, editorRequirementToRow } from '@/lib/schoolRequirements';
 import { PROGRAMS } from '@/lib/programs';
 
 const STORE_KEY = 'active_work_store';
@@ -51,6 +54,105 @@ async function syncEntityBeforeAfter(type, entityId, gallery) {
     const { error } = await supabase.from('galleries').insert(row);
     if (error) throw error;
   }
+}
+
+async function readEntityTimeline(loggableType, entityId) {
+  const { data, error } = await supabase
+    .from('activity_logs')
+    .select('*')
+    .eq('loggable_type', loggableType)
+    .eq('loggable_id', entityId)
+    .order('activity_date', { ascending: false });
+  if (error) throw error;
+  return (data || []).map(activityLogToTimelineEvent);
+}
+
+async function syncEntityTimeline(loggableType, entityId, events) {
+  const { error: deleteError } = await supabase
+    .from('activity_logs')
+    .delete()
+    .eq('loggable_type', loggableType)
+    .eq('loggable_id', entityId);
+  if (deleteError) throw deleteError;
+
+  const rows = (events || [])
+    .map((event) => timelineEventToActivityLog(entityId, event, loggableType))
+    .filter((row) => row.title);
+
+  if (!rows.length) return;
+
+  const { error: insertError } = await supabase.from('activity_logs').insert(rows);
+  if (insertError) throw insertError;
+}
+
+async function readVillageTimeline(villageId) {
+  return readEntityTimeline('village', villageId);
+}
+
+async function syncVillageTimeline(villageId, events) {
+  return syncEntityTimeline('village', villageId, events);
+}
+
+async function readSchoolTimeline(schoolId) {
+  return readEntityTimeline('school', schoolId);
+}
+
+async function syncSchoolTimeline(schoolId, events) {
+  return syncEntityTimeline('school', schoolId, events);
+}
+
+async function readVillageCrops(villageId) {
+  const { data, error } = await supabase
+    .from('village_crops')
+    .select('*')
+    .eq('village_id', villageId)
+    .order('sort_order', { ascending: true });
+  if (error) throw error;
+  return (data || []).map(cropRowToEditor);
+}
+
+async function syncVillageCrops(villageId, crops) {
+  const { error: deleteError } = await supabase
+    .from('village_crops')
+    .delete()
+    .eq('village_id', villageId);
+  if (deleteError) throw deleteError;
+
+  const rows = (crops || [])
+    .map((crop, index) => editorCropToRow(villageId, crop, index))
+    .filter((row) => row.name);
+
+  if (!rows.length) return;
+
+  const { error: insertError } = await supabase.from('village_crops').insert(rows);
+  if (insertError) throw insertError;
+}
+
+async function readSchoolRequirements(schoolId) {
+  const { data, error } = await supabase
+    .from('school_requirements')
+    .select('*')
+    .eq('school_id', schoolId)
+    .order('sort_order', { ascending: true });
+  if (error) throw error;
+  return (data || []).map(requirementRowToEditor);
+}
+
+async function syncSchoolRequirements(schoolId, requirements) {
+  const { error: deleteError } = await supabase
+    .from('school_requirements')
+    .delete()
+    .eq('school_id', schoolId);
+  if (deleteError) throw deleteError;
+
+  const rows = (requirements || [])
+    .map((req, index) => editorRequirementToRow(schoolId, req, index))
+    .filter((row) => row.title);
+
+  if (!rows.length) return;
+
+  const { error: insertError } = await supabase.from('school_requirements').insert(rows);
+  if (insertError) throw insertError;
 }
 
 async function readStore() {
@@ -323,7 +425,7 @@ function villageToCard(v, cat) {
     name: v.village_name,
     slug: v.slug,
     cover_image: v.cover_image,
-    description: v.short_description,
+    description: v.description || v.short_description,
     status: v.is_active !== false ? 'active' : 'inactive',
     featured: Boolean(v.is_featured),
     display_order: v.display_order ?? 0,
@@ -345,7 +447,7 @@ function schoolToCard(s, cat) {
     name: s.school_name,
     slug: s.slug,
     cover_image: s.cover_image,
-    description: s.short_description,
+    description: s.description || s.short_description,
     status: s.is_active !== false ? 'active' : 'inactive',
     featured: Boolean(s.is_featured),
     display_order: s.display_order ?? 0,
@@ -540,7 +642,7 @@ export const activeWorkService = {
         slug: v.slug,
         name: v.village_name,
         cover_image: v.cover_image,
-        description: v.short_description,
+        description: v.description || v.short_description,
         badge: v.is_featured ? 'Featured' : 'Active',
         category_id: cat.id,
         link: `/villages/${v.slug}`,
@@ -560,7 +662,7 @@ export const activeWorkService = {
         slug: s.slug,
         name: s.school_name,
         cover_image: s.cover_image,
-        description: s.short_description,
+        description: s.description || s.short_description,
         badge: s.is_featured ? 'Featured' : 'Active',
         category_id: cat.id,
         link: `/schools/${s.slug}`,
@@ -581,7 +683,7 @@ export const activeWorkService = {
         slug: p.slug,
         name: p.project_name,
         cover_image: p.cover_image,
-        description: p.short_description,
+        description: p.description || p.short_description,
         badge: p.is_featured ? 'Featured' : 'Active',
         category_id: cat.id,
         link: `/projects/${p.slug}`,
@@ -658,7 +760,9 @@ export const activeWorkService = {
       const payload = {
         village_name: item.name?.trim(),
         slug: item.slug || slugify(item.name),
-        short_description: item.description || null,
+        short_description: null,
+        description: item.description || null,
+        description_te: item.description_te || null,
         cover_image: item.cover_image || null,
         is_featured: item.featured !== false,
         is_active: item.status !== 'inactive',
@@ -688,6 +792,7 @@ export const activeWorkService = {
         school_name: item.name?.trim(),
         slug: item.slug || slugify(item.name),
         short_description: item.description || null,
+        short_description_te: item.description_te || null,
         cover_image: item.cover_image || null,
         is_featured: item.featured !== false,
         is_active: item.status !== 'inactive',
@@ -755,7 +860,7 @@ export const activeWorkService = {
     }
 
     if (source === 'village') {
-      const { data } = await supabase.from('villages').select('*, districts(name), states(name)').eq('id', id).maybeSingle();
+      const { data } = await supabase.from('villages').select('*, districts(name), states(name), mandals(name)').eq('id', id).maybeSingle();
       if (!data) return null;
       return {
         ...emptyActiveWorkPage('village'),
@@ -764,25 +869,44 @@ export const activeWorkService = {
         entity_id: data.id,
         template_type: 'village',
         name: data.village_name,
+        name_te: data.village_name_te || '',
         slug: data.slug,
         cover_image: data.cover_image,
-        description: data.short_description,
+        description: data.description || data.short_description || '',
+        description_te: data.description_te || data.short_description_te || '',
+        history: data.history || '',
+        history_te: data.history_te || '',
+        village_code: data.village_code || '',
         status: data.is_active !== false ? 'active' : 'inactive',
-        overview: {
-          about: data.description || '',
-          vision: data.vision || '',
-          challenges: data.challenges || '',
-          achievements: data.achievements || '',
-        },
+        overview: {},
         location: {
           district: data.districts?.name || '',
           state: data.states?.name || '',
+          mandal: data.mandals?.name || '',
           pincode: data.pincode || '',
+        },
+        impact: {
+          trees_planted: data.trees_count || 0,
+          water_bodies: data.water_bodies_count || 0,
+          farmer_count: data.farmer_count || 0,
+          schools_count: data.schools_count || 0,
+          projects_count: data.projects_count || 0,
+          volunteers_count: data.volunteers_count || 0,
         },
         statistics: {
           population: data.population ?? '',
+          male_population: data.male_population ?? '',
+          female_population: data.female_population ?? '',
+          literacy_rate: data.literacy_rate ?? '',
+          farmer_count: data.farmer_count ?? '',
+          cultivable_land: data.cultivable_land || '',
+          major_crops: data.major_crops || '',
+          trees_count: data.trees_count ?? '',
+          water_bodies_count: data.water_bodies_count ?? '',
         },
         gallery: await readEntityBeforeAfter('village', data.id),
+        timeline: await readVillageTimeline(data.id),
+        crops: await readVillageCrops(data.id),
         link: `/villages/${data.slug}`,
       };
     }
@@ -799,20 +923,37 @@ export const activeWorkService = {
         name: data.school_name,
         slug: data.slug,
         cover_image: data.cover_image,
-        description: data.short_description,
+        description: data.short_description || '',
+        description_te: data.short_description_te || '',
         status: data.is_active !== false ? 'active' : 'inactive',
-        overview: {
-          about: data.description || '',
-          vision: data.vision || '',
-          challenges: data.challenges || '',
-          achievements: data.achievements || '',
-        },
+        overview: {},
         impact: {
           students_count: data.student_count || 0,
           teachers_count: data.teacher_count || 0,
           classrooms: data.classroom_count || 0,
         },
+        statistics: {
+          udise_code: data.udise_code || '',
+        },
+        infrastructure: {
+          library_available: !!data.library_available,
+          computer_lab_available: !!data.computer_lab_available,
+          playground_available: !!data.playground_available,
+          drinking_water_available: !!data.drinking_water_available,
+          toilet_available: !!data.toilet_available,
+          electricity_available: !!data.electricity_available,
+          digital_classroom_available: !!data.digital_classroom_available,
+          boundary_wall_available: !!data.boundary_wall_available,
+        },
+        administration: {
+          principal_name: data.principal_name || '',
+          contact_number: data.contact_number || '',
+          email: data.email || '',
+          website: data.website || '',
+        },
         gallery: await readEntityBeforeAfter('school', data.id),
+        timeline: await readSchoolTimeline(data.id),
+        requirements: await readSchoolRequirements(data.id),
         link: `/schools/${data.slug}`,
       };
     }
@@ -823,22 +964,42 @@ export const activeWorkService = {
   async saveAdminDetailPage(form) {
     if (form._source === 'village') {
       return adminDbMutation(async () => {
+        const stats = form.statistics || {};
+        const impact = form.impact || {};
         const payload = {
           village_name: form.name,
           slug: form.slug || slugify(form.name),
-          short_description: form.description || null,
-          description: form.overview?.about || null,
+          description: form.description || null,
+          description_te: form.description_te || null,
+          history: form.history || null,
+          history_te: form.history_te || null,
+          village_code: form.village_code || null,
+          pincode: form.location?.pincode || null,
+          short_description: null,
           cover_image: form.cover_image || null,
-          population: form.statistics?.population ? Number(form.statistics.population) : 0,
-          vision: form.overview?.vision || null,
-          challenges: form.overview?.challenges || null,
-          achievements: form.overview?.achievements || null,
+          population: stats.population ? Number(stats.population) : 0,
+          male_population: stats.male_population ? Number(stats.male_population) : 0,
+          female_population: stats.female_population ? Number(stats.female_population) : 0,
+          literacy_rate: stats.literacy_rate ? Number(stats.literacy_rate) : null,
+          farmer_count: stats.farmer_count ? Number(stats.farmer_count) : (impact.farmer_count ? Number(impact.farmer_count) : 0),
+          cultivable_land: stats.cultivable_land || null,
+          major_crops: stats.major_crops || null,
+          trees_count: stats.trees_count ? Number(stats.trees_count) : (impact.trees_planted ? Number(impact.trees_planted) : 0),
+          water_bodies_count: stats.water_bodies_count ? Number(stats.water_bodies_count) : (impact.water_bodies ? Number(impact.water_bodies) : 0),
+          schools_count: impact.schools_count ? Number(impact.schools_count) : 0,
+          projects_count: impact.projects_count ? Number(impact.projects_count) : 0,
+          volunteers_count: impact.volunteers_count ? Number(impact.volunteers_count) : 0,
+          vision: null,
+          challenges: null,
+          achievements: null,
           is_featured: form.featured !== false,
           is_active: form.status !== 'inactive',
         };
         const { error } = await supabase.from('villages').update(payload).eq('id', form.entity_id);
         if (error) throw error;
         await syncEntityBeforeAfter('village', form.entity_id, form.gallery);
+        await syncVillageTimeline(form.entity_id, form.timeline);
+        await syncVillageCrops(form.entity_id, form.crops);
         invalidateActiveWorkPublicCache();
         notifyPlatformDataChanged();
       });
@@ -846,29 +1007,50 @@ export const activeWorkService = {
 
     if (form._source === 'school') {
       return adminDbMutation(async () => {
+        const infra = form.infrastructure || {};
+        const admin = form.administration || {};
+        const impact = form.impact || {};
         const payload = {
           school_name: form.name,
           slug: form.slug || slugify(form.name),
           short_description: form.description || null,
-          description: form.overview?.about || null,
+          short_description_te: form.description_te || null,
           cover_image: form.cover_image || null,
-          student_count: Number(form.impact?.students_count) || 0,
-          teacher_count: Number(form.impact?.teachers_count) || 0,
-          classroom_count: Number(form.impact?.classrooms) || 0,
-          vision: form.overview?.vision || null,
-          challenges: form.overview?.challenges || null,
-          achievements: form.overview?.achievements || null,
+          udise_code: form.statistics?.udise_code || null,
+          principal_name: admin.principal_name || null,
+          contact_number: admin.contact_number || null,
+          email: admin.email || null,
+          website: admin.website || null,
+          student_count: Number(impact.students_count) || 0,
+          teacher_count: Number(impact.teachers_count) || 0,
+          classroom_count: Number(impact.classrooms) || 0,
+          library_available: !!infra.library_available,
+          computer_lab_available: !!infra.computer_lab_available,
+          playground_available: !!infra.playground_available,
+          drinking_water_available: !!infra.drinking_water_available,
+          toilet_available: !!infra.toilet_available,
+          electricity_available: !!infra.electricity_available,
+          digital_classroom_available: !!infra.digital_classroom_available,
+          boundary_wall_available: !!infra.boundary_wall_available,
+          vision: null,
+          challenges: null,
+          achievements: null,
           is_featured: form.featured !== false,
           is_active: form.status !== 'inactive',
         };
         const { error } = await supabase.from('schools').update(payload).eq('id', form.entity_id);
         if (error) throw error;
         await syncEntityBeforeAfter('school', form.entity_id, form.gallery);
+        await syncSchoolTimeline(form.entity_id, form.timeline);
+        await syncSchoolRequirements(form.entity_id, form.requirements);
         invalidateActiveWorkPublicCache();
         notifyPlatformDataChanged();
       });
     }
 
-    return this.saveItem(form);
+    return this.saveItem({
+      ...form,
+      overview: {},
+    });
   },
 };

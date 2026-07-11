@@ -13,7 +13,7 @@ const emptyItem = () => ({
   cover_image: '', description: '', badge: 'Featured',
   card: { enable_donate: true, enable_details: true },
   location: {}, programs: [], impact: {}, development_score: {},
-  overview: { about: '', vision: '', challenges: '', achievements: '' },
+  overview: {},
   statistics: {}, timeline: [], gallery: [], donations: {}, seo: {},
 });
 
@@ -126,7 +126,6 @@ export default function AdminActiveWorks() {
               <div><Label>Cover Image</Label><Input value={itemForm.cover_image} onChange={(e) => setItemForm({ ...itemForm, cover_image: e.target.value })} className="mt-1" /></div>
               <div><Label>Badge</Label><Input value={itemForm.badge} onChange={(e) => setItemForm({ ...itemForm, badge: e.target.value })} className="mt-1" /></div>
               <div className="sm:col-span-2"><RichTextEditor label="Description" value={itemForm.description} onChange={(html) => setItemForm({ ...itemForm, description: html })} /></div>
-              <div className="sm:col-span-2"><RichTextEditor label="About (Overview)" value={itemForm.overview?.about || ''} onChange={(html) => setItemForm({ ...itemForm, overview: { ...itemForm.overview, about: html } })} /></div>
               <div><Label>Trees Planted</Label><Input type="number" value={itemForm.impact?.trees_planted || ''} onChange={(e) => setItemForm({ ...itemForm, impact: { ...itemForm.impact, trees_planted: Number(e.target.value) } })} className="mt-1" /></div>
               <div><Label>Volunteers</Label><Input type="number" value={itemForm.impact?.volunteers_count || ''} onChange={(e) => setItemForm({ ...itemForm, impact: { ...itemForm.impact, volunteers_count: Number(e.target.value) } })} className="mt-1" /></div>
               <div><Label>Education Score (0-100)</Label><Input type="number" value={itemForm.development_score?.education || ''} onChange={(e) => setItemForm({ ...itemForm, development_score: { ...itemForm.development_score, education: Number(e.target.value) } })} className="mt-1" /></div>

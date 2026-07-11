@@ -6,19 +6,24 @@ import SafeImage from '@/components/shared/SafeImage';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { localize } from '@/lib/localizedContent';
 import { stripHtml } from '@/lib/stripHtml';
+import { normalizeVillageRecord } from '@/lib/villageDisplay';
+import { useInstantNavigation } from '@/lib/instantNavigation';
 
-export default function VillageCard({ village, index = 0 }) {
+export default function VillageCard({ village: rawVillage, index = 0 }) {
   const { lang } = useLanguage();
+  const instant = useInstantNavigation();
+  const village = normalizeVillageRecord(rawVillage);
   const villageName = localize(village, 'village_name', lang);
   const shortDescription = localize(village, 'short_description', lang);
   const slug = village.slug || village.village_name?.toLowerCase().replace(/\s+/g, '-') || village.id;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={instant ? false : { opacity: 0, y: 20 }}
+      animate={instant ? { opacity: 1, y: 0 } : undefined}
+      whileInView={instant ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.5 }}
+      transition={instant ? { duration: 0 } : { delay: index * 0.1, duration: 0.5 }}
       className="group cs-hover-card bg-white rounded-2xl overflow-hidden border border-brown-300 hover:shadow-xl transition-all duration-300"
     >
       <div className="relative h-44 overflow-hidden">

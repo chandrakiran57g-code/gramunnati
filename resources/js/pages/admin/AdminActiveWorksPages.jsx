@@ -11,9 +11,13 @@ import {
   buildActiveWorkTemplateTypes,
   getImpactFieldsForTemplate,
   getStatFieldsForTemplate,
-  isProgramTemplate,
-  DEVELOPMENT_SCORE_FIELDS,
+  VILLAGE_STAT_FIELDS,
+  VILLAGE_IMPACT_FIELDS,
+  SCHOOL_INFRA_FIELDS,
+  SCHOOL_ACADEMIC_FIELDS,
+  SCHOOL_OVERVIEW_FIELDS,
 } from '@/lib/activeWorkTemplates';
+import { getActiveWorkAdminTabs, getActiveWorkPreviewPath, resolveActiveWorkPageType } from '@/lib/detailPageTabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,9 +28,13 @@ import { Loader2, Layers, Save } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import BeforeAfterGalleryEditor from '@/components/admin/BeforeAfterGalleryEditor';
+import TimelineEditor from '@/components/admin/TimelineEditor';
+import CropsEditor from '@/components/admin/CropsEditor';
+import RequirementsEditor from '@/components/admin/RequirementsEditor';
+import AdminDetailTabNotice from '@/components/admin/AdminDetailTabNotice';
 import { normalizeBeforeAfter } from '@/lib/beforeAfterGallery';
 import { BilingualInput } from '@/components/admin/BilingualField';
-import RichTextEditor, { BilingualRichText, BilingualNestedRichText } from '@/components/admin/RichTextEditor';
+import RichTextEditor, { BilingualRichText } from '@/components/admin/RichTextEditor';
 
 export default function AdminActiveWorksPages() {
   const [searchParams] = useSearchParams();
@@ -86,7 +94,8 @@ export default function AdminActiveWorksPages() {
       slug: page?.slug || card?.slug || (card?.name ? slugifyTitle(card.name) : ''),
       template_type: type,
       cover_image: page?.cover_image || card?.cover_image || '',
-      description: page?.description || card?.description || '',
+      description: page?.description || page?.overview?.about || card?.description || '',
+      description_te: page?.description_te || page?.overview?.about_te || card?.description_te || '',
       _adminKey: key,
       _source: page?._source || card?._source,
       entity_id: page?.entity_id || card?.entity_id || card?.id,
@@ -94,7 +103,15 @@ export default function AdminActiveWorksPages() {
       impact: { ...base.impact, ...(page?.impact || {}) },
       development_score: { ...base.development_score, ...(page?.development_score || {}) },
       statistics: { ...(base.statistics || {}), ...(page?.statistics || {}) },
-      location: { district: '', state: '', pincode: '', ...(page?.location || {}) },
+      location: { district: '', state: '', mandal: '', pincode: '', ...(page?.location || {}) },
+      infrastructure: { ...(base.infrastructure || {}), ...(page?.infrastructure || {}) },
+      administration: { ...(base.administration || {}), ...(page?.administration || {}) },
+      history: page?.history || '',
+      history_te: page?.history_te || '',
+      village_code: page?.village_code || '',
+      timeline: Array.isArray(page?.timeline) ? page.timeline : [],
+      crops: Array.isArray(page?.crops) ? page.crops : [],
+      requirements: Array.isArray(page?.requirements) ? page.requirements : [],
       gallery: normalizeBeforeAfter(page?.gallery),
       donations: { goal: 0, raised: 0, ...(page?.donations || {}) },
       program_details: { objectives: '', activities: '', impact_highlights: '', ...(page?.program_details || {}) },
@@ -111,9 +128,10 @@ export default function AdminActiveWorksPages() {
     setForm((f) => ({ ...f, program_details: { ...(f.program_details || {}), [key]: value } }));
   };
 
-  const impactFields = getImpactFieldsForTemplate(form.template_type);
-  const statFields = getStatFieldsForTemplate(form.template_type);
-  const isProgram = isProgramTemplate(form.template_type);
+  const pageType = resolveActiveWorkPageType(form);
+  const adminTabs = getActiveWorkAdminTabs(form);
+  const statFields = pageType === 'village' ? VILLAGE_STAT_FIELDS : getStatFieldsForTemplate(form.template_type);
+  const developmentFields = pageType === 'village' ? VILLAGE_IMPACT_FIELDS : getImpactFieldsForTemplate(form.template_type);
 
   const handleSave = async () => {
     if (!form.name?.trim()) return toast.error('Name is required');
@@ -134,7 +152,7 @@ export default function AdminActiveWorksPages() {
     }
   };
 
-  const previewUrl = form.link || `/active-work/${form.slug}`;
+  const previewUrl = getActiveWorkPreviewPath(form);
 
   return (
     <AdminShell
@@ -244,119 +262,231 @@ export default function AdminActiveWorksPages() {
 
               <Tabs defaultValue="overview">
                 <TabsList className="mb-4 flex h-auto flex-wrap">
-                  {['overview', 'impact', 'scores', 'statistics', ...(isProgram ? ['program'] : []), 'gallery', 'location', 'donations', 'settings'].map((t) => (
-                    <TabsTrigger key={t} value={t} className="capitalize">{t === 'program' ? 'Objectives' : t}</TabsTrigger>
+                  {adminTabs.map((tab) => (
+                    <TabsTrigger key={tab.id} value={tab.id}>{tab.label}</TabsTrigger>
                   ))}
                 </TabsList>
 
                 <TabsContent value="overview" className="space-y-4">
-                  <BilingualRichText name="description" label="Short description" form={form} setForm={setForm} />
-                  <BilingualNestedRichText parent="overview" name="about" label="About" form={form} setForm={setForm} />
-                  <BilingualNestedRichText parent="overview" name="vision" label="Vision" form={form} setForm={setForm} />
-                  <BilingualNestedRichText parent="overview" name="challenges" label="Challenges" form={form} setForm={setForm} />
-                  <BilingualNestedRichText parent="overview" name="achievements" label="Achievements" form={form} setForm={setForm} />
-                </TabsContent>
-
-                <TabsContent value="impact">
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {impactFields.map(({ key, label, type }) => (
-                      <div key={key}>
-                        <Label>{label}</Label>
-                        <Input
-                          type={type || 'text'}
-                          className="mt-1"
-                          value={form.impact?.[key] ?? ''}
-                          onChange={(e) => setNested('impact', key, type === 'number' ? Number(e.target.value) : e.target.value)}
-                        />
+                  <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
+                  {pageType === 'school' && (
+                    <>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {SCHOOL_OVERVIEW_FIELDS.map(({ key, label }) => (
+                          <div key={key}>
+                            <Label>{label}</Label>
+                            <Input
+                              className="mt-1"
+                              value={key === 'udise_code' ? (form.statistics?.udise_code ?? '') : (form.administration?.[key] ?? '')}
+                              onChange={(e) => {
+                                if (key === 'udise_code') setNested('statistics', 'udise_code', e.target.value);
+                                else setNested('administration', key, e.target.value);
+                              }}
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </>
+                  )}
+                  {pageType === 'program' && (
+                    <p className="text-sm text-muted-foreground">
+                      Program overview content. Objectives, activities, and impact each have their own tab below.
+                    </p>
+                  )}
                 </TabsContent>
 
-                <TabsContent value="scores">
-                  <p className="mb-3 text-sm text-muted-foreground">Development score radar (0–100 each axis)</p>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {DEVELOPMENT_SCORE_FIELDS.map(({ key, label }) => (
-                      <div key={key}>
-                        <Label>{label}</Label>
-                        <Input
-                          type="number"
-                          min={0}
-                          max={100}
-                          className="mt-1"
-                          value={form.development_score?.[key] ?? ''}
-                          onChange={(e) => setNested('development_score', key, Number(e.target.value))}
-                        />
+                {pageType === 'village' && (
+                  <TabsContent value="location" className="space-y-4">
+                    <p className="text-sm text-muted-foreground">
+                      Shown in the Location sidebar on the public Overview tab.
+                    </p>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <Label>State</Label>
+                        <Input className="mt-1 bg-muted" value={form.location?.state || ''} readOnly />
+                        <p className="mt-1 text-xs text-muted-foreground">Edit in Villages admin geo settings.</p>
                       </div>
-                    ))}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="statistics">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {statFields.map(({ key, label }) => (
-                      <div key={key}>
-                        <Label>{label}</Label>
-                        <Input className="mt-1" value={form.statistics?.[key] ?? ''} onChange={(e) => setNested('statistics', key, e.target.value)} />
+                      <div>
+                        <Label>District</Label>
+                        <Input className="mt-1 bg-muted" value={form.location?.district || ''} readOnly />
                       </div>
-                    ))}
-                  </div>
-                </TabsContent>
+                      <div>
+                        <Label>Mandal</Label>
+                        <Input className="mt-1 bg-muted" value={form.location?.mandal || ''} readOnly />
+                      </div>
+                      <div>
+                        <Label>Pincode</Label>
+                        <Input className="mt-1" value={form.location?.pincode || ''} onChange={(e) => setNested('location', 'pincode', e.target.value)} />
+                      </div>
+                      <div>
+                        <Label>Village Code</Label>
+                        <Input className="mt-1" value={form.village_code || ''} onChange={(e) => setForm((f) => ({ ...f, village_code: e.target.value }))} />
+                      </div>
+                    </div>
+                  </TabsContent>
+                )}
 
-                {isProgram && (
-                  <TabsContent value="program" className="space-y-4">
-                    <RichTextEditor
-                      label="Objectives"
-                      value={form.program_details?.objectives || ''}
-                      onChange={(html) => setProgramDetail('objectives', html)}
-                    />
-                    <RichTextEditor
-                      label="Activities"
-                      value={form.program_details?.activities || ''}
-                      onChange={(html) => setProgramDetail('activities', html)}
-                    />
-                    <RichTextEditor
-                      label="Impact highlights"
-                      value={form.program_details?.impact_highlights || ''}
-                      onChange={(html) => setProgramDetail('impact_highlights', html)}
+                {(pageType === 'village' || pageType === 'cms_active_work') && (
+                  <TabsContent value="statistics">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {statFields.map(({ key, label, type }) => (
+                        <div key={key}>
+                          <Label>{label}</Label>
+                          <Input
+                            type={type || 'text'}
+                            className="mt-1"
+                            value={form.statistics?.[key] ?? ''}
+                            onChange={(e) => setNested('statistics', key, type === 'number' ? e.target.value : e.target.value)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+                )}
+
+                {pageType === 'village' && (
+                  <TabsContent value="development">
+                    <p className="mb-3 text-sm text-muted-foreground">Quick stats and development cards on the public page.</p>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                      {developmentFields.map(({ key, label, type }) => (
+                        <div key={key}>
+                          <Label>{label}</Label>
+                          <Input
+                            type={type || 'text'}
+                            className="mt-1"
+                            value={form.impact?.[key] ?? ''}
+                            onChange={(e) => setNested('impact', key, type === 'number' ? Number(e.target.value) : e.target.value)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </TabsContent>
+                )}
+
+                {pageType === 'village' && (
+                  <TabsContent value="crops">
+                    <CropsEditor
+                      value={form.crops}
+                      onChange={(crops) => setForm((f) => ({ ...f, crops }))}
                     />
                   </TabsContent>
                 )}
 
+                {pageType === 'school' && (
+                  <>
+                    <TabsContent value="infrastructure">
+                      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        {SCHOOL_INFRA_FIELDS.map(({ key, label }) => (
+                          <label key={key} className="flex items-center gap-2 rounded-lg border border-border p-3 text-sm">
+                            <input
+                              type="checkbox"
+                              checked={!!form.infrastructure?.[key]}
+                              onChange={(e) => setNested('infrastructure', key, e.target.checked)}
+                            />
+                            {label}
+                          </label>
+                        ))}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="academics">
+                      <div className="grid gap-4 sm:grid-cols-3">
+                        {SCHOOL_ACADEMIC_FIELDS.map(({ key, label, type }) => (
+                          <div key={key}>
+                            <Label>{label}</Label>
+                            <Input
+                              type={type || 'text'}
+                              className="mt-1"
+                              value={form.impact?.[key] ?? ''}
+                              onChange={(e) => setNested('impact', key, Number(e.target.value))}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="requirements">
+                      <RequirementsEditor
+                        value={form.requirements}
+                        onChange={(requirements) => setForm((f) => ({ ...f, requirements }))}
+                      />
+                    </TabsContent>
+                  </>
+                )}
+
+                {(pageType === 'village' || pageType === 'school' || pageType === 'cms_active_work') && (
+                  <TabsContent value="timeline">
+                    {(pageType === 'village' || pageType === 'school' || pageType === 'cms_active_work') ? (
+                      <TimelineEditor
+                        value={form.timeline}
+                        onChange={(timeline) => setForm((f) => ({ ...f, timeline }))}
+                      />
+                    ) : null}
+                  </TabsContent>
+                )}
+
+                {pageType === 'program' && (
+                  <>
+                    <TabsContent value="objectives" className="space-y-4">
+                      <RichTextEditor
+                        label="Objectives"
+                        value={form.program_details?.objectives || ''}
+                        onChange={(html) => setProgramDetail('objectives', html)}
+                      />
+                    </TabsContent>
+                    <TabsContent value="activities" className="space-y-4">
+                      <RichTextEditor
+                        label="Activities"
+                        value={form.program_details?.activities || ''}
+                        onChange={(html) => setProgramDetail('activities', html)}
+                      />
+                    </TabsContent>
+                    <TabsContent value="impact" className="space-y-4">
+                      <RichTextEditor
+                        label="Impact highlights"
+                        value={form.program_details?.impact_highlights || ''}
+                        onChange={(html) => setProgramDetail('impact_highlights', html)}
+                      />
+                    </TabsContent>
+                  </>
+                )}
+
                 <TabsContent value="gallery">
                   <p className="mb-3 text-sm text-muted-foreground">
-                    Upload photos to show the visual comparison of this place before and after CMSR's work.
-                    They appear in the Gallery tab of the public detail page.
+                    {pageType === 'program'
+                      ? 'Gallery images shown on the program detail page.'
+                      : 'Before/after photos shown in the Gallery tab on the public detail page.'}
                   </p>
-                  <BeforeAfterGalleryEditor
-                    value={form.gallery}
-                    onChange={(gallery) => setForm((f) => ({ ...f, gallery }))}
-                  />
+                  {(pageType === 'village' || pageType === 'school' || pageType === 'cms_active_work' || pageType === 'program') && (
+                    <BeforeAfterGalleryEditor
+                      value={form.gallery}
+                      onChange={(gallery) => setForm((f) => ({ ...f, gallery }))}
+                    />
+                  )}
                 </TabsContent>
 
-                <TabsContent value="location">
-                  <div className="grid gap-4 sm:grid-cols-3">
-                    <div><Label>District</Label><Input className="mt-1" value={form.location?.district || ''} onChange={(e) => setNested('location', 'district', e.target.value)} /></div>
-                    <div><Label>State</Label><Input className="mt-1" value={form.location?.state || ''} onChange={(e) => setNested('location', 'state', e.target.value)} /></div>
-                    <div><Label>Pincode</Label><Input className="mt-1" value={form.location?.pincode || ''} onChange={(e) => setNested('location', 'pincode', e.target.value)} /></div>
-                  </div>
-                </TabsContent>
+                {(pageType === 'village' || pageType === 'school' || pageType === 'cms_active_work') && (
+                  <TabsContent value="donations">
+                    {pageType === 'village' || pageType === 'school' ? (
+                      <AdminDetailTabNotice title="Donations tab">
+                        Donation totals on the public page are calculated automatically from successful donations in the donations table.
+                      </AdminDetailTabNotice>
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div><Label>Donation goal (₹)</Label><Input type="number" className="mt-1" value={form.donations?.goal ?? ''} onChange={(e) => setNested('donations', 'goal', Number(e.target.value))} /></div>
+                        <div><Label>Raised amount (₹)</Label><Input type="number" className="mt-1" value={form.donations?.raised ?? ''} onChange={(e) => setNested('donations', 'raised', Number(e.target.value))} /></div>
+                      </div>
+                    )}
+                  </TabsContent>
+                )}
 
-                <TabsContent value="donations">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div><Label>Donation goal (₹)</Label><Input type="number" className="mt-1" value={form.donations?.goal ?? ''} onChange={(e) => setNested('donations', 'goal', Number(e.target.value))} /></div>
-                    <div><Label>Raised amount (₹)</Label><Input type="number" className="mt-1" value={form.donations?.raised ?? ''} onChange={(e) => setNested('donations', 'raised', Number(e.target.value))} /></div>
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="settings">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.card?.enable_donate !== false} onChange={(e) => setNested('card', 'enable_donate', e.target.checked)} /> Show Donate button</label>
-                    <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.card?.enable_details !== false} onChange={(e) => setNested('card', 'enable_details', e.target.checked)} /> Show View Details</label>
-                    <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.card?.enable_follow === true} onChange={(e) => setNested('card', 'enable_follow', e.target.checked)} /> Show Follow</label>
-                    <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.card?.enable_compare === true} onChange={(e) => setNested('card', 'enable_compare', e.target.checked)} /> Show Compare</label>
-                  </div>
-                </TabsContent>
+                {(pageType === 'village' || pageType === 'cms_active_work') && (
+                  <TabsContent value="insights">
+                    <AdminDetailTabNotice title="Insights tab">
+                      Charts on the public Insights tab are generated automatically from village statistics. Update the Statistics and Development tabs to change what visitors see.
+                    </AdminDetailTabNotice>
+                  </TabsContent>
+                )}
               </Tabs>
 
               <div className="mt-6 flex gap-2 border-t pt-4">

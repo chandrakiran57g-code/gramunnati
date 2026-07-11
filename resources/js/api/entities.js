@@ -128,7 +128,7 @@ export const villagesService = {
   async follow(villageId, userId) {
     const { error } = await supabase
       .from('village_followers')
-      .insert({ village_id: villageId, user_id: userId });
+      .insert({ village_id: villageId, user_id: userId, created_at: new Date().toISOString() });
     if (error) throw error;
   },
 
@@ -225,7 +225,7 @@ export const schoolsService = {
       .from('school_requirements')
       .select('*')
       .eq('school_id', schoolId)
-      .order('priority', { ascending: true });
+      .order('sort_order', { ascending: true });
     if (error) throw error;
     return data;
   },
@@ -253,13 +253,28 @@ export const schoolsService = {
   },
 
   async follow(schoolId, userId) {
-    const { error } = await supabase.from('school_followers').insert({ school_id: schoolId, user_id: userId });
+    const { error } = await supabase.from('school_followers').insert({
+      school_id: schoolId,
+      user_id: userId,
+      created_at: new Date().toISOString(),
+    });
     if (error) throw error;
   },
 
   async unfollow(schoolId, userId) {
     const { error } = await supabase.from('school_followers').delete().eq('school_id', schoolId).eq('user_id', userId);
     if (error) throw error;
+  },
+
+  async isFollowing(schoolId, userId) {
+    const { data, error } = await supabase
+      .from('school_followers')
+      .select('id')
+      .eq('school_id', schoolId)
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error) return false;
+    return !!data;
   },
 
   async create(data) {

@@ -197,7 +197,6 @@ export default function AdminCmsPages() {
               }
             }}
           />
-          <BilingualRichText name="short_description" label="Short description" form={form} setForm={setForm} />
           <StructuredContentEditor
             form={form}
             setForm={setForm}

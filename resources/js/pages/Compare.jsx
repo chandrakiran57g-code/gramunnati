@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { safeText } from '@/lib/safeText';
+import { normalizeVillageRecord } from '@/lib/villageDisplay';
+import { fetchDonationTotalsByVillageIds } from '@/lib/donationTotals';
 
 export default function Compare() {
   const [villages, setVillages] = useState([]);
@@ -13,12 +15,23 @@ export default function Compare() {
   const [search2, setSearch2] = useState('');
   const [selected1, setSelected1] = useState(null);
   const [selected2, setSelected2] = useState(null);
+  const [donationTotals, setDonationTotals] = useState({});
   const [showDropdown1, setShowDropdown1] = useState(false);
   const [showDropdown2, setShowDropdown2] = useState(false);
 
   useEffect(() => {
-    base44.entities.Village.list('-created_date', 100).then(setVillages).catch(() => {});
+    base44.entities.Village.list('-created_date', 100)
+      .then((data) => setVillages((data || []).map(normalizeVillageRecord)))
+      .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const ids = [selected1?.id, selected2?.id].filter(Boolean);
+    if (!ids.length) return;
+    fetchDonationTotalsByVillageIds(ids)
+      .then((totals) => setDonationTotals((prev) => ({ ...prev, ...totals })))
+      .catch(() => {});
+  }, [selected1?.id, selected2?.id]);
 
   const filtered1 = villages.filter(v => !search1 || v.village_name?.toLowerCase().includes(search1.toLowerCase())).slice(0, 6);
   const filtered2 = villages.filter(v => !search2 || v.village_name?.toLowerCase().includes(search2.toLowerCase())).slice(0, 6);
@@ -101,10 +114,12 @@ export default function Compare() {
               <span className="text-center text-school">{selected2.village_name}</span>
             </div>
             {rows.map((row, i) => {
-              const v1 = row.format ? row.format(selected1[row.key]) : selected1[row.key] || '—';
-              const v2 = row.format ? row.format(selected2[row.key]) : selected2[row.key] || '—';
-              const isHigher1 = typeof selected1[row.key] === 'number' && typeof selected2[row.key] === 'number' && selected1[row.key] > selected2[row.key];
-              const isHigher2 = typeof selected1[row.key] === 'number' && typeof selected2[row.key] === 'number' && selected2[row.key] > selected1[row.key];
+              const raw1 = row.key === 'total_donations' ? (donationTotals[selected1.id] || 0) : selected1[row.key];
+              const raw2 = row.key === 'total_donations' ? (donationTotals[selected2.id] || 0) : selected2[row.key];
+              const v1 = row.format ? row.format(raw1) : raw1 || '—';
+              const v2 = row.format ? row.format(raw2) : raw2 || '—';
+              const isHigher1 = typeof raw1 === 'number' && typeof raw2 === 'number' && raw1 > raw2;
+              const isHigher2 = typeof raw1 === 'number' && typeof raw2 === 'number' && raw2 > raw1;
               return (
                 <div key={row.label} className="grid grid-cols-3 px-5 py-4 border-b border-border last:border-0 text-sm items-center hover:bg-muted/20">
                   <span className="text-muted-foreground">{row.label}</span>

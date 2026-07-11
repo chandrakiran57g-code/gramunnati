@@ -218,3 +218,38 @@ CREATE POLICY "Anyone insert contact" ON contact_messages FOR INSERT TO anon, au
 
 DROP POLICY IF EXISTS "Public insert donations" ON donations;
 CREATE POLICY "Public insert donations" ON donations FOR INSERT TO anon, authenticated WITH CHECK (true);
+
+-- Village followers & crops
+ALTER TABLE village_followers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE village_crops ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read village followers" ON village_followers;
+CREATE POLICY "Public read village followers" ON village_followers FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "Users manage own village follows" ON village_followers;
+CREATE POLICY "Users manage own village follows" ON village_followers FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users delete own village follows" ON village_followers;
+CREATE POLICY "Users delete own village follows" ON village_followers FOR DELETE TO authenticated USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Admin village followers" ON village_followers;
+CREATE POLICY "Admin village followers" ON village_followers FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read village crops" ON village_crops;
+CREATE POLICY "Public read village crops" ON village_crops FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "Admin village crops" ON village_crops;
+CREATE POLICY "Admin village crops" ON village_crops FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+ALTER TABLE school_followers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE school_requirements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public read school followers" ON school_followers;
+CREATE POLICY "Public read school followers" ON school_followers FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "Users manage own school follows" ON school_followers;
+CREATE POLICY "Users manage own school follows" ON school_followers FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Users delete own school follows" ON school_followers;
+CREATE POLICY "Users delete own school follows" ON school_followers FOR DELETE TO authenticated USING (auth.uid() = user_id);
+DROP POLICY IF EXISTS "Admin school followers" ON school_followers;
+CREATE POLICY "Admin school followers" ON school_followers FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public read school requirements" ON school_requirements;
+CREATE POLICY "Public read school requirements" ON school_requirements FOR SELECT TO anon, authenticated USING (true);
+DROP POLICY IF EXISTS "Admin school requirements" ON school_requirements;
+CREATE POLICY "Admin school requirements" ON school_requirements FOR ALL TO authenticated USING (true) WITH CHECK (true);

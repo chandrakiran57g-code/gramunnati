@@ -2,23 +2,40 @@ import React, { createContext, useState, useContext, useEffect, useCallback } fr
 import { authService } from '@/api/auth';
 
 const AuthContext = createContext();
+const AUTH_BOOT_KEY = 'cmsr_auth_bootstrapped';
+
+function isAuthBootstrapped() {
+  try {
+    return sessionStorage.getItem(AUTH_BOOT_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+function markAuthBootstrapped() {
+  try {
+    sessionStorage.setItem(AUTH_BOOT_KEY, '1');
+  } catch {
+    /* ignore */
+  }
+}
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [userRoles, setUserRoles] = useState([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  const [isLoadingAuth, setIsLoadingAuth] = useState(() => !isAuthBootstrapped());
   const [authChecked, setAuthChecked] = useState(false);
   const [authError, setAuthError] = useState(null);
 
   useEffect(() => {
-    checkSession();
+    checkSession({ silent: isAuthBootstrapped() });
   }, []);
 
-  const checkSession = async () => {
+  const checkSession = async ({ silent = false } = {}) => {
     try {
-      setIsLoadingAuth(true);
+      if (!silent) setIsLoadingAuth(true);
       setAuthError(null);
 
       const payload = await authService.getSession();
@@ -38,6 +55,7 @@ export const AuthProvider = ({ children }) => {
         message: error.message || 'Failed to check authentication',
       });
     } finally {
+      markAuthBootstrapped();
       setIsLoadingAuth(false);
       setAuthChecked(true);
     }

@@ -55,8 +55,8 @@ export default function ActiveWorkDetail() {
   const isProgram = isProgramTemplate(item.template_type);
   const programMeta = isProgram ? getProgramTemplateMeta(item.template_type) : null;
   const displayName = localize(item, 'name', lang) || item.name;
-  const overviewAbout = localizeNested(item, 'overview', 'about', lang)
-    || localize(item, 'description', lang)
+  const overviewAbout = localize(item, 'description', lang)
+    || localizeNested(item, 'overview', 'about', lang)
     || 'No overview yet.';
   const impact = item.impact || {};
   const mockVillage = {
