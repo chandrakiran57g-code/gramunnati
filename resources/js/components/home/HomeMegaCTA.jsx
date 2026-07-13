@@ -10,7 +10,7 @@ export default function HomeMegaCTA({ stats, loading }) {
   const { t } = useLanguage();
 
   return (
-    <section className="relative min-h-[480px] flex items-center overflow-hidden">
+    <section className="relative min-h-[360px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <SafeImage
           src={VILLAGE_HERO_PHOTOS[5].url}
@@ -24,7 +24,7 @@ export default function HomeMegaCTA({ stats, loading }) {
         <div className="absolute inset-0 home-mega-cta-gradient" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-20 text-center">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -44,7 +44,7 @@ export default function HomeMegaCTA({ stats, loading }) {
             <br />
             a transformed village tomorrow
           </h2>
-          <p className="text-amber-100/70 text-lg max-w-xl mx-auto mb-10 font-body text-pretty">
+          <p className="text-amber-100/70 text-lg max-w-xl mx-auto mb-6 font-body text-pretty">
             Donors and volunteers worldwide on one platform. Join us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

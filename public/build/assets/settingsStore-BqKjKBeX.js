@@ -1,0 +1,1 @@
+function e(e,t=null){if(e==null||e===``)return t;try{let n=typeof e==`string`?JSON.parse(e):e;return typeof n==`string`&&(n=JSON.parse(n)),n??t}catch{return t}}function t(e){return JSON.stringify(e)}export{t as n,e as t};

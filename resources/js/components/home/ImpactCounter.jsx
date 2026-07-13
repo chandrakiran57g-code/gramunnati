@@ -35,13 +35,13 @@ function CountUp({ end, duration = 2000 }) {
 export default function ImpactCounter({ stats, loading }) {
   const { t } = useLanguage();
   return (
-    <section className="py-20 bg-gray-50 border-y border-gray-100">
+    <section className="py-10 bg-gray-50 border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-14"
+          className="text-center mb-6"
         >
           <h2
             className="font-heading font-bold text-gray-900 mb-3"

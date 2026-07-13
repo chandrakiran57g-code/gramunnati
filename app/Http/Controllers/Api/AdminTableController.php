@@ -56,6 +56,36 @@ class AdminTableController extends Controller
         'mandals' => \App\Models\Mandal::class,
     ];
 
+    /** Tables readable without authentication (public site). */
+    private const PUBLIC_READ_TABLES = [
+        'villages', 'schools', 'projects', 'project_categories', 'project_updates',
+        'programs', 'team_groups', 'team_members', 'partners', 'beneficiaries',
+        'news', 'events', 'success_stories', 'galleries', 'impact_metrics',
+        'activity_logs', 'testimonials', 'cms_pages', 'settings', 'faqs',
+        'states', 'districts', 'mandals',
+        'village_needs', 'school_requirements', 'village_crops',
+        'donations', 'profiles',
+    ];
+
+    /** Tables that require a signed-in member (scoped to the current user). */
+    private const MEMBER_READ_TABLES = [
+        'village_followers', 'school_followers', 'notifications',
+        'volunteers', 'volunteer_activities',
+    ];
+
+    /** Donation columns safe for anonymous aggregate reads (no PII). */
+    private const PUBLIC_DONATION_COLUMNS = [
+        'id', 'amount', 'currency', 'payment_status', 'village_id', 'school_id',
+        'project_id', 'target_type', 'is_anonymous', 'donated_at', 'created_at', 'updated_at',
+    ];
+
+    /** Profile columns exposed on the public member directory. */
+    private const PUBLIC_PROFILE_COLUMNS = [
+        'id', 'user_id', 'full_name', 'profession', 'village_name', 'village_id',
+        'state', 'district', 'mandal', 'state_id', 'district_id', 'mandal_id',
+        'profile_photo', 'created_at', 'updated_at',
+    ];
+
     /** CMS pages that cannot be edited or deleted from admin. */
     private const LOCKED_CMS_SLUGS = ['about-cmsr'];
 
@@ -108,7 +138,39 @@ class AdminTableController extends Controller
         $filters = is_string($filtersInput) ? (json_decode($filtersInput, true) ?? []) : $filtersInput;
         $filters = $this->normalizeFilters($table, $filters);
 
+        if ($table === 'village_crops') {
+            $this->enforcePublicReadAccess($request, $table, $filters);
+
+            $query = DB::table('village_crops');
+            foreach ($filters as $filter) {
+                if (($filter['column'] ?? '') && ($filter['op'] ?? '') === 'eq') {
+                    $query->where($filter['column'], $filter['value']);
+                }
+            }
+
+            if ($request->boolean('count_only')) {
+                return response()->json(['data' => null, 'count' => $query->count(), 'error' => null]);
+            }
+
+            $orderInput = $request->input('order', []);
+            $order = is_string($orderInput) ? (json_decode($orderInput, true) ?? []) : $orderInput;
+            if (! empty($order['column'])) {
+                $query->orderBy($order['column'], ($order['ascending'] ?? true) ? 'asc' : 'desc');
+            }
+
+            $count = (clone $query)->count();
+            $limit = min((int) $request->input('limit', 50), 500);
+            $offset = max((int) $request->input('offset', 0), 0);
+            $rows = $query->offset($offset)->limit($limit)->get();
+
+            return response()->json(['data' => $rows, 'count' => $count, 'error' => null]);
+        }
+
         if ($table === 'user_roles') {
+            if (! $this->isAdminDbRequest($request)) {
+                abort(403, 'Table not allowed');
+            }
+
             $query = DB::table('user_roles');
             foreach ($filters as $filter) {
                 if (($filter['column'] ?? '') && ($filter['op'] ?? '') === 'eq') {
@@ -124,11 +186,13 @@ class AdminTableController extends Controller
             return response()->json(['data' => $rows, 'count' => $rows->count(), 'error' => null]);
         }
 
+        $this->enforcePublicReadAccess($request, $table, $filters);
+
         $model = $this->resolveModel($table);
         $query = $model::query();
 
-        // Never expose payment secrets / bank details to unauthenticated callers.
-        if ($table === 'settings' && ! $request->user()) {
+        // Never expose payment secrets / bank details outside the admin API.
+        if ($table === 'settings' && ! $this->isAdminDbRequest($request)) {
             $query->whereNotIn('key', ['rzp_key', 'rzp_secret', 'bank_name', 'bank_account', 'ifsc']);
         }
 
@@ -154,6 +218,7 @@ class AdminTableController extends Controller
 
         $rows = $query->offset($offset)->limit($limit)->get();
         $this->transformRows($table, $rows);
+        $rows = $this->stripSensitiveReadColumns($request, $table, $filters, $rows);
 
         return response()->json(['data' => $rows, 'count' => $count, 'error' => null]);
     }
@@ -436,6 +501,133 @@ class AdminTableController extends Controller
         }
 
         return self::MODELS[$table];
+    }
+
+    private function isAdminDbRequest(Request $request): bool
+    {
+        return str_contains($request->path(), 'admin/db');
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function enforcePublicReadAccess(Request $request, string $table, array &$filters): void
+    {
+        if ($this->isAdminDbRequest($request)) {
+            return;
+        }
+
+        if ($table === 'user_roles') {
+            abort(403, 'Table not allowed');
+        }
+
+        $user = $request->user();
+        $allowed = self::PUBLIC_READ_TABLES;
+
+        if ($user) {
+            $allowed = array_merge($allowed, self::MEMBER_READ_TABLES);
+        }
+
+        if (! in_array($table, $allowed, true)) {
+            abort($user ? 403 : 401, $user ? 'Table not allowed' : 'Authentication required');
+        }
+
+        if ($user) {
+            $this->enforceMemberScope($table, $filters, $user);
+        }
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function enforceMemberScope(string $table, array &$filters, \App\Models\User $user): void
+    {
+        $scopedTables = [
+            'village_followers' => 'user_id',
+            'school_followers' => 'user_id',
+            'notifications' => 'user_id',
+            'volunteers' => 'user_id',
+        ];
+
+        if (! isset($scopedTables[$table])) {
+            return;
+        }
+
+        $column = $scopedTables[$table];
+        $filters = array_values(array_filter(
+            $filters,
+            fn ($filter) => ! (($filter['column'] ?? '') === $column && ($filter['op'] ?? '') === 'eq')
+        ));
+        $filters[] = ['column' => $column, 'op' => 'eq', 'value' => $user->id];
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function stripSensitiveReadColumns(Request $request, string $table, array $filters, $rows)
+    {
+        if ($this->isAdminDbRequest($request)) {
+            return $rows;
+        }
+
+        $user = $request->user();
+
+        if ($table === 'donations' && ! $this->filtersScopeToUserDonations($filters, $user)) {
+            return $rows->map(fn ($row) => collect($row->toArray())->only(self::PUBLIC_DONATION_COLUMNS)->all());
+        }
+
+        if ($table === 'profiles' && ! $this->filtersScopeToOwnProfile($filters, $user)) {
+            return $rows->map(fn ($row) => collect($row->toArray())->only(self::PUBLIC_PROFILE_COLUMNS)->all());
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function filtersScopeToUserDonations(array $filters, ?\App\Models\User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        foreach ($filters as $filter) {
+            if (($filter['op'] ?? '') !== 'eq') {
+                continue;
+            }
+            if (($filter['column'] ?? '') === 'user_id' && (int) ($filter['value'] ?? 0) === (int) $user->id) {
+                return true;
+            }
+            if (($filter['column'] ?? '') === 'email'
+                && strtolower((string) ($filter['value'] ?? '')) === strtolower((string) $user->email)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function filtersScopeToOwnProfile(array $filters, ?\App\Models\User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        foreach ($filters as $filter) {
+            if (($filter['op'] ?? '') !== 'eq') {
+                continue;
+            }
+            if (in_array($filter['column'] ?? '', ['id', 'user_id'], true)
+                && (int) ($filter['value'] ?? 0) === (int) $user->id) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function normalizeFilters(string $table, array $filters): array

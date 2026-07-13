@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
@@ -60,66 +61,69 @@ import Beneficiaries from '@/pages/Beneficiaries';
 import BeneficiaryDetail from '@/pages/BeneficiaryDetail';
 import MemberDirectory from '@/pages/MemberDirectory';
 
-// Member Portal
-import MemberDashboard from '@/pages/dashboard/MemberDashboard';
-import Profile from '@/pages/dashboard/Profile';
-import ProfileEdit from '@/pages/dashboard/ProfileEdit';
-import MyDonations from '@/pages/dashboard/MyDonations';
-import MyVillages from '@/pages/dashboard/MyVillages';
-import MySchools from '@/pages/dashboard/MySchools';
-import VolunteerProfile from '@/pages/dashboard/VolunteerProfile';
-import MyActivities from '@/pages/dashboard/MyActivities';
-import Notifications from '@/pages/dashboard/Notifications';
-import Settings from '@/pages/dashboard/Settings';
-
-// Admin Pages
-import AdminDashboard from '@/pages/admin/AdminDashboard';
-import AdminReports from '@/pages/admin/AdminReports';
-import AdminVillages from '@/pages/admin/AdminVillages';
-import AdminSchools from '@/pages/admin/AdminSchools';
-import AdminProjects from '@/pages/admin/AdminProjects';
-import AdminDonations from '@/pages/admin/AdminDonations';
-import AdminVolunteers from '@/pages/admin/AdminVolunteers';
-import AdminMessages from '@/pages/admin/AdminMessages';
-import AdminSettings from '@/pages/admin/AdminSettings';
-import AdminCMS from '@/pages/admin/AdminCMS';
-import AdminNavigation from '@/pages/admin/AdminNavigation';
-import AdminCmsPages from '@/pages/admin/AdminCmsPages';
-import AdminTeams from '@/pages/admin/AdminTeams';
-import AdminPartners from '@/pages/admin/AdminPartners';
-import AdminHomepage from '@/pages/admin/AdminHomepage';
-import AdminBeneficiaries from '@/pages/admin/AdminBeneficiaries';
-import AdminPrograms from '@/pages/admin/AdminPrograms';
-import AdminProgramPages from '@/pages/admin/AdminProgramPages';
-import AdminStories from '@/pages/admin/AdminStories';
-import AdminEvents from '@/pages/admin/AdminEvents';
-import AdminNews from '@/pages/admin/AdminNews';
-import AdminFaqs from '@/pages/admin/AdminFaqs';
-import AdminGallery from '@/pages/admin/AdminGallery';
-import AdminUsers from '@/pages/admin/AdminUsers';
-import AdminMemberDirectory from '@/pages/admin/AdminMemberDirectory';
-import AdminNotifications from '@/pages/admin/AdminNotifications';
-import AdminRoles from '@/pages/admin/AdminRoles';
-import AdminAuditLogs from '@/pages/admin/AdminAuditLogs';
-import AdminProjectCategories from '@/pages/admin/AdminProjectCategories';
-import AdminImpactMetrics from '@/pages/admin/AdminImpactMetrics';
-import AdminReceipts from '@/pages/admin/AdminReceipts';
-import AdminVillageActivities from '@/pages/admin/AdminVillageActivities';
-import AdminSchoolActivities from '@/pages/admin/AdminSchoolActivities';
-import AdminVillageDonations from '@/pages/admin/AdminVillageDonations';
-import AdminSchoolDonations from '@/pages/admin/AdminSchoolDonations';
-import AdminBackup from '@/pages/admin/AdminBackup';
 import ActiveWorkDetail from '@/pages/ActiveWorkDetail';
 import ActiveWorksCategory from '@/pages/ActiveWorksCategory';
 import NeedSupport from '@/pages/NeedSupport';
 import NeedSupportDetail from '@/pages/NeedSupportDetail';
-import AdminActiveWorksCards from '@/pages/admin/AdminActiveWorksCards';
-import AdminActiveWorksPages from '@/pages/admin/AdminActiveWorksPages';
-import AdminActiveWorksTemplates from '@/pages/admin/AdminActiveWorksTemplates';
-import AdminNeedSupport from '@/pages/admin/AdminNeedSupport';
-import AdminNeedSupportPages from '@/pages/admin/AdminNeedSupportPages';
+
 import AdminLegacyRedirect, { adminLegacyRedirects } from '@/pages/admin/AdminLegacyRedirect';
 import { adminRoutes } from '@/lib/adminRoutes';
+
+function RouteLoading() {
+  return (
+    <div className="min-h-[40vh] flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+    </div>
+  );
+}
+
+function lazyPage(importFn) {
+  const Component = lazy(importFn);
+  return function LazyPage(props) {
+    return (
+      <Suspense fallback={<RouteLoading />}>
+        <Component {...props} />
+      </Suspense>
+    );
+  };
+}
+
+// Member portal — code-split
+const MemberDashboard = lazyPage(() => import('@/pages/dashboard/MemberDashboard'));
+const Profile = lazyPage(() => import('@/pages/dashboard/Profile'));
+const ProfileEdit = lazyPage(() => import('@/pages/dashboard/ProfileEdit'));
+const MyDonations = lazyPage(() => import('@/pages/dashboard/MyDonations'));
+const MyVillages = lazyPage(() => import('@/pages/dashboard/MyVillages'));
+const MySchools = lazyPage(() => import('@/pages/dashboard/MySchools'));
+const VolunteerProfile = lazyPage(() => import('@/pages/dashboard/VolunteerProfile'));
+const MyActivities = lazyPage(() => import('@/pages/dashboard/MyActivities'));
+const Notifications = lazyPage(() => import('@/pages/dashboard/Notifications'));
+const Settings = lazyPage(() => import('@/pages/dashboard/Settings'));
+
+// Admin panel — code-split
+const AdminDashboard = lazyPage(() => import('@/pages/admin/AdminDashboard'));
+const AdminReports = lazyPage(() => import('@/pages/admin/AdminReports'));
+const AdminDonations = lazyPage(() => import('@/pages/admin/AdminDonations'));
+const AdminVolunteers = lazyPage(() => import('@/pages/admin/AdminVolunteers'));
+const AdminMessages = lazyPage(() => import('@/pages/admin/AdminMessages'));
+const AdminSettings = lazyPage(() => import('@/pages/admin/AdminSettings'));
+const AdminCmsPages = lazyPage(() => import('@/pages/admin/AdminCmsPages'));
+const AdminTeams = lazyPage(() => import('@/pages/admin/AdminTeams'));
+const AdminPartners = lazyPage(() => import('@/pages/admin/AdminPartners'));
+const AdminPrograms = lazyPage(() => import('@/pages/admin/AdminPrograms'));
+const AdminProgramPages = lazyPage(() => import('@/pages/admin/AdminProgramPages'));
+const AdminStories = lazyPage(() => import('@/pages/admin/AdminStories'));
+const AdminEvents = lazyPage(() => import('@/pages/admin/AdminEvents'));
+const AdminNews = lazyPage(() => import('@/pages/admin/AdminNews'));
+const AdminFaqs = lazyPage(() => import('@/pages/admin/AdminFaqs'));
+const AdminGallery = lazyPage(() => import('@/pages/admin/AdminGallery'));
+const AdminMemberDirectory = lazyPage(() => import('@/pages/admin/AdminMemberDirectory'));
+const AdminReceipts = lazyPage(() => import('@/pages/admin/AdminReceipts'));
+const AdminActiveWorksCards = lazyPage(() => import('@/pages/admin/AdminActiveWorksCards'));
+const AdminActiveWorksPages = lazyPage(() => import('@/pages/admin/AdminActiveWorksPages'));
+const AdminActiveWorksTemplates = lazyPage(() => import('@/pages/admin/AdminActiveWorksTemplates'));
+const AdminNeedSupport = lazyPage(() => import('@/pages/admin/AdminNeedSupport'));
+const AdminNeedSupportPages = lazyPage(() => import('@/pages/admin/AdminNeedSupportPages'));
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();

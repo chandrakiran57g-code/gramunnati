@@ -1,0 +1,1 @@
+function e(e,t=``){return e==null?t:typeof e==`string`?e||t:typeof e==`number`?String(e):typeof e==`object`?e.name?e.name:e.village_name?e.village_name:e.school_name?e.school_name:e.title?e.title:t:String(e)||t}export{e as t};

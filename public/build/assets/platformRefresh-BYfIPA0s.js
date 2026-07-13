@@ -1,0 +1,1 @@
+var e=`cmsr-platform-data-changed`,t=`cmsr-platform-data-changed`;function n(n={}){if(!(typeof window>`u`)){window.dispatchEvent(new CustomEvent(e,{detail:n}));try{localStorage.setItem(t,JSON.stringify({ts:Date.now(),detail:n}))}catch{}}}export{t as n,n as r,e as t};

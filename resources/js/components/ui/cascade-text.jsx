@@ -53,7 +53,7 @@ export const TextReveal = React.memo(function TextReveal({
       fontSize,
       color: hoverEffect && hovered ? hoverColor : color,
       transition: hoverEffect ? 'color 0.35s ease' : undefined,
-      lineHeight: isWordMode ? 1.65 : 1.15,
+      lineHeight: isWordMode ? 'var(--leading-relaxed)' : 'var(--leading-snug)',
       ...style,
     },
     onMouseEnter: hoverEffect ? () => setHovered(true) : undefined,
@@ -110,7 +110,7 @@ export const TextReveal = React.memo(function TextReveal({
                     transitionDelay: getTransitionDelay(i),
                     transform: getTransform(i),
                     opacity: getOpacity(),
-                    lineHeight: 1.65,
+                    lineHeight: 'var(--leading-relaxed)',
                     verticalAlign: 'baseline',
                   }
                 : {

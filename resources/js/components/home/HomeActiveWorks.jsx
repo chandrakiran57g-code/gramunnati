@@ -92,7 +92,7 @@ export function HomeActiveWorksSection({ section, index = 0 }) {
   const viewAll = category.view_all_link || `/active-works/category/${category.slug}`;
 
   return (
-    <div className={index > 0 ? 'mt-14' : ''}>
+    <div className={index > 0 ? 'mt-6' : ''}>
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
         <div>
           <h3 className="font-heading font-bold text-[#3D2914] text-2xl">{translateCategoryName(category, t)}</h3>
@@ -143,9 +143,9 @@ export default function HomeActiveWorks() {
   const isLoading = loading && sections.length === 0;
 
   return (
-    <section className="py-20 sm:py-24 bg-gray-50">
+    <section className="py-10 sm:py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="mb-10">
+        <div className="mb-5">
           <h2
             className="font-heading font-bold text-[#3D2914] mb-2"
             style={{ fontSize: 'clamp(1.75rem, 3.5vw, 2.75rem)', letterSpacing: '-0.025em' }}

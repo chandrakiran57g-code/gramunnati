@@ -27,7 +27,7 @@ export function LogoCloud({ logos = [], className, ...props }) {
           logo={logo}
         >
           {index % 3 === 0 && (
-            <PlusIcon className="absolute -bottom-[12.5px] -right-[12.5px] z-10 size-6 text-border" strokeWidth={1} />
+            <PlusIcon className="absolute -bottom-3 -right-3 z-10 size-6 text-border" strokeWidth={1} />
           )}
         </LogoCard>
       ))}

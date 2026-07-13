@@ -1,0 +1,1 @@
+function e(e){return String(e||``).trim()||`https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=800&q=80`}export{e as t};

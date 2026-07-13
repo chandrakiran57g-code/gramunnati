@@ -25,6 +25,14 @@
     /* Fixed navbar height (matches Navbar h-16) */
     --navbar-height: 4rem;
 
+    /* Line-height scale */
+    --leading-tight: 1.1;
+    --leading-snug: 1.15;
+    --leading-normal: 1.55;
+    --leading-relaxed: 1.65;
+    --leading-loose: 1.7;
+    --leading-body: 1.75;
+
     /* ── Service accents (programs only — do not use for global UI) ── */
     --service-village: 158 57% 29%;       /* #2D6A4F */
     --service-village-tint: 152 41% 93%;  /* #E8F5EE */
@@ -226,13 +234,13 @@
   }
 
   .hero-section-title-main {
-    line-height: 1.1;
+    line-height: var(--leading-tight);
   }
 
   .hero-section-title-line {
     font-size: 0.72em;
     letter-spacing: 0.01em;
-    line-height: 1.15;
+    line-height: var(--leading-snug);
   }
 
   .hero-rotating-word {
@@ -279,7 +287,7 @@
     font-size: clamp(0.8125rem, 2.2vw, 1rem);
     letter-spacing: 0.01em;
     max-width: 26rem;
-    line-height: 1.55;
+    line-height: var(--leading-normal);
   }
 
   @media (prefers-color-scheme: dark) {
@@ -294,7 +302,7 @@
 
   .hero-section-subtitle {
     font-size: 0.9375rem;
-    line-height: 1.65;
+    line-height: var(--leading-relaxed);
     margin-bottom: 1.25rem;
   }
 
@@ -1051,7 +1059,7 @@
 /* Structured / rich admin content on public pages */
 .rich-content {
   color: hsl(var(--muted-foreground));
-  line-height: 1.7;
+  line-height: var(--leading-loose);
   font-size: 0.975rem;
 }
 .rich-content h1 {
@@ -1085,7 +1093,7 @@
 }
 .rich-content p {
   margin: 0 0 1rem;
-  line-height: 1.75;
+  line-height: var(--leading-body);
 }
 .rich-content p:last-child {
   margin-bottom: 0;
@@ -1103,7 +1111,7 @@
 }
 .rich-content li {
   margin: 0.35rem 0;
-  line-height: 1.65;
+  line-height: var(--leading-relaxed);
 }
 .rich-content strong,
 .rich-content b {

@@ -71,9 +71,9 @@ export default function HomeUrgentProjects({ projects = [], loading }) {
   if (!loading && projects.length === 0) return null;
 
   return (
-    <section className="py-20 sm:py-24 bg-[#2a1c0f] relative overflow-hidden">
+    <section className="py-10 sm:py-12 bg-[#2a1c0f] relative overflow-hidden">
       <div className="absolute inset-0 home-urgent-glow pointer-events-none" />
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 mb-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 mb-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
           <h2
             className="font-heading font-bold text-amber-50 mb-2"
