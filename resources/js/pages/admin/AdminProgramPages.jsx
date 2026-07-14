@@ -6,7 +6,6 @@ import AdminShell from '@/components/admin/AdminShell';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { adminRoutes } from '@/lib/adminRoutes';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
-import StructuredContentEditor from '@/components/admin/StructuredContentEditor';
 import { PROGRAM_STYLE_TABS } from '@/lib/detailPageTabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -207,15 +206,6 @@ export default function AdminProgramPages() {
 
             <TabsContent value="overview" className="space-y-4">
               <BilingualRichText name="long_description" label="Description" form={form} setForm={setForm} />
-              <StructuredContentEditor
-                form={form}
-                setForm={setForm}
-                titleField="content_title"
-                headingField="content_heading"
-                sectionsField="content_sections"
-                legacyField="long_description"
-                showLegacyFallback={false}
-              />
               <div className="rounded-lg border border-border p-4">
                 <h4 className="mb-1 text-sm font-semibold">Stats strip (above tabs on public page)</h4>
                 <p className="mb-3 text-xs text-muted-foreground">These four numbers appear in the hero stats row, not inside a tab.</p>

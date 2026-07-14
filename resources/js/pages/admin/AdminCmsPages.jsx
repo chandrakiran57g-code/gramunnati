@@ -1,6 +1,5 @@
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
-import StructuredContentEditor from '@/components/admin/StructuredContentEditor';
 import AdminUrlField, { slugifyTitle } from '@/components/admin/AdminUrlField';
 import AdminImageUpload, { AdminVideoUpload } from '@/components/admin/AdminMediaUpload';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
@@ -197,15 +196,7 @@ export default function AdminCmsPages() {
               }
             }}
           />
-          <StructuredContentEditor
-            form={form}
-            setForm={setForm}
-            titleField="content_title"
-            headingField="content_heading"
-            sectionsField="content_sections"
-            legacyField="content"
-            showLegacyFallback
-          />
+          <BilingualRichText name="content" label="Page content" form={form} setForm={setForm} />
           <div className="grid gap-4 sm:grid-cols-2">
             <AdminImageUpload
               label="Featured image (optional)"
