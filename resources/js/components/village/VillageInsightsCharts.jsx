@@ -3,12 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 const COLORS = ['#337ab7', '#d9534f', '#f0ad4e', '#5cb85c', '#9b59b6', '#5bc0de', '#e83e8c', '#8bc34a', '#795548', '#17a2b8'];
 
 function ChartPanel({ title, data, height = 280 }) {
-  if (!data?.length) return (
-    <div className="bg-white rounded-xl border border-border p-6 text-center text-muted-foreground text-sm">
-      <h4 className="font-heading font-bold text-base mb-2 text-foreground block">{title}</h4>
-      No data available in database.
-    </div>
-  );
+  if (!data?.length) return null;
   return (
     <div className="bg-white rounded-xl border border-border p-4">
       <h4 className="font-heading font-bold text-base mb-1 border-b-2 border-orange-400 inline-block pb-0.5">{title}</h4>
@@ -60,6 +55,9 @@ export default function VillageInsightsCharts({ village }) {
     { name: 'Trees Planted', value: village.trees_count || 0 },
     { name: 'Water Bodies', value: village.water_bodies_count || 0 },
   ].filter(d => d.value > 0);
+
+  const hasAnyData = [populationData, ageData, occupationData, resourceData].some((d) => d.length > 0);
+  if (!hasAnyData) return null;
 
   return (
     <div className="grid sm:grid-cols-2 gap-6 mt-8">

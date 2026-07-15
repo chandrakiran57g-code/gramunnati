@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { Heart, Users, Bell, Settings, User, MapPin, School, Activity, TrendingUp, BookOpen, Award, Clock } from 'lucide-react';
@@ -47,6 +47,10 @@ export default function MemberDashboard() {
       </div>
     </div>
   );
+
+  // Admin accounts belong in the admin panel, not the member dashboard.
+  const isAdminUser = user?.user_roles?.some((ur) => ['Super Admin', 'SuperAdmin'].includes(ur?.roles?.name));
+  if (isAdminUser) return <Navigate to="/admin" replace />;
 
   const totalDonated = donations.filter(d => d.payment_status === 'success').reduce((sum, d) => sum + (d.amount || 0), 0);
   const successDonations = donations.filter(d => d.payment_status === 'success');

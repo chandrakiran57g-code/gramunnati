@@ -55,6 +55,12 @@ export default function Navbar() {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
+  // Super Admin accounts use the admin panel, not the member dashboard.
+  const isAdminUser = Boolean(
+    user?.user_roles?.some((ur) => ['Super Admin', 'SuperAdmin'].includes(ur?.roles?.name))
+    || user?.role === 'admin',
+  );
+
 
 
   const clearDropdownTimer = () => {
@@ -292,34 +298,36 @@ export default function Navbar() {
                 <div className="text-xs text-muted-foreground truncate">{user.email}</div>
               </div>
 
-              <Link to="/profile" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-                <User className="w-4 h-4" /> {t('nav.myProfile')}
-              </Link>
-
-              <Link to="/dashboard" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-                <LayoutDashboard className="w-4 h-4" /> {t('nav.dashboard')}
-              </Link>
-
-              <Link to="/my-donations" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-                <Heart className="w-4 h-4" /> {t('nav.myDonations')}
-              </Link>
-
-              <Link to="/my-villages" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-                <MapPin className="w-4 h-4" /> {t('nav.myVillages')}
-              </Link>
-
-              <Link to="/my-schools" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-                <School className="w-4 h-4" /> {t('nav.mySchools')}
-              </Link>
-
-              <Link to="/notifications" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
-                <Heart className="w-4 h-4" /> {t('nav.notifications')}
-              </Link>
-
-              {user.role === 'admin' && (
-                <Link to="/admin" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground border-t border-border">
+              {isAdminUser ? (
+                <Link to="/admin" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm font-semibold text-foreground">
                   <LayoutDashboard className="w-4 h-4" /> {t('nav.adminPanel')}
                 </Link>
+              ) : (
+                <>
+                  <Link to="/profile" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                    <User className="w-4 h-4" /> {t('nav.myProfile')}
+                  </Link>
+
+                  <Link to="/dashboard" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                    <LayoutDashboard className="w-4 h-4" /> {t('nav.dashboard')}
+                  </Link>
+
+                  <Link to="/my-donations" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                    <Heart className="w-4 h-4" /> {t('nav.myDonations')}
+                  </Link>
+
+                  <Link to="/my-villages" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                    <MapPin className="w-4 h-4" /> {t('nav.myVillages')}
+                  </Link>
+
+                  <Link to="/my-schools" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                    <School className="w-4 h-4" /> {t('nav.mySchools')}
+                  </Link>
+
+                  <Link to="/notifications" className="nav-dropdown-item flex items-center gap-2.5 px-4 py-2.5 text-sm text-foreground">
+                    <Heart className="w-4 h-4" /> {t('nav.notifications')}
+                  </Link>
+                </>
               )}
 
               <button type="button" onClick={() => base44.auth.logout('/')} className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors border-t border-border">
@@ -497,7 +505,7 @@ export default function Navbar() {
 
                 {user ? (
 
-                  <Link to="/dashboard" className="flex-1"><Button className="w-full text-sm">Dashboard</Button></Link>
+                  <Link to={isAdminUser ? '/admin' : '/dashboard'} className="flex-1"><Button className="w-full text-sm">{isAdminUser ? 'Admin Panel' : 'Dashboard'}</Button></Link>
 
                 ) : (
 

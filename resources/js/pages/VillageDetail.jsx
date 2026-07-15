@@ -150,6 +150,21 @@ export default function VillageDetail() {
     { subject: 'Community', score: Math.min(100, (village.volunteers_count || 0) * 3 + 20), fullMark: 100 },
   ];
 
+  // Hide tabs that have no data at all — empty sections should not be shown.
+  const hasLocation = Boolean(safeText(village.state) || safeText(village.district) || safeText(village.mandal) || village.pincode || village.village_code);
+  const hasStatistics = Boolean(village.population > 0 || village.farmer_count || village.cultivable_land || village.trees_count || village.water_bodies_count);
+  const hasInsights = Boolean(village.population > 0 || village.trees_count || village.water_bodies_count);
+  const hasGallery = (gallery.before?.length || 0) + (gallery.after?.length || 0) > 0;
+  const tabAvailability = {
+    location: hasLocation,
+    statistics: hasStatistics,
+    crops: crops.length > 0,
+    timeline: timeline.length > 0,
+    gallery: hasGallery,
+    insights: hasInsights,
+  };
+  const visibleTabs = VILLAGE_DETAIL_TABS.filter((tab) => tabAvailability[tab.id] !== false);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero */}
@@ -218,7 +233,7 @@ export default function VillageDetail() {
         {/* Tabs */}
         <Tabs defaultValue="overview" className="w-full">
           <TabsList className="bg-muted w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6">
-            {VILLAGE_DETAIL_TABS.map((tab) => (
+            {visibleTabs.map((tab) => (
               <TabsTrigger key={tab.id} value={tab.id} className="rounded-lg text-sm py-2 px-4 whitespace-nowrap">{tab.label}</TabsTrigger>
             ))}
           </TabsList>

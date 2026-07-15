@@ -140,7 +140,7 @@ export const serviceDirectoryApi = {
       const { data } = await supabase
         .from('volunteers')
         .select('id, full_name, state, district, created_at, status')
-        .eq('status', 'active')
+        .in('status', ['active', 'approved'])
         .order('full_name');
       return (data || []).map(mapVolunteerRow);
     }

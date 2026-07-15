@@ -64,6 +64,18 @@ export default function ActiveWorkDetail() {
     farmer_count: impact.farmer_count || 40, volunteers_count: impact.volunteers_count || 30,
   };
 
+  // Hide tabs that have no data — empty sections should not be shown.
+  const galleryData = item.gallery || {};
+  const hasGallery = (galleryData.before?.length || 0) + (galleryData.after?.length || 0) > 0
+    || (Array.isArray(galleryData) && galleryData.length > 0);
+  const tabAvailability = {
+    statistics: Object.keys(item.statistics || {}).length > 0,
+    timeline: (item.timeline || []).length > 0,
+    gallery: hasGallery,
+  };
+  const visibleTabs = ['overview', 'statistics', 'timeline', 'gallery', 'donations', 'insights']
+    .filter((t) => tabAvailability[t] !== false);
+
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
@@ -115,7 +127,7 @@ export default function ActiveWorkDetail() {
 
         <Tabs defaultValue="overview">
           <TabsList className="mb-6 flex-wrap h-auto">
-            {['overview', 'statistics', 'timeline', 'gallery', 'donations', 'insights'].map((t) => (
+            {visibleTabs.map((t) => (
               <TabsTrigger key={t} value={t} className="capitalize">{t}</TabsTrigger>
             ))}
           </TabsList>

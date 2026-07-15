@@ -190,7 +190,21 @@ class QueryBuilder {
 
       if (this.mutation === 'delete') {
         const idFilter = this.filters.find((f) => f.column === 'id');
-        await apiFetch(`/admin/db/${this.table}/${idFilter?.value}`, { method: 'DELETE' });
+        if (idFilter?.value != null) {
+          await apiFetch(`/admin/db/${this.table}/${idFilter.value}`, { method: 'DELETE' });
+          return { data: null, error: null };
+        }
+        // Delete by filters: resolve matching row ids first, then delete each.
+        const params = new URLSearchParams();
+        params.set('filters', JSON.stringify(this.filters));
+        params.set('limit', '500');
+        const json = await apiFetch(`/admin/db/${this.table}?${params.toString()}`);
+        const rows = json?.data ?? [];
+        for (const row of rows) {
+          if (row?.id != null) {
+            await apiFetch(`/admin/db/${this.table}/${row.id}`, { method: 'DELETE' });
+          }
+        }
         return { data: null, error: null };
       }
 

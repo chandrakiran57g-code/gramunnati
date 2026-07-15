@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AdminTableController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CmsController;
 use App\Http\Controllers\Api\DonationController;
+use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\GeographyController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\NeedSupportController;
@@ -97,6 +98,10 @@ Route::get('/need-support/projects', [NeedSupportController::class, 'projects'])
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/donations/mine', [DonationController::class, 'mine']);
+    Route::post('/villages/{id}/follow', [FollowController::class, 'followVillage'])->whereNumber('id');
+    Route::delete('/villages/{id}/follow', [FollowController::class, 'unfollowVillage'])->whereNumber('id');
+    Route::post('/schools/{id}/follow', [FollowController::class, 'followSchool'])->whereNumber('id');
+    Route::delete('/schools/{id}/follow', [FollowController::class, 'unfollowSchool'])->whereNumber('id');
 });
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])->prefix('admin')->group(function () {

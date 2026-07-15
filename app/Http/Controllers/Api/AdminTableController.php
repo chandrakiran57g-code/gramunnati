@@ -40,6 +40,7 @@ class AdminTableController extends Controller
         'volunteers' => \App\Models\Volunteer::class,
         'volunteer_activities' => \App\Models\VolunteerActivity::class,
         'village_needs' => \App\Models\VillageNeed::class,
+        'village_crops' => \App\Models\VillageCrop::class,
         'school_requirements' => \App\Models\SchoolRequirement::class,
         'village_followers' => \App\Models\VillageFollower::class,
         'school_followers' => \App\Models\SchoolFollower::class,
@@ -64,13 +65,13 @@ class AdminTableController extends Controller
         'activity_logs', 'testimonials', 'cms_pages', 'settings', 'faqs',
         'states', 'districts', 'mandals',
         'village_needs', 'school_requirements', 'village_crops',
-        'donations', 'profiles',
+        'donations', 'profiles', 'volunteers',
     ];
 
     /** Tables that require a signed-in member (scoped to the current user). */
     private const MEMBER_READ_TABLES = [
         'village_followers', 'school_followers', 'notifications',
-        'volunteers', 'volunteer_activities',
+        'volunteer_activities',
     ];
 
     /** Donation columns safe for anonymous aggregate reads (no PII). */
@@ -84,6 +85,12 @@ class AdminTableController extends Controller
         'id', 'user_id', 'full_name', 'profession', 'village_name', 'village_id',
         'state', 'district', 'mandal', 'state_id', 'district_id', 'mandal_id',
         'profile_photo', 'created_at', 'updated_at',
+    ];
+
+    /** Volunteer columns exposed on the public volunteer directory (no contact PII). */
+    private const PUBLIC_VOLUNTEER_COLUMNS = [
+        'id', 'volunteer_code', 'full_name', 'state', 'district', 'status',
+        'photo', 'skills', 'occupation', 'created_at',
     ];
 
     /** CMS pages that cannot be edited or deleted from admin. */
@@ -546,7 +553,6 @@ class AdminTableController extends Controller
             'village_followers' => 'user_id',
             'school_followers' => 'user_id',
             'notifications' => 'user_id',
-            'volunteers' => 'user_id',
         ];
 
         if (! isset($scopedTables[$table])) {
@@ -580,6 +586,12 @@ class AdminTableController extends Controller
             return $rows->map(fn ($row) => collect($row->toArray())->only(self::PUBLIC_PROFILE_COLUMNS)->all());
         }
 
+        // Volunteer directory is public, but email/mobile stay private unless
+        // the signed-in member is reading their own volunteer record.
+        if ($table === 'volunteers' && ! $this->filtersScopeToOwnUserId($filters, $user)) {
+            return $rows->map(fn ($row) => collect($row->toArray())->only(self::PUBLIC_VOLUNTEER_COLUMNS)->all());
+        }
+
         return $rows;
     }
 
@@ -601,6 +613,26 @@ class AdminTableController extends Controller
             }
             if (($filter['column'] ?? '') === 'email'
                 && strtolower((string) ($filter['value'] ?? '')) === strtolower((string) $user->email)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function filtersScopeToOwnUserId(array $filters, ?\App\Models\User $user): bool
+    {
+        if (! $user) {
+            return false;
+        }
+
+        foreach ($filters as $filter) {
+            if (($filter['op'] ?? '') === 'eq'
+                && ($filter['column'] ?? '') === 'user_id'
+                && (int) ($filter['value'] ?? 0) === (int) $user->id) {
                 return true;
             }
         }

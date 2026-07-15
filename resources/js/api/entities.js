@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 
 /**
  * Villages Service — CRUD + search + filters
@@ -125,20 +126,12 @@ export const villagesService = {
   /**
    * Follow / unfollow a village
    */
-  async follow(villageId, userId) {
-    const { error } = await supabase
-      .from('village_followers')
-      .insert({ village_id: villageId, user_id: userId, created_at: new Date().toISOString() });
-    if (error) throw error;
+  async follow(villageId) {
+    await apiFetch(`/villages/${villageId}/follow`, { method: 'POST' });
   },
 
-  async unfollow(villageId, userId) {
-    const { error } = await supabase
-      .from('village_followers')
-      .delete()
-      .eq('village_id', villageId)
-      .eq('user_id', userId);
-    if (error) throw error;
+  async unfollow(villageId) {
+    await apiFetch(`/villages/${villageId}/follow`, { method: 'DELETE' });
   },
 
   async isFollowing(villageId, userId) {
@@ -252,18 +245,12 @@ export const schoolsService = {
     return data;
   },
 
-  async follow(schoolId, userId) {
-    const { error } = await supabase.from('school_followers').insert({
-      school_id: schoolId,
-      user_id: userId,
-      created_at: new Date().toISOString(),
-    });
-    if (error) throw error;
+  async follow(schoolId) {
+    await apiFetch(`/schools/${schoolId}/follow`, { method: 'POST' });
   },
 
-  async unfollow(schoolId, userId) {
-    const { error } = await supabase.from('school_followers').delete().eq('school_id', schoolId).eq('user_id', userId);
-    if (error) throw error;
+  async unfollow(schoolId) {
+    await apiFetch(`/schools/${schoolId}/follow`, { method: 'DELETE' });
   },
 
   async isFollowing(schoolId, userId) {

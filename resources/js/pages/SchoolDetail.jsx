@@ -141,6 +141,15 @@ export default function SchoolDetail() {
     { label: 'Boundary Wall', value: school.boundary_wall_available },
   ];
 
+  // Hide tabs that have no data at all — empty sections should not be shown.
+  const hasGallery = (gallery.before?.length || 0) + (gallery.after?.length || 0) > 0;
+  const tabAvailability = {
+    requirements: requirements.length > 0,
+    timeline: timeline.length > 0,
+    gallery: hasGallery,
+  };
+  const visibleTabs = SCHOOL_DETAIL_TABS.filter((tab) => tabAvailability[tab.id] !== false);
+
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
@@ -214,7 +223,7 @@ export default function SchoolDetail() {
 
         <Tabs defaultValue="overview">
           <TabsList className="bg-muted w-full justify-start overflow-x-auto flex gap-1 h-auto p-1 rounded-xl mb-6">
-            {SCHOOL_DETAIL_TABS.map((tab) => (
+            {visibleTabs.map((tab) => (
               <TabsTrigger key={tab.id} value={tab.id} className="rounded-lg text-sm py-2 px-3 whitespace-nowrap">{tab.label}</TabsTrigger>
             ))}
           </TabsList>
