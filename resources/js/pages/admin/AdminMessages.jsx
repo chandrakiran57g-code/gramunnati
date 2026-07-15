@@ -5,6 +5,7 @@ import { MessageSquare, Mail, Clock, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { toast } from 'sonner';
 
 const statusColor = { new: 'bg-blue-100 text-blue-700', read: 'bg-yellow-100 text-yellow-700', resolved: 'bg-green-100 text-green-700' };
 
@@ -22,13 +23,21 @@ export default function AdminMessages() {
   }, []);
 
   const markRead = async (msg) => {
-    await adminService.updateMessageStatus(msg.id, 'read');
-    setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'read' } : m));
+    try {
+      await adminService.updateMessageStatus(msg.id, 'read');
+      setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'read' } : m));
+    } catch (err) {
+      toast.error(err.message || 'Failed to update message');
+    }
   };
 
   const markResolved = async (msg) => {
-    await adminService.updateMessageStatus(msg.id, 'resolved');
-    setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'resolved' } : m));
+    try {
+      await adminService.updateMessageStatus(msg.id, 'resolved');
+      setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'resolved' } : m));
+    } catch (err) {
+      toast.error(err.message || 'Failed to update message');
+    }
   };
 
   const filtered = messages.filter(m => filter === 'all' || m.status === filter);

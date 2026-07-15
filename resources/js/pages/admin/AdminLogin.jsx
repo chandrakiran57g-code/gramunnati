@@ -25,16 +25,18 @@ export default function AdminLogin() {
     setError('');
     setLoading(true);
 
-    const result = await authenticateAdmin(email, password);
-
-    if (!result.ok) {
-      setError(result.error || 'Login failed');
+    try {
+      const result = await authenticateAdmin(email, password);
+      if (!result.ok) {
+        setError(result.error || 'Login failed');
+        return;
+      }
+      navigate(adminRoutes.dashboard, { replace: true });
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
       setLoading(false);
-      return;
     }
-
-    navigate(adminRoutes.dashboard, { replace: true });
-    setLoading(false);
   };
 
   return (

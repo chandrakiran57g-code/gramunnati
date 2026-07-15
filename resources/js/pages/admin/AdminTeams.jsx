@@ -14,7 +14,7 @@ import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
-import { validateContactFields } from '@/lib/formValidation';
+import { validateContactFields, sanitizeMobileInput, digitsOnly } from '@/lib/formValidation';
 
 const emptyGroup = () => ({ name: '', name_te: '', slug: '', description: '', description_te: '', display_order: 0, status: 'active', banner_image: '' });
 const emptyMember = () => ({ full_name: '', email: '', mobile: '', designation: '', designation_te: '', description: '', description_te: '', photo: '', team_group_id: '', display_order: 0, is_active: true });
@@ -53,7 +53,11 @@ export default function AdminTeams() {
     if (!groupForm.name) return toast.error('Team name required');
     setSaving(true);
     try {
-      const payload = { ...groupForm, slug: groupForm.slug || slugify(groupForm.name) };
+      const payload = {
+        ...groupForm,
+        slug: groupForm.slug || slugify(groupForm.name),
+        display_order: Number(groupForm.display_order) || 0,
+      };
       if (editingGroup) {
         await cmsService.updateTeamGroup(editingGroup.id, payload);
         toast.success('Team category updated');
@@ -131,7 +135,7 @@ export default function AdminTeams() {
           <div className="grid gap-4 sm:grid-cols-2">
             <BilingualInput name="name" label="Team Name" form={groupForm} setForm={setGroupForm} required className="sm:col-span-2" />
             <div><Label>Slug</Label><Input value={groupForm.slug} onChange={(e) => setGroupForm({ ...groupForm, slug: e.target.value })} placeholder="auto-generated" className="mt-1" /></div>
-            <div><Label>Display Order</Label><Input type="number" value={groupForm.display_order} onChange={(e) => setGroupForm({ ...groupForm, display_order: Number(e.target.value) })} className="mt-1" /></div>
+            <div><Label>Display Order</Label><Input type="number" min="0" value={groupForm.display_order} onChange={(e) => setGroupForm({ ...groupForm, display_order: digitsOnly(e.target.value) })} className="mt-1" /></div>
             <BilingualRichText name="description" label="Description" form={groupForm} setForm={setGroupForm} className="sm:col-span-2" />
             <AdminImageUpload label="Banner image" value={groupForm.banner_image} onChange={(url) => setGroupForm({ ...groupForm, banner_image: url })} subPath="teams" />
             <div><Label>Status</Label>
@@ -165,7 +169,7 @@ export default function AdminTeams() {
                 <div><Label>Full Name *</Label><Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></div>
                 <BilingualInput name="designation" label="Designation" form={form} setForm={setForm} />
                 <div><Label>Email</Label><Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} type="email" /></div>
-                <div><Label>Mobile</Label><Input value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} /></div>
+                <div><Label>Mobile</Label><Input value={form.mobile} onChange={(e) => setForm({ ...form, mobile: sanitizeMobileInput(e.target.value) })} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit mobile number" /></div>
                 <div className="sm:col-span-2">
                   <AdminImageUpload label="Member photo" value={form.photo} onChange={(url) => setForm({ ...form, photo: url })} subPath="teams/members" />
                 </div>

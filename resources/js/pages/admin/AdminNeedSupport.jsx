@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Loader2, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+import { digitsOnly } from '@/lib/formValidation';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { resolveCardCover } from '@/lib/adminMedia';
 import { Link } from 'react-router-dom';
@@ -79,6 +80,9 @@ export default function AdminNeedSupport() {
       await needsSupportService.saveAdminItem({
         ...(editing || {}),
         ...form,
+        funding_goal: goal,
+        raised_amount: raised,
+        display_order: Number(form.display_order) || 0,
         cover_image: resolveCardCover(form.cover_image),
         slug: form.slug || slugifyTitle(form.name),
         id: storeId,
@@ -176,15 +180,15 @@ export default function AdminNeedSupport() {
           </div>
           <div>
             <Label>Funding goal (₹)</Label>
-            <Input type="number" className="mt-1" value={form.funding_goal} onChange={(e) => setForm({ ...form, funding_goal: e.target.value })} />
+            <Input type="number" min="0" className="mt-1" value={form.funding_goal} onChange={(e) => setForm({ ...form, funding_goal: digitsOnly(e.target.value) })} />
           </div>
           <div>
             <Label>Raised amount (₹)</Label>
-            <Input type="number" className="mt-1" value={form.raised_amount} onChange={(e) => setForm({ ...form, raised_amount: e.target.value })} />
+            <Input type="number" min="0" className="mt-1" value={form.raised_amount} onChange={(e) => setForm({ ...form, raised_amount: digitsOnly(e.target.value) })} />
           </div>
           <div>
             <Label>Sort order</Label>
-            <Input type="number" className="mt-1" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: e.target.value })} />
+            <Input type="number" min="0" className="mt-1" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: digitsOnly(e.target.value) })} />
           </div>
           <div>
             <Label>Status</Label>

@@ -14,6 +14,7 @@ import { Loader2, Pencil, Trash2, Layers, ExternalLink } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { BilingualInput } from '@/components/admin/BilingualField';
+import { digitsOnly } from '@/lib/formValidation';
 
 const BUILT_IN_TEMPLATES = BUILT_IN_ENTITY_TEMPLATES.map((t) => ({
   ...t,
@@ -63,6 +64,7 @@ export default function AdminActiveWorksTemplates() {
       await activeWorkService.saveEntityTemplate({
         ...(editId ? { id: editId } : {}),
         ...form,
+        display_order: Number(form.display_order) || 0,
         slug: form.slug || slugifyTitle(form.name),
       });
       toast.success(editId ? 'Template updated' : 'Template created');
@@ -155,9 +157,10 @@ export default function AdminActiveWorksTemplates() {
             <Label>Sort order</Label>
             <Input
               type="number"
+              min="0"
               className="mt-1"
               value={form.display_order}
-              onChange={(e) => setForm({ ...form, display_order: e.target.value })}
+              onChange={(e) => setForm({ ...form, display_order: digitsOnly(e.target.value) })}
             />
           </div>
           <div>

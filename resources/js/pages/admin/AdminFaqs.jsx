@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import AdminShell from '@/components/admin/AdminShell';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
+import { digitsOnly } from '@/lib/formValidation';
 
 const EMPTY = { question: '', question_te: '', answer: '', answer_te: '', sort_order: 0, is_active: true };
 
@@ -52,11 +53,12 @@ export default function AdminFaqs() {
     }
     setSaving(true);
     try {
+      const data = { ...form, sort_order: Number(form.sort_order) || 0 };
       if (editing) {
-        await cmsService.updateFaq(editing.id, form);
+        await cmsService.updateFaq(editing.id, data);
         toast.success('FAQ updated');
       } else {
-        await cmsService.createFaq(form);
+        await cmsService.createFaq(data);
         toast.success('FAQ created');
       }
       setShowForm(false);
@@ -138,7 +140,7 @@ export default function AdminFaqs() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label>Sort order</Label>
-                  <Input type="number" value={form.sort_order} onChange={(e) => setForm((f) => ({ ...f, sort_order: +e.target.value }))} className="mt-1" />
+                  <Input type="number" min="0" value={form.sort_order} onChange={(e) => setForm((f) => ({ ...f, sort_order: digitsOnly(e.target.value) }))} className="mt-1" />
                 </div>
                 <div className="flex items-center gap-2 pt-6">
                   <Switch checked={form.is_active} onCheckedChange={(v) => setForm((f) => ({ ...f, is_active: v }))} />

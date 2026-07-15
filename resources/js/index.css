@@ -140,6 +140,17 @@
   h1, h2, h3 {
     @apply font-heading;
   }
+  /* Placeholders must read as hints, not entered values */
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--muted-foreground) / 0.5);
+    font-weight: 400;
+    opacity: 1;
+  }
+  .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground) / 0.5) !important;
+    font-style: normal;
+  }
 }
 
 @layer utilities {
@@ -204,12 +215,20 @@
     );
   }
 
-  /* Home hero — fit one laptop viewport below navbar (64px) */
+  /* Home hero — fixed-height layout, consistent across screen sizes */
   .hero-section-viewport {
-    min-height: calc(100svh - 4rem);
-    min-height: calc(100dvh - 4rem);
-    max-height: calc(100svh - 4rem);
-    max-height: calc(100dvh - 4rem);
+    height: 620px;
+    min-height: 620px;
+    max-height: none;
+  }
+
+  @media (max-width: 640px) {
+    .hero-section-viewport {
+      height: auto;
+      min-height: 560px;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
   }
 
   .hero-section-inner {
@@ -219,10 +238,16 @@
   }
 
   .hero-section-title {
-    font-size: clamp(1.75rem, 3.2vw, 2.65rem);
+    font-size: 2.5rem;
     letter-spacing: -0.02em;
     margin-bottom: 0.875rem;
     overflow: visible;
+  }
+
+  @media (max-width: 640px) {
+    .hero-section-title {
+      font-size: 1.875rem;
+    }
   }
 
   .hero-section-title-stack {
@@ -331,57 +356,6 @@
     height: 32px;
   }
 
-  /* Tighter on typical laptop heights (768–900px) */
-  @media (max-height: 820px) {
-    .hero-section-inner {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-
-    .hero-section-title {
-      font-size: clamp(1.625rem, 2.8vw, 2.25rem);
-      margin-bottom: 0.625rem;
-    }
-
-    .hero-section-subtitle {
-      font-size: 0.875rem;
-      margin-bottom: 1rem;
-    }
-
-    .hero-section-cta-link,
-    .hero-section-volunteer {
-      padding: 0.4375rem 0.875rem;
-      font-size: 0.75rem;
-    }
-
-    .hero-scroll-hint-compact {
-      margin-top: 0.5rem;
-    }
-  }
-
-  /* Only scale up on large desktop — laptops stay compact */
-  @media (min-width: 1536px) and (min-height: 900px) {
-    .hero-section-inner {
-      padding-top: 2rem;
-      padding-bottom: 2rem;
-    }
-
-    .hero-section-title {
-      font-size: clamp(2rem, 3.5vw, 3rem);
-      margin-bottom: 1.25rem;
-    }
-
-    .hero-section-subtitle {
-      font-size: 1.0625rem;
-      margin-bottom: 1.75rem;
-    }
-
-    .hero-section-cta-link,
-    .hero-section-volunteer {
-      padding: 0.625rem 1.25rem;
-      font-size: 0.875rem;
-    }
-  }
 
   .mountain-vista-hero {
     background: linear-gradient(180deg, #1b4332 0%, #2d6a4f 50%, #1e3a5f 100%);

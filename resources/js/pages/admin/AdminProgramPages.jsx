@@ -6,6 +6,7 @@ import AdminShell from '@/components/admin/AdminShell';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { adminRoutes } from '@/lib/adminRoutes';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
+import { digitsOnly } from '@/lib/formValidation';
 import { PROGRAM_STYLE_TABS } from '@/lib/detailPageTabs';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -133,7 +134,7 @@ export default function AdminProgramPages() {
   };
 
   const setStat = (key, value) => {
-    setForm((f) => ({ ...f, stats: { ...(f.stats || {}), [key]: Number(value) || 0 } }));
+    setForm((f) => ({ ...f, stats: { ...(f.stats || {}), [key]: digitsOnly(value) } }));
   };
 
   const setNested = (key, subKey, value) => {
@@ -144,7 +145,10 @@ export default function AdminProgramPages() {
     if (!selectedSlug) return toast.error('Select a program category first');
     setSaving(true);
     try {
-      await programPagesService.savePage(selectedSlug, form);
+      const stats = Object.fromEntries(
+        Object.entries(form.stats || {}).map(([k, v]) => [k, Number(v) || 0])
+      );
+      await programPagesService.savePage(selectedSlug, { ...form, stats });
       toast.success('Program detail page saved');
       notifyPlatformDataChanged({ type: 'program_pages' });
     } catch (e) {
@@ -215,6 +219,7 @@ export default function AdminProgramPages() {
                       <Label>{label}</Label>
                       <Input
                         type="number"
+                        min="0"
                         className="mt-1"
                         value={form.stats?.[key] ?? ''}
                         onChange={(e) => setStat(key, e.target.value)}

@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { Heart, Layers, Loader2, Save, X } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
+import { digitsOnly } from '@/lib/formValidation';
 
 const IMPACT_STATS = [
   { key: 'villages', label: 'Villages impacted' },
@@ -114,7 +115,7 @@ export default function AdminNeedSupportPages() {
   };
 
   const setStat = (key, value) => {
-    setForm((f) => ({ ...f, stats: { ...(f.stats || {}), [key]: Number(value) || 0 } }));
+    setForm((f) => ({ ...f, stats: { ...(f.stats || {}), [key]: digitsOnly(value) } }));
   };
 
   const setNested = (key, subKey, value) => {
@@ -125,7 +126,10 @@ export default function AdminNeedSupportPages() {
     if (!selectedSlug) return toast.error('Select a Need Support card first');
     setSaving(true);
     try {
-      await needSupportPagesService.savePage(selectedSlug, form);
+      const stats = Object.fromEntries(
+        Object.entries(form.stats || {}).map(([k, v]) => [k, Number(v) || 0])
+      );
+      await needSupportPagesService.savePage(selectedSlug, { ...form, stats });
       toast.success('Need Support detail page saved');
       notifyPlatformDataChanged({ type: 'need_support_pages' });
     } catch (e) {
@@ -202,6 +206,7 @@ export default function AdminNeedSupportPages() {
                       <Label>{label}</Label>
                       <Input
                         type="number"
+                        min="0"
                         className="mt-1"
                         value={form.stats?.[key] ?? ''}
                         onChange={(e) => setStat(key, e.target.value)}

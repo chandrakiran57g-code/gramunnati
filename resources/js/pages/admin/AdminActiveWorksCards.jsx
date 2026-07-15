@@ -17,6 +17,7 @@ import { Loader2, Pencil, Trash2, ExternalLink, FileText } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { resolveCardCover } from '@/lib/adminMedia';
+import { digitsOnly } from '@/lib/formValidation';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
 
@@ -78,6 +79,7 @@ export default function AdminActiveWorksCards() {
       await activeWorkService.saveAdminCard({
         ...(editing || {}),
         ...form,
+        display_order: Number(form.display_order) || 0,
         cover_image,
         slug: form.slug || slugifyTitle(form.name),
         _source: editing?._source || 'cms',
@@ -183,7 +185,7 @@ export default function AdminActiveWorksCards() {
           </div>
           <div>
             <Label>Sort Order</Label>
-            <Input type="number" className="mt-1" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: e.target.value })} />
+            <Input type="number" min="0" className="mt-1" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: digitsOnly(e.target.value) })} />
           </div>
           <div>
             <Label>Status</Label>

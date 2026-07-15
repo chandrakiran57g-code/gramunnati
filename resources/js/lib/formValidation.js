@@ -6,9 +6,21 @@ export function normalizeMobile(value) {
   return String(value || '').replace(/\D/g, '');
 }
 
-/** Indian mobile: 10 digits starting with 6–9 */
+/** Keep only digits — for numeric fields; allows clearing to empty. */
+export function digitsOnly(value) {
+  return String(value ?? '').replace(/\D/g, '');
+}
+
+/** Sanitize a mobile field as the user types: digits only, max 10. */
+export function sanitizeMobileInput(value) {
+  return digitsOnly(value).slice(0, 10);
+}
+
+/** Indian mobile: 10 digits starting with 6–9 (accepts +91 / leading-0 formats) */
 export function isValidIndianMobile(mobile) {
-  const digits = normalizeMobile(mobile);
+  let digits = normalizeMobile(mobile);
+  if (digits.length === 12 && digits.startsWith('91')) digits = digits.slice(2);
+  if (digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
   return /^[6-9]\d{9}$/.test(digits);
 }
 

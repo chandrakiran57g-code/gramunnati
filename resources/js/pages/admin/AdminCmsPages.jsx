@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { CMS_STATUS, isCmsPagePublic } from '@/lib/cmsStatus';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { isLockedCmsSlug, SYSTEM_ABOUT_CMSR } from '@/lib/protectedAboutPages';
-import { isValidSlug } from '@/lib/formValidation';
+import { isValidSlug, digitsOnly } from '@/lib/formValidation';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminDbSetupBanner from '@/components/admin/AdminDbSetupBanner';
 import { cmsService } from '@/api/cms';
@@ -136,7 +136,7 @@ export default function AdminCmsPages() {
     setSaving(true);
     try {
       const slug = form.slug?.trim() || slugifyTitle(form.title);
-      const data = { ...form, slug };
+      const data = { ...form, slug, display_order: Number(form.display_order) || 0 };
 
       let saved;
       if (editing) {
@@ -258,7 +258,7 @@ export default function AdminCmsPages() {
             </div>
             <div>
               <Label>Order in dropdown</Label>
-              <Input type="number" className="mt-1" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: parseInt(e.target.value, 10) || 0 })} />
+              <Input type="number" min="0" className="mt-1" value={form.display_order} onChange={(e) => setForm({ ...form, display_order: digitsOnly(e.target.value) })} />
             </div>
           </div>
           <div className="flex gap-3">

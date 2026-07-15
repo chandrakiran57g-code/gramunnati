@@ -16,6 +16,7 @@ import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { ADMIN_SECTIONS } from '@/lib/adminSections';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 import { clearProgramCategoryCache } from '@/lib/programCategoryOptions';
+import { digitsOnly } from '@/lib/formValidation';
 import { Link } from 'react-router-dom';
 import { adminRoutes } from '@/lib/adminRoutes';
 
@@ -61,6 +62,7 @@ export default function AdminPrograms() {
     const data = {
       ...form,
       slug: form.slug || form.title.toLowerCase().replace(/\s+/g, '-'),
+      sort_order: Number(form.sort_order) || 0,
     };
     setSaving(true);
     try {
@@ -161,7 +163,7 @@ export default function AdminPrograms() {
               <BilingualRichText name="description" label="Description" form={form} setForm={setForm} />
               <AdminImageUpload label="Cover image" value={form.cover_image} onChange={(url) => setForm((f) => ({ ...f, cover_image: url }))} subPath="programs" />
               <div className="grid grid-cols-2 gap-4">
-                <div><Label>Sort Order</Label><Input type="number" value={form.sort_order} onChange={(e) => setForm((f) => ({ ...f, sort_order: +e.target.value }))} className="mt-1" /></div>
+                <div><Label>Sort Order</Label><Input type="number" min="0" value={form.sort_order} onChange={(e) => setForm((f) => ({ ...f, sort_order: digitsOnly(e.target.value) }))} className="mt-1" /></div>
                 <div><Label>Status</Label>
                   <select value={form.status} onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))} className="mt-1 w-full rounded-lg border px-3 py-2 text-sm">
                     <option value="active">Active</option>

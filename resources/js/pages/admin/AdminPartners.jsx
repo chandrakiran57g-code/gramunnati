@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { motion } from 'framer-motion';
 import { Building2, Plus, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,7 +9,7 @@ import { toast } from 'sonner';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
-import { validateContactFields } from '@/lib/formValidation';
+import { validateContactFields, sanitizeMobileInput } from '@/lib/formValidation';
 
 const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
 const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', is_active: true };
@@ -37,9 +36,13 @@ export default function AdminPartners() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this partner?')) return;
-    await base44.entities.Partner.delete(id);
-    toast.success('Partner deleted');
-    load();
+    try {
+      await base44.entities.Partner.delete(id);
+      toast.success('Partner deleted');
+      load();
+    } catch (err) {
+      toast.error(err.message || 'Delete failed');
+    }
   };
 
   const handleSave = async () => {
@@ -47,14 +50,19 @@ export default function AdminPartners() {
     const contactError = validateContactFields({ email: form.email, mobile: form.mobile, website: form.website });
     if (contactError) return toast.error(contactError);
     setSaving(true);
-    const slug = form.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-    const data = { ...form, slug };
-    if (editing) { await base44.entities.Partner.update(editing.id, data); toast.success('Partner updated'); }
-    else { await base44.entities.Partner.create(data); toast.success('Partner created'); }
-    setEditing(null);
-    setForm(EMPTY_PARTNER);
-    setSaving(false);
-    load();
+    try {
+      const slug = form.slug.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const data = { ...form, slug };
+      if (editing) { await base44.entities.Partner.update(editing.id, data); toast.success('Partner updated'); }
+      else { await base44.entities.Partner.create(data); toast.success('Partner created'); }
+      setEditing(null);
+      setForm(EMPTY_PARTNER);
+      load();
+    } catch (err) {
+      toast.error(err.message || 'Save failed');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -93,7 +101,7 @@ export default function AdminPartners() {
           </div>
           <div><Label>Website</Label><Input value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} /></div>
           <div><Label>Email</Label><Input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} type="email" /></div>
-          <div><Label>Mobile</Label><Input value={form.mobile} onChange={e => setForm({ ...form, mobile: e.target.value })} /></div>
+          <div><Label>Mobile</Label><Input value={form.mobile} onChange={e => setForm({ ...form, mobile: sanitizeMobileInput(e.target.value) })} type="tel" inputMode="numeric" maxLength={10} placeholder="10-digit mobile number" /></div>
           <div>
             <Label>Status</Label>
             <select value={form.is_active ? 'active' : 'inactive'} onChange={e => setForm({ ...form, is_active: e.target.value === 'active' })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">

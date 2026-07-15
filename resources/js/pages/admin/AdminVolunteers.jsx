@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import {
   VOLUNTEER_SKILLS, VOLUNTEER_STATES, VOLUNTEER_AVAILABILITY, VOLUNTEER_STATUSES,
 } from '@/lib/adminSections';
-import { validateContactFields } from '@/lib/formValidation';
+import { validateContactFields, sanitizeMobileInput, digitsOnly } from '@/lib/formValidation';
 import { Loader2, Plus, Pencil, Search, Trash2, UserPlus } from 'lucide-react';
 
 async function generateVolunteerCode() {
@@ -188,7 +188,7 @@ export default function AdminVolunteers() {
             </div>
             <div>
               <Label>Age</Label>
-              <Input type="number" className="mt-1" value={form.age} onChange={(e) => setForm({ ...form, age: e.target.value })} />
+              <Input type="number" min="0" max="120" className="mt-1" value={form.age} onChange={(e) => setForm({ ...form, age: digitsOnly(e.target.value).slice(0, 3) })} />
             </div>
             <div>
               <Label>Email</Label>
@@ -196,7 +196,7 @@ export default function AdminVolunteers() {
             </div>
             <div>
               <Label>Mobile *</Label>
-              <Input className="mt-1" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: e.target.value })} placeholder="10-digit number" maxLength={10} />
+              <Input className="mt-1" value={form.mobile} onChange={(e) => setForm({ ...form, mobile: sanitizeMobileInput(e.target.value) })} type="tel" inputMode="numeric" placeholder="10-digit mobile number" maxLength={10} />
             </div>
             <div>
               <Label>State *</Label>

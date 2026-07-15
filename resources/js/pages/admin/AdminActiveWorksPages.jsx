@@ -26,6 +26,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
 import { Loader2, Layers, Save } from 'lucide-react';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
+import { digitsOnly } from '@/lib/formValidation';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import BeforeAfterGalleryEditor from '@/components/admin/BeforeAfterGalleryEditor';
 import TimelineEditor from '@/components/admin/TimelineEditor';
@@ -137,8 +138,15 @@ export default function AdminActiveWorksPages() {
     if (!form.name?.trim()) return toast.error('Name is required');
     setSaving(true);
     try {
+      const goal = Number(form.donations?.goal) || 0;
+      const raised = Number(form.donations?.raised) || 0;
+      if (goal > 0 && raised > goal) {
+        toast.error('Raised amount cannot exceed the donation goal');
+        return;
+      }
       await activeWorkService.saveAdminDetailPage({
         ...form,
+        donations: { ...(form.donations || {}), goal, raised },
         slug: form.slug || slugifyTitle(form.name),
         _adminKey: selectedKey,
       });
@@ -473,8 +481,8 @@ export default function AdminActiveWorksPages() {
                       </AdminDetailTabNotice>
                     ) : (
                       <div className="grid gap-4 sm:grid-cols-2">
-                        <div><Label>Donation goal (₹)</Label><Input type="number" className="mt-1" value={form.donations?.goal ?? ''} onChange={(e) => setNested('donations', 'goal', Number(e.target.value))} /></div>
-                        <div><Label>Raised amount (₹)</Label><Input type="number" className="mt-1" value={form.donations?.raised ?? ''} onChange={(e) => setNested('donations', 'raised', Number(e.target.value))} /></div>
+                        <div><Label>Donation goal (₹)</Label><Input type="number" min="0" className="mt-1" value={form.donations?.goal ?? ''} onChange={(e) => setNested('donations', 'goal', digitsOnly(e.target.value))} /></div>
+                        <div><Label>Raised amount (₹)</Label><Input type="number" min="0" className="mt-1" value={form.donations?.raised ?? ''} onChange={(e) => setNested('donations', 'raised', digitsOnly(e.target.value))} /></div>
                       </div>
                     )}
                   </TabsContent>
