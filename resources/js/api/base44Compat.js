@@ -10,6 +10,7 @@
  */
 
 import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 import { ensureAdminDbAccess } from '@/lib/adminDb';
 import { notifyPlatformDataChanged } from '@/lib/platformRefresh';
 
@@ -222,8 +223,8 @@ const entities = {
         message: recordData.message,
         status: 'new',
       };
-      const { data, error } = await supabase.from('contact_messages').insert(payload).select().single();
-      if (error) throw error;
+      // Public endpoint — visitors are not authenticated, so the admin DB API would reject them.
+      const data = await apiFetch('/contact', { method: 'POST', body: payload });
       notifyPlatformDataChanged({ table: 'contact_messages', action: 'create' });
       return data;
     },

@@ -1,0 +1,1 @@
+import{t as e}from"./cms-DFadGNDx.js";var t=null;async function n(){if(t)return t;try{return t=(await e.listPrograms({activeOnly:!0})||[]).filter(e=>e.status===`active`).map(e=>({value:e.slug,label:e.title})),t}catch{return[]}}function r(){t=null}export{n,r as t};

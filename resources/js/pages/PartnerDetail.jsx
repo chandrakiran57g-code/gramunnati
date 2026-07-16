@@ -8,11 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { normalizeExternalUrl } from '@/lib/externalUrl';
 import RichContent from '@/components/shared/RichContent';
-
-const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Foundation' };
+import { partnerTypeLabel } from '@/lib/partnerTypes';
+import { useLocalize } from '@/lib/localizedContent';
 
 export default function PartnerDetail() {
   const { slug } = useParams();
+  const localize = useLocalize();
   const [partner, setPartner] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,8 +54,8 @@ export default function PartnerDetail() {
               </div>
               <div>
                 <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                  className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{partner.name}</motion.h1>
-                <Badge className="bg-white/20 text-white border-white/20">{typeLabels[partner.partner_type] || partner.partner_type}</Badge>
+                  className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{localize(partner, 'name') || partner.name}</motion.h1>
+                <Badge className="bg-white/20 text-white border-white/20">{partnerTypeLabel(partner.partner_type)}</Badge>
               </div>
             </div>
           </div>
@@ -67,7 +68,7 @@ export default function PartnerDetail() {
             {partner.description && (
               <div className="mb-8">
                 <h2 className="font-heading text-xl font-bold mb-3">About</h2>
-                <RichContent content={partner.description} className="text-muted-foreground leading-relaxed" />
+                <RichContent content={localize(partner, 'description') || partner.description} className="text-muted-foreground leading-relaxed" />
               </div>
             )}
             <div className="grid sm:grid-cols-2 gap-4">

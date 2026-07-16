@@ -37,7 +37,7 @@ function localizeSections(sections, lang) {
 function mergeProgram(cmsRow, detailPage, staticFallback, lang = 'en') {
   const slug = cmsRow.slug;
   const title = cmsRow.title || slug;
-  const description = cmsRow.description || '';
+  const description = localize(cmsRow, 'description', lang) || cmsRow.description || '';
   const cover = detailPage?.hero_image || cmsRow.cover_image || '/hero/village.jpg';
   const longDescription = localize(detailPage, 'long_description', lang) || detailPage?.long_description || description;
   const objectives = linesToList(localize(detailPage, 'objectives', lang) || detailPage?.objectives);
@@ -138,7 +138,6 @@ export default function ProgramDetail() {
             <h1 className={`font-heading text-3xl sm:text-4xl font-bold text-white mb-3 ${program.textColor}`}>
               {program.title}
             </h1>
-            <p className="text-white/90 text-base max-w-2xl">{stripHtml(program.description)}</p>
           </motion.div>
         </div>
       </div>

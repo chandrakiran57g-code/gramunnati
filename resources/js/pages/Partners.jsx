@@ -7,11 +7,11 @@ import { Badge } from '@/components/ui/badge';
 import { Building2, ArrowRight } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { stripHtml } from '@/lib/stripHtml';
-
-const typeLabels = { ngo: 'NGO', company: 'Company', educational_institution: 'Education', government: 'Government', individual: 'Individual', csr_partner: 'CSR Partner', foundation: 'Others' };
-const typeColors = { ngo: 'bg-green-100 text-green-700', company: 'bg-blue-100 text-blue-700', educational_institution: 'bg-purple-100 text-purple-700', government: 'bg-orange-100 text-orange-700', individual: 'bg-gray-100 text-gray-700', csr_partner: 'bg-yellow-100 text-yellow-700', foundation: 'bg-pink-100 text-pink-700' };
+import { PARTNER_TYPE_OPTIONS, PARTNER_TYPE_COLORS, partnerTypeLabel } from '@/lib/partnerTypes';
+import { useLocalize } from '@/lib/localizedContent';
 
 export default function Partners() {
+  const localize = useLocalize();
   const [partners, setPartners] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -42,7 +42,7 @@ export default function Partners() {
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap gap-2 mb-10 justify-center">
-            {Object.entries({ all: 'All', ...typeLabels }).map(([key, label]) => (
+            {[['all', 'All'], ...PARTNER_TYPE_OPTIONS.map(({ value, label }) => [value, label])].map(([key, label]) => (
               <button key={key} onClick={() => setFilter(key)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   filter === key ? 'bg-primary text-white shadow-md' : 'bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary'
@@ -92,14 +92,14 @@ export default function Partners() {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{partner.name}</h3>
-                        <Badge className={`mt-1.5 ${typeColors[partner.partner_type] || 'bg-gray-100'}`}>
-                          {typeLabels[partner.partner_type] || partner.partner_type}
+                        <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">{localize(partner, 'name') || partner.name}</h3>
+                        <Badge className={`mt-1.5 ${PARTNER_TYPE_COLORS[partner.partner_type] || 'bg-gray-100'}`}>
+                          {partnerTypeLabel(partner.partner_type)}
                         </Badge>
                       </div>
                     </div>
                     {partner.description && (
-                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-3">{stripHtml(partner.description)}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 mb-3">{stripHtml(localize(partner, 'description') || partner.description)}</p>
                     )}
                     <span className="inline-flex items-center gap-1 text-primary text-sm font-medium group-hover:gap-2 transition-all">
                       View Details <ArrowRight className="w-4 h-4" />

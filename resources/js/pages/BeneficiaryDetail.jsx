@@ -8,11 +8,13 @@ import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import RichContent from '@/components/shared/RichContent';
 import { safeText } from '@/lib/safeText';
+import { useLocalize } from '@/lib/localizedContent';
 
 const typeLabels = { village: 'Village', school: 'School', farmer: 'Farmer', student: 'Student', women_shg: 'Women SHG', youth_group: 'Youth Group', artisan: 'Artisan', other: 'Other' };
 
 export default function BeneficiaryDetail() {
   const { slug } = useParams();
+  const localize = useLocalize();
   const [beneficiary, setBeneficiary] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -48,7 +50,7 @@ export default function BeneficiaryDetail() {
               <ArrowLeft className="w-4 h-4" /> Back to Beneficiaries
             </Link>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-              className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{beneficiary.name}</motion.h1>
+              className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{localize(beneficiary, 'name') || beneficiary.name}</motion.h1>
             <div className="flex flex-wrap items-center gap-3">
               <Badge className="bg-white/20 text-white border-white/20">{typeLabels[beneficiary.beneficiary_type] || beneficiary.beneficiary_type}</Badge>
               {[safeText(beneficiary.village_name), safeText(beneficiary.district), safeText(beneficiary.state)].filter(Boolean).length > 0 && (
@@ -72,7 +74,7 @@ export default function BeneficiaryDetail() {
             {beneficiary.description && (
               <div className="mb-8">
                 <h2 className="font-heading text-xl font-bold mb-3">About</h2>
-                <RichContent content={beneficiary.description} className="text-muted-foreground leading-relaxed" />
+                <RichContent content={localize(beneficiary, 'description') || beneficiary.description} className="text-muted-foreground leading-relaxed" />
               </div>
             )}
             {beneficiary.impact_details && (

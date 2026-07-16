@@ -9,6 +9,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { PROGRAMS } from '@/lib/programs';
 import { usePlatformRefresh } from '@/hooks/usePlatformRefresh';
 import { stripHtml } from '@/lib/stripHtml';
+import { localize } from '@/lib/localizedContent';
 
 function translateBadge(badge, t) {
   if (!badge) return '';
@@ -40,10 +41,12 @@ function translateCategoryName(category, t) {
 }
 
 export function ActiveWorkCard({ item, index = 0 }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const href = item.link || `/active-work/${item.slug}`;
   const cover = item.cover_image || item.card?.cover_image;
   const badge = translateBadge(item.badge || item.card?.badge || 'Featured', t);
+  const name = localize(item, 'name', lang) || item.name;
+  const description = localize(item, 'description', lang) || item.description;
 
   return (
     <motion.article
@@ -54,16 +57,16 @@ export function ActiveWorkCard({ item, index = 0 }) {
       className="home-feature-card group bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden flex flex-col h-full min-h-[380px]"
     >
       <div className="relative h-44 shrink-0 overflow-hidden">
-        <SafeImage src={cover} alt={item.name} fallbackIndex={index} width={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        <SafeImage src={cover} alt={name} fallbackIndex={index} width={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/70 to-transparent" />
         {badge && (
           <span className="absolute top-3 left-3 bg-[#8B6914] text-amber-50 text-xs font-semibold px-2.5 py-1 rounded-full">{badge}</span>
         )}
       </div>
       <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-heading font-bold text-[#3D2914] text-lg leading-tight mb-2">{item.name}</h3>
-        {item.description && (
-          <p className="text-sm text-[#5C4033]/75 line-clamp-3 flex-1">{stripHtml(item.description)}</p>
+        <h3 className="font-heading font-bold text-[#3D2914] text-lg leading-tight mb-2">{name}</h3>
+        {description && (
+          <p className="text-sm text-[#5C4033]/75 line-clamp-3 flex-1">{stripHtml(description)}</p>
         )}
         <div className="flex gap-2 mt-4 pt-2">
           {(item.card?.enable_details !== false) && (

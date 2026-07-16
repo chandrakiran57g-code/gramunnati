@@ -7,11 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { safeText } from '@/lib/safeText';
 import { stripHtml } from '@/lib/stripHtml';
+import { useLocalize } from '@/lib/localizedContent';
 
 const typeLabels = { village: 'Village', school: 'School', farmer: 'Farmer', student: 'Student', women_shg: 'Women SHG', youth_group: 'Youth Group', artisan: 'Artisan', other: 'Other' };
 const typeColors = { village: 'bg-green-100 text-green-700', school: 'bg-blue-100 text-blue-700', farmer: 'bg-yellow-100 text-yellow-700', student: 'bg-purple-100 text-purple-700', women_shg: 'bg-pink-100 text-pink-700', youth_group: 'bg-orange-100 text-orange-700', artisan: 'bg-indigo-100 text-indigo-700', other: 'bg-gray-100 text-gray-700' };
 
 export default function Beneficiaries() {
+  const localize = useLocalize();
   const [beneficiaries, setBeneficiaries] = useState([]);
   const [filter, setFilter] = useState('all');
   const [loading, setLoading] = useState(true);
@@ -74,11 +76,11 @@ export default function Beneficiaries() {
                       <Badge className={`mb-2 ${typeColors[b.beneficiary_type] || 'bg-gray-100'}`}>
                         {typeLabels[b.beneficiary_type] || b.beneficiary_type}
                       </Badge>
-                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors mb-1">{b.name}</h3>
+                      <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors mb-1">{localize(b, 'name') || b.name}</h3>
                       {(b.village_name || b.state) && (
                         <p className="text-xs text-muted-foreground mb-2">{[safeText(b.village_name), safeText(b.district), safeText(b.state)].filter(Boolean).join(', ')}</p>
                       )}
-                      {b.description && <p className="text-muted-foreground text-sm line-clamp-2">{stripHtml(b.description)}</p>}
+                      {b.description && <p className="text-muted-foreground text-sm line-clamp-2">{stripHtml(localize(b, 'description') || b.description)}</p>}
                       <span className="inline-flex items-center gap-1 text-primary text-sm font-medium mt-3 group-hover:gap-2 transition-all">
                         Read More <ArrowRight className="w-4 h-4" />
                       </span>

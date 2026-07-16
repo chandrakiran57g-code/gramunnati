@@ -22,12 +22,14 @@ import { requirementRowToEditor } from '@/lib/schoolRequirements';
 import { fetchDonationTotal } from '@/lib/donationTotals';
 import { useRoutePageCache } from '@/hooks/useRoutePageCache';
 import { useBreadcrumbLabel } from '@/lib/BreadcrumbContext';
+import { useLocalize } from '@/lib/localizedContent';
 
 const schoolTypeLabel = { government: 'Government', private: 'Private', aided: 'Aided', model: 'Model School' };
 const schoolTypeColor = { government: 'bg-primary/10 text-primary', private: 'bg-school/10 text-school', aided: 'bg-purple-100 text-purple-700', model: 'bg-donation/10 text-donation' };
 
 export default function SchoolDetail() {
   const { slug } = useParams();
+  const localize = useLocalize();
   const { user, isAuthenticated, navigateToLogin } = useAuth();
   const { data, showBlockingLoader } = useRoutePageCache(
     `school-detail:${slug}`,
@@ -161,7 +163,7 @@ export default function SchoolDetail() {
             <div className="flex flex-wrap gap-2 mb-2">
               <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${schoolTypeColor[school.school_type]}`}>{schoolTypeLabel[school.school_type]}</span>
             </div>
-            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">{school.school_name}</h1>
+            <h1 className="font-heading text-2xl sm:text-3xl font-bold text-white mb-2">{localize(school, 'school_name') || school.school_name}</h1>
             <div className="text-white/80 text-sm flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{safeText(school.village_name)}, {safeText(school.district)}, {safeText(school.state)}</div>
           </div>
         </div>
@@ -234,7 +236,7 @@ export default function SchoolDetail() {
                 <h3 className="font-heading font-bold mb-3">School Information</h3>
                 <div className="space-y-2 text-sm">
                   {[
-                    { label: 'School Name', value: school.school_name },
+                    { label: 'School Name', value: localize(school, 'school_name') || school.school_name },
                     { label: 'Type', value: schoolTypeLabel[school.school_type] },
                     { label: 'UDISE Code', value: school.udise_code },
                     { label: 'Village', value: school.village_name },
@@ -270,8 +272,8 @@ export default function SchoolDetail() {
               <div className="bg-white rounded-xl border border-border p-6 space-y-4">
                 {school.description && (
                   <div>
-                    <h3 className="font-heading font-bold text-lg mb-2">About {school.school_name}</h3>
-                    <RichContent content={school.description} className="text-muted-foreground leading-relaxed text-sm" />
+                    <h3 className="font-heading font-bold text-lg mb-2">About {localize(school, 'school_name') || school.school_name}</h3>
+                    <RichContent content={localize(school, 'description') || school.description} className="text-muted-foreground leading-relaxed text-sm" />
                   </div>
                 )}
                 {school.vision && (
@@ -408,7 +410,7 @@ export default function SchoolDetail() {
                 <Heart className="w-12 h-12 text-donation/30 mx-auto mb-3" />
               )}
               <div className="text-center">
-                <h3 className="font-heading font-bold text-xl mb-2">Support {school.school_name}</h3>
+                <h3 className="font-heading font-bold text-xl mb-2">Support {localize(school, 'school_name') || school.school_name}</h3>
                 <p className="text-muted-foreground text-sm mb-6">Your donation directly helps provide better education resources to {school.student_count || 'hundreds of'} students.</p>
                 <Link to={`/donate?type=school&school_id=${school.id}`}>
                   <Button className="donation-gradient text-white border-0 px-10 rounded-xl font-semibold">

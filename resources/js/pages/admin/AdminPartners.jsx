@@ -10,8 +10,8 @@ import AdminImageUpload from '@/components/admin/AdminMediaUpload';
 import { BilingualInput } from '@/components/admin/BilingualField';
 import { BilingualRichText } from '@/components/admin/RichTextEditor';
 import { validateContactFields, sanitizeMobileInput } from '@/lib/formValidation';
+import { PARTNER_TYPE_OPTIONS, partnerTypeLabel } from '@/lib/partnerTypes';
 
-const partnerTypes = ['ngo', 'company', 'educational_institution', 'government', 'individual', 'csr_partner', 'foundation'];
 const EMPTY_PARTNER = { name: '', name_te: '', slug: '', logo: '', partner_type: 'ngo', website: '', email: '', mobile: '', description: '', description_te: '', is_active: true };
 
 export default function AdminPartners() {
@@ -96,7 +96,7 @@ export default function AdminPartners() {
           <div>
             <Label>Partner Type</Label>
             <select value={form.partner_type} onChange={e => setForm({ ...form, partner_type: e.target.value })} className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white">
-              {partnerTypes.map(t => <option key={t} value={t}>{t.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</option>)}
+              {PARTNER_TYPE_OPTIONS.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
             </select>
           </div>
           <div><Label>Website</Label><Input value={form.website} onChange={e => setForm({ ...form, website: e.target.value })} /></div>
@@ -131,7 +131,7 @@ export default function AdminPartners() {
                   </div>
                   <div>
                     <div className="font-medium text-sm">{p.name}</div>
-                    <div className="text-xs text-muted-foreground">{p.partner_type?.replace(/_/g, ' ')} · {p.is_active ? 'active' : 'inactive'}</div>
+                    <div className="text-xs text-muted-foreground">{partnerTypeLabel(p.partner_type)} · {p.is_active ? 'active' : 'inactive'}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-1">

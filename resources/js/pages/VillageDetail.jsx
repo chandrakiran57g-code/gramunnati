@@ -24,9 +24,11 @@ import { normalizeVillageRecord } from '@/lib/villageDisplay';
 import { fetchDonationTotal } from '@/lib/donationTotals';
 import { useRoutePageCache } from '@/hooks/useRoutePageCache';
 import { useBreadcrumbLabel } from '@/lib/BreadcrumbContext';
+import { useLocalize } from '@/lib/localizedContent';
 
 export default function VillageDetail() {
   const { slug } = useParams();
+  const localize = useLocalize();
   const { user, isAuthenticated, navigateToLogin } = useAuth();
   const { data, showBlockingLoader } = useRoutePageCache(
     `village-detail:${slug}`,
@@ -176,7 +178,7 @@ export default function VillageDetail() {
             <Link to="/villages" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3 transition-colors">
               <ChevronLeft className="w-4 h-4" /> Back to Villages
             </Link>
-            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{village.village_name}</h1>
+            <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{localize(village, 'village_name') || village.village_name}</h1>
             <div className="flex flex-wrap items-center gap-3 text-white/80 text-sm">
               <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{safeText(village.district)}, {safeText(village.mandal)}</span>
               <span className="flex items-center gap-1">📍 {safeText(village.state)}</span>
@@ -240,12 +242,12 @@ export default function VillageDetail() {
 
           <TabsContent value="overview">
             <div className="bg-white rounded-xl border border-border p-6">
-              <h3 className="font-heading font-bold text-lg mb-3">About {village.village_name}</h3>
-              <RichContent content={village.description || village.short_description || 'Village description not yet available. Contact the village representative to add information.'} className="text-muted-foreground leading-relaxed text-sm" />
+              <h3 className="font-heading font-bold text-lg mb-3">About {localize(village, 'village_name') || village.village_name}</h3>
+              <RichContent content={localize(village, 'description') || localize(village, 'short_description') || 'Village description not yet available. Contact the village representative to add information.'} className="text-muted-foreground leading-relaxed text-sm" />
               {village.history && (
                 <div className="mt-4 pt-4 border-t border-border">
                   <h4 className="font-semibold text-sm mb-2">History</h4>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{village.history}</p>
+                  <RichContent content={localize(village, 'history') || village.history} className="text-muted-foreground text-sm leading-relaxed" />
                 </div>
               )}
               {village.vision && (

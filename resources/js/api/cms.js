@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiFetch } from './apiClient';
 import { adminDbMutation } from '@/lib/adminDb';
 import { DEFAULT_NAV_CONFIG } from '@/lib/navConfig';
 import { CMS_STATUS } from '@/lib/cmsStatus';
@@ -414,13 +415,8 @@ export const cmsService = {
 
   // ─── Contact Messages ─────────────────
   async submitContact(messageData) {
-    const { data, error } = await supabase
-      .from('contact_messages')
-      .insert(messageData)
-      .select()
-      .single();
-    if (error) throw error;
-    return data;
+    // Public endpoint — anonymous visitors cannot write via the admin DB API.
+    return apiFetch('/contact', { method: 'POST', body: messageData });
   },
 
   // ─── Gallery ──────────────────────────
