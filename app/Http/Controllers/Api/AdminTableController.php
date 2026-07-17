@@ -174,7 +174,7 @@ class AdminTableController extends Controller
         }
 
         if ($table === 'user_roles') {
-            if (! $this->isAdminDbRequest($request)) {
+            if (! $this->isPrivilegedRequest($request)) {
                 abort(403, 'Table not allowed');
             }
 
@@ -199,7 +199,7 @@ class AdminTableController extends Controller
         $query = $model::query();
 
         // Never expose payment secrets / bank details outside the admin API.
-        if ($table === 'settings' && ! $this->isAdminDbRequest($request)) {
+        if ($table === 'settings' && ! $this->isPrivilegedRequest($request)) {
             $query->whereNotIn('key', ['rzp_key', 'rzp_secret', 'bank_name', 'bank_account', 'ifsc']);
         }
 
@@ -515,12 +515,36 @@ class AdminTableController extends Controller
         return str_contains($request->path(), 'admin/db');
     }
 
+    private ?bool $privilegedRequest = null;
+
+    /**
+     * True for /admin/db requests AND for signed-in Super Admins hitting the
+     * public /db path (admin pages read through the shared shim, which always
+     * uses /db for reads).
+     */
+    private function isPrivilegedRequest(Request $request): bool
+    {
+        if ($this->privilegedRequest !== null) {
+            return $this->privilegedRequest;
+        }
+
+        if ($this->isAdminDbRequest($request)) {
+            return $this->privilegedRequest = true;
+        }
+
+        $user = $request->user() ?: $request->user('sanctum');
+
+        return $this->privilegedRequest = (bool) ($user && $user->roles()
+            ->whereIn('name', ['Super Admin', 'SuperAdmin'])
+            ->exists());
+    }
+
     /**
      * @param  array<int, array<string, mixed>>  $filters
      */
     private function enforcePublicReadAccess(Request $request, string $table, array &$filters): void
     {
-        if ($this->isAdminDbRequest($request)) {
+        if ($this->isPrivilegedRequest($request)) {
             return;
         }
 
@@ -572,7 +596,7 @@ class AdminTableController extends Controller
      */
     private function stripSensitiveReadColumns(Request $request, string $table, array $filters, $rows)
     {
-        if ($this->isAdminDbRequest($request)) {
+        if ($this->isPrivilegedRequest($request)) {
             return $rows;
         }
 
