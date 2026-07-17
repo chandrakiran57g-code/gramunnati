@@ -203,6 +203,18 @@ class AdminTableController extends Controller
             $query->whereNotIn('key', ['rzp_key', 'rzp_secret', 'bank_name', 'bank_account', 'ifsc']);
         }
 
+        // The admin account is the platform founder, not a member — hide it
+        // from directory listings (/members and the admin Member List mirror).
+        // Specific profile fetches (id / user_id filter) are unaffected.
+        if ($table === 'profiles' && ! $this->isAdminDbRequest($request) && ! $this->filtersTargetSpecificUser($filters)) {
+            $query->whereNotIn('user_id', function ($sub) {
+                $sub->select('user_roles.user_id')
+                    ->from('user_roles')
+                    ->join('roles', 'roles.id', '=', 'user_roles.role_id')
+                    ->whereIn('roles.name', ['Super Admin', 'SuperAdmin']);
+            });
+        }
+
         if ($with = self::WITH[$table] ?? null) {
             $query->with($with);
         }
@@ -657,6 +669,23 @@ class AdminTableController extends Controller
             if (($filter['op'] ?? '') === 'eq'
                 && ($filter['column'] ?? '') === 'user_id'
                 && (int) ($filter['value'] ?? 0) === (int) $user->id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * True when the query targets specific user rows (own-profile lookups,
+     * role management) rather than the whole member directory.
+     *
+     * @param  array<int, array<string, mixed>>  $filters
+     */
+    private function filtersTargetSpecificUser(array $filters): bool
+    {
+        foreach ($filters as $filter) {
+            if (in_array($filter['column'] ?? '', ['id', 'user_id', 'email'], true)) {
                 return true;
             }
         }
