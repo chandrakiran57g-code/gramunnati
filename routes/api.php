@@ -106,6 +106,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])->prefix('admin')->group(function () {
     Route::get('/dashboard-stats', [AdminController::class, 'dashboardStats']);
+    Route::post('/messages/{id}/reply', [AdminController::class, 'replyToMessage'])->whereNumber('id');
     Route::get('/upload-limits', [UploadController::class, 'limits']);
     Route::post('/upload-base64', [UploadController::class, 'storeBase64']);
     Route::put('/active-works/store', [ActiveWorkController::class, 'update']);

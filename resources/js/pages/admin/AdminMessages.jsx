@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { adminService } from '@/api/admin';
-import { MessageSquare, Mail, Clock, CheckCircle } from 'lucide-react';
+import { MessageSquare, Mail, Clock, CheckCircle, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
@@ -14,6 +14,10 @@ export default function AdminMessages() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState(null);
   const [filter, setFilter] = useState('all');
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replySubject, setReplySubject] = useState('');
+  const [replyBody, setReplyBody] = useState('');
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     adminService.listMessages({ limit: 100 })
@@ -37,6 +41,37 @@ export default function AdminMessages() {
       setMessages(prev => prev.map(m => m.id === msg.id ? { ...m, status: 'resolved' } : m));
     } catch (err) {
       toast.error(err.message || 'Failed to update message');
+    }
+  };
+
+  const openReply = (msg) => {
+    setReplySubject(msg.subject ? `Re: ${msg.subject.replace(/^Re:\s*/i, '')}` : 'Re: Your message to CMSR');
+    setReplyBody('');
+    setReplyOpen(true);
+  };
+
+  const selectMessage = (msg) => {
+    setSelected(msg);
+    setReplyOpen(false);
+  };
+
+  const sendReply = async () => {
+    if (!replySubject.trim() || !replyBody.trim()) {
+      toast.error('Subject and message are required.');
+      return;
+    }
+    setSending(true);
+    try {
+      const res = await adminService.replyToMessage(selected.id, { subject: replySubject.trim(), message: replyBody.trim() });
+      const updated = res?.data || { ...selected, status: 'resolved', reply_subject: replySubject, reply_message: replyBody, replied_at: new Date().toISOString() };
+      setMessages(prev => prev.map(m => m.id === selected.id ? { ...m, ...updated } : m));
+      setSelected(prev => ({ ...prev, ...updated }));
+      setReplyOpen(false);
+      toast.success(`Reply sent to ${selected.email}`);
+    } catch (err) {
+      toast.error(err.message || 'Failed to send reply');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -72,7 +107,7 @@ export default function AdminMessages() {
             {loading ? [...Array(5)].map((_, i) => <div key={i} className="bg-white rounded-2xl border border-border h-24 animate-pulse" />)
             : filtered.map((msg, i) => (
               <motion.div key={msg.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                onClick={() => setSelected(msg)}
+                onClick={() => selectMessage(msg)}
                 className={`bg-white rounded-2xl border p-4 cursor-pointer transition-all hover:shadow-md ${selected?.id === msg.id ? 'border-school ring-1 ring-school/20' : 'border-border'}`}>
                 <div className="flex items-start justify-between mb-2">
                   <div className="font-semibold text-sm">{msg.name}</div>
@@ -115,10 +150,51 @@ export default function AdminMessages() {
                       <CheckCircle className="w-3.5 h-3.5 mr-1.5" />Mark Resolved
                     </Button>
                   )}
-                  <a href={`mailto:${selected.email}`}>
-                    <Button size="sm" variant="outline"><Mail className="w-3.5 h-3.5 mr-1.5" />Reply via Email</Button>
-                  </a>
+                  {selected.email && !replyOpen && (
+                    <Button size="sm" variant="outline" onClick={() => openReply(selected)}>
+                      <Mail className="w-3.5 h-3.5 mr-1.5" />Reply via Email
+                    </Button>
+                  )}
                 </div>
+
+                {selected.replied_at && !replyOpen && (
+                  <div className="mt-6 border-t border-border pt-5">
+                    <div className="text-xs font-semibold uppercase tracking-wide text-green-700 mb-2 flex items-center gap-1.5">
+                      <CheckCircle className="w-3.5 h-3.5" />
+                      Replied on {new Date(selected.replied_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                    <div className="bg-green-50 border border-green-100 rounded-xl p-4">
+                      <div className="text-sm font-medium mb-1">{selected.reply_subject}</div>
+                      <p className="text-sm text-muted-foreground whitespace-pre-wrap">{selected.reply_message}</p>
+                    </div>
+                  </div>
+                )}
+
+                {replyOpen && (
+                  <div className="mt-6 border-t border-border pt-5 space-y-3">
+                    <div className="text-sm font-semibold">Reply to {selected.name} ({selected.email})</div>
+                    <input
+                      type="text"
+                      value={replySubject}
+                      onChange={e => setReplySubject(e.target.value)}
+                      placeholder="Subject"
+                      className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white"
+                    />
+                    <textarea
+                      value={replyBody}
+                      onChange={e => setReplyBody(e.target.value)}
+                      placeholder="Write your reply…"
+                      rows={6}
+                      className="w-full rounded-md border border-input px-3 py-2 text-sm bg-white resize-y"
+                    />
+                    <div className="flex gap-3">
+                      <Button size="sm" onClick={sendReply} disabled={sending} className="bg-school text-white border-0">
+                        <Send className="w-3.5 h-3.5 mr-1.5" />{sending ? 'Sending…' : 'Send Reply'}
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setReplyOpen(false)} disabled={sending}>Cancel</Button>
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="bg-white rounded-2xl border border-border p-16 text-center">

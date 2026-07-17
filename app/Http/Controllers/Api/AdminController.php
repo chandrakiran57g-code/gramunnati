@@ -13,6 +13,8 @@ use App\Models\User;
 use App\Models\Village;
 use App\Models\Volunteer;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -44,5 +46,60 @@ class AdminController extends Controller
         ];
 
         return response()->json($stats);
+    }
+
+    /**
+     * Send an email reply to a contact-form message from the admin panel.
+     */
+    public function replyToMessage(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate([
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:10000',
+        ]);
+
+        $contact = ContactMessage::query()->findOrFail($id);
+
+        if (! $contact->email) {
+            return response()->json(['message' => 'This message has no email address to reply to.'], 422);
+        }
+
+        // Shared hosting typically ships sendmail but the .env default is the
+        // "log" mailer (emails vanish into the log). Prefer real delivery.
+        $mailer = config('mail.default');
+        if ($mailer === 'log') {
+            $sendmailPath = explode(' ', (string) config('mail.mailers.sendmail.path'))[0] ?: '/usr/sbin/sendmail';
+            if (is_executable($sendmailPath)) {
+                $mailer = 'sendmail';
+            }
+        }
+
+        $body = $data['message']
+            ."\n\n---\n"
+            .'In reply to your message "'.($contact->subject ?: 'Contact enquiry').'" sent on '
+            .$contact->created_at?->format('d M Y').":\n"
+            .'"'.\Illuminate\Support\Str::limit($contact->message, 500)."\"\n\n"
+            .config('mail.from.name').' - '.config('app.url');
+
+        try {
+            Mail::mailer($mailer)->raw($body, function ($mail) use ($contact, $data) {
+                $mail->to($contact->email, $contact->name)->subject($data['subject']);
+            });
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'message' => 'Email could not be sent: '.$e->getMessage(),
+            ], 502);
+        }
+
+        $contact->update([
+            'status' => 'resolved',
+            'reply_subject' => $data['subject'],
+            'reply_message' => $data['message'],
+            'replied_at' => now(),
+        ]);
+
+        return response()->json(['ok' => true, 'mailer' => $mailer, 'data' => $contact->fresh()]);
     }
 }

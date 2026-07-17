@@ -355,6 +355,11 @@ export const adminService = {
     if (error) throw error;
   },
 
+  async replyToMessage(id, { subject, message }) {
+    await ensureCsrf();
+    return apiFetch(`/admin/messages/${id}/reply`, { method: 'POST', body: { subject, message } });
+  },
+
   // ─── Settings ─────────────────────────
   async updateSetting(key, value) {
     const { error } = await supabase.from('settings').update({ value }).eq('key', key);
