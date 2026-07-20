@@ -1,23 +1,18 @@
 import { supabase } from '@/api/supabaseClient';
-import { ADMIN_CREDENTIALS } from '@/lib/adminAuth';
 
 export const ADMIN_DB_SETUP_HINT =
-  'Run: php artisan migrate:fresh --seed (local) or import database/cmsrr.sql on cPanel.';
+  'Log in again from the admin login page. If it keeps failing, your session may have expired.';
 
-/** Sign in to Supabase so RLS allows admin writes. Called before mutations. */
+/**
+ * Confirm an authenticated admin session exists before an admin write/upload.
+ * The browser never holds credentials — this simply verifies the server session
+ * cookie (established at login) is still valid.
+ */
 export async function ensureAdminDbAccess() {
   const { data: { session } } = await supabase.auth.getSession();
   if (session?.user) return { ok: true };
 
-  const { error } = await supabase.auth.signInWithPassword({
-    email: ADMIN_CREDENTIALS.email,
-    password: ADMIN_CREDENTIALS.password,
-  });
-
-  if (error) {
-    throw new Error(`Database access denied: ${error.message}. ${ADMIN_DB_SETUP_HINT}`);
-  }
-  return { ok: true };
+  throw new Error(`Your admin session has expired. ${ADMIN_DB_SETUP_HINT}`);
 }
 
 export async function adminDbMutation(fn) {

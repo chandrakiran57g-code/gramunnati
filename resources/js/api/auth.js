@@ -73,6 +73,13 @@ export const authService = {
     return apiFetch('/auth/forgot-password', { method: 'POST', body: { email } });
   },
 
+  async submitPasswordReset({ email, token, password }) {
+    return apiFetch('/auth/reset-password', {
+      method: 'POST',
+      body: { email, token, password, password_confirmation: password },
+    });
+  },
+
   async updatePassword(_newPassword) {
     throw new Error('Use email reset flow when configured.');
   },

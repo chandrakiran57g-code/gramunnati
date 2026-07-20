@@ -404,6 +404,38 @@ export const donationsService = {
 };
 
 /**
+ * Public donation checkout — records a pending donation, then (when the gateway
+ * is configured) creates a Razorpay order and verifies the payment server-side.
+ * No admin escalation and no client-controlled payment status.
+ */
+export const donationCheckout = {
+  async createDonation(payload) {
+    return apiFetch('/donations', { method: 'POST', body: payload });
+  },
+  async createOrder(donationId) {
+    return apiFetch(`/donations/${donationId}/order`, { method: 'POST' });
+  },
+  async verify(donationId, body) {
+    return apiFetch(`/donations/${donationId}/verify`, { method: 'POST', body });
+  },
+};
+
+let _razorpayPromise = null;
+export function loadRazorpayCheckout() {
+  if (typeof window === 'undefined') return Promise.resolve(false);
+  if (window.Razorpay) return Promise.resolve(true);
+  if (_razorpayPromise) return _razorpayPromise;
+  _razorpayPromise = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+  return _razorpayPromise;
+}
+
+/**
  * Volunteers Service
  */
 export const volunteersService = {

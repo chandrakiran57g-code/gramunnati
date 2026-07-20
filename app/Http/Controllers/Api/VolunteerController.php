@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Volunteer;
+use App\Support\Notifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,6 +37,15 @@ class VolunteerController extends Controller
             'status' => 'pending',
             'user_id' => $request->user()?->id,
         ]);
+
+        if ($volunteer->user_id) {
+            Notifier::send(
+                (int) $volunteer->user_id,
+                'system',
+                'Volunteer application received',
+                'Thanks for signing up to volunteer. Our team will review your application and contact you shortly.'
+            );
+        }
 
         return response()->json([
             'data' => $volunteer,

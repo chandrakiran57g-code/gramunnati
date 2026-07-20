@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\School;
 use App\Models\SchoolFollower;
+use App\Models\Village;
 use App\Models\VillageFollower;
+use App\Support\Notifier;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -20,6 +23,19 @@ class FollowController extends Controller
             ['village_id' => $id, 'user_id' => $request->user()->id],
             ['created_at' => now()]
         );
+
+        if ($row->wasRecentlyCreated) {
+            $village = Village::query()->find($id);
+            if ($village) {
+                Notifier::send(
+                    (int) $request->user()->id,
+                    'village',
+                    'Following '.$village->village_name,
+                    "You'll now receive updates about ".$village->village_name.'.',
+                    '/villages/'.$village->slug
+                );
+            }
+        }
 
         return response()->json(['data' => $row, 'error' => null], 201);
     }
@@ -40,6 +56,19 @@ class FollowController extends Controller
             ['school_id' => $id, 'user_id' => $request->user()->id],
             ['created_at' => now()]
         );
+
+        if ($row->wasRecentlyCreated) {
+            $school = School::query()->find($id);
+            if ($school) {
+                Notifier::send(
+                    (int) $request->user()->id,
+                    'school',
+                    'Following '.$school->school_name,
+                    "You'll now receive updates about ".$school->school_name.'.',
+                    '/schools/'.$school->slug
+                );
+            }
+        }
 
         return response()->json(['data' => $row, 'error' => null], 201);
     }

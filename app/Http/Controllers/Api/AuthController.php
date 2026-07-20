@@ -7,11 +7,14 @@ use App\Models\Profile;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserCategory;
+use App\Support\Mailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -150,9 +153,37 @@ class AuthController extends Controller
 
     public function forgotPassword(Request $request): JsonResponse
     {
-        $request->validate(['email' => 'required|email']);
-        // Phase 3+: wire cPanel SMTP — acknowledge for now
-        return response()->json(['ok' => true, 'message' => 'If that email exists, a reset link will be sent.']);
+        $data = $request->validate(['email' => 'required|email']);
+        $genericResponse = response()->json([
+            'ok' => true,
+            'message' => 'If an account exists for that email, a password reset link has been sent.',
+        ]);
+
+        $user = User::query()->where('email', $data['email'])->first();
+        if (! $user) {
+            // Do not disclose whether the email is registered.
+            return $genericResponse;
+        }
+
+        $token = Str::random(64);
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            ['token' => Hash::make($token), 'created_at' => now()]
+        );
+
+        $resetUrl = rtrim((string) config('app.url'), '/')
+            .'/reset-password?token='.$token.'&email='.urlencode($user->email);
+
+        $body = "Hello,\n\n"
+            ."We received a request to reset your ".config('mail.from.name')." account password.\n\n"
+            ."Reset your password using the link below (valid for 60 minutes):\n"
+            .$resetUrl."\n\n"
+            ."If you did not request this, you can safely ignore this email — your password will not change.\n\n"
+            .config('mail.from.name');
+
+        Mailer::sendRawDeferred($user->email, 'Reset your '.config('mail.from.name').' password', $body, $user->name);
+
+        return $genericResponse;
     }
 
     public function resetPassword(Request $request): JsonResponse
@@ -163,7 +194,26 @@ class AuthController extends Controller
             'token' => 'required|string',
         ]);
 
-        return response()->json(['ok' => false, 'message' => 'Password reset via email not configured yet.'], 501);
+        $record = DB::table('password_reset_tokens')->where('email', $data['email'])->first();
+
+        if (! $record || ! Hash::check($data['token'], $record->token)) {
+            throw ValidationException::withMessages(['token' => 'This reset link is invalid. Please request a new one.']);
+        }
+
+        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+            throw ValidationException::withMessages(['token' => 'This reset link has expired. Please request a new one.']);
+        }
+
+        $user = User::query()->where('email', $data['email'])->first();
+        if (! $user) {
+            throw ValidationException::withMessages(['email' => 'No account found for this email.']);
+        }
+
+        $user->update(['password' => $data['password']]);
+        DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+
+        return response()->json(['ok' => true, 'message' => 'Your password has been reset. You can now log in.']);
     }
 
     private function authPayload(User $user): array

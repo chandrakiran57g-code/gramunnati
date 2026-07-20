@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\FollowController;
 use App\Http\Controllers\Api\GeographyController;
 use App\Http\Controllers\Api\HomeController;
 use App\Http\Controllers\Api\NeedSupportController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SchoolController;
 use App\Http\Controllers\Api\UploadController;
@@ -21,13 +22,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', fn () => response()->json(['ok' => true, 'service' => 'cmsr-api']));
 
 Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:6,1');
+    Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
     Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/user', [AuthController::class, 'user'])->middleware('auth:sanctum');
     Route::put('/profile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
-    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('/reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword'])->middleware('throttle:5,1');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:6,1');
 });
 
 Route::get('/db/{table}', [AdminTableController::class, 'query']);
@@ -85,9 +86,14 @@ Route::prefix('cms')->group(function () {
 });
 
 Route::get('/search', [CmsController::class, 'search']);
-Route::post('/contact', [CmsController::class, 'contact']);
-Route::post('/donations', [DonationController::class, 'store']);
-Route::post('/volunteers/register', [VolunteerController::class, 'register']);
+Route::post('/contact', [CmsController::class, 'contact'])->middleware('throttle:5,1');
+Route::post('/volunteers/register', [VolunteerController::class, 'register'])->middleware('throttle:5,1');
+
+Route::middleware('throttle:12,1')->group(function () {
+    Route::post('/donations', [DonationController::class, 'store']);
+    Route::post('/donations/{id}/order', [DonationController::class, 'createOrder'])->whereNumber('id');
+    Route::post('/donations/{id}/verify', [DonationController::class, 'verify'])->whereNumber('id');
+});
 
 Route::get('/active-works/store', [ActiveWorkController::class, 'show']);
 Route::get('/active-works/public-bundle', [ActiveWorkController::class, 'publicBundle']);
@@ -102,6 +108,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/villages/{id}/follow', [FollowController::class, 'unfollowVillage'])->whereNumber('id');
     Route::post('/schools/{id}/follow', [FollowController::class, 'followSchool'])->whereNumber('id');
     Route::delete('/schools/{id}/follow', [FollowController::class, 'unfollowSchool'])->whereNumber('id');
+
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount']);
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markRead'])->whereNumber('id');
+    Route::post('/notifications/read-all', [NotificationController::class, 'markAllRead']);
 });
 
 Route::middleware(['auth:sanctum', AdminMiddleware::class])->prefix('admin')->group(function () {

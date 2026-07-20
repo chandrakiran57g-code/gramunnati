@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/lib/AuthContext";
+import React, { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { authService } from "@/api/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,13 +13,20 @@ export default function ResetPassword() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const { updatePassword } = useAuth();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const token = searchParams.get("token") || "";
+  const email = searchParams.get("email") || "";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    if (!token || !email) {
+      setError("This reset link is invalid or incomplete. Please request a new one.");
+      return;
+    }
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
@@ -31,7 +38,7 @@ export default function ResetPassword() {
 
     setLoading(true);
     try {
-      await updatePassword(password);
+      await authService.submitPasswordReset({ email, token, password });
       setSuccess(true);
       setTimeout(() => navigate("/login"), 3000);
     } catch (err) {

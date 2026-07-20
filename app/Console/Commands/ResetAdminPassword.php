@@ -11,14 +11,24 @@ class ResetAdminPassword extends Command
 {
     protected $signature = 'cmsr:reset-admin
                             {--email=test@gmail.com : Admin email}
-                            {--password=testadmin123 : New password}';
+                            {--password= : New password (min 8 chars; prompted if omitted)}';
 
-    protected $description = 'Reset (or create) the default admin user with the given credentials';
+    protected $description = 'Reset (or create) the admin user and set a new, strong password';
 
     public function handle(): int
     {
         $email = $this->option('email');
         $password = $this->option('password');
+
+        if (empty($password)) {
+            $password = (string) $this->secret('Enter a new admin password (min 8 characters)');
+        }
+
+        if (strlen($password) < 8) {
+            $this->error('Password must be at least 8 characters. Aborting.');
+
+            return self::FAILURE;
+        }
 
         $user = User::query()->where('email', $email)->first();
 
@@ -65,7 +75,7 @@ class ResetAdminPassword extends Command
             $this->info("   Cleaned up stale 'SuperAdmin' role.");
         }
 
-        $this->info("✅ Done. Login at /admin/login with: {$email} / {$password}");
+        $this->info("✅ Done. You can now log in at /admin/login with {$email} and your new password.");
 
         return self::SUCCESS;
     }

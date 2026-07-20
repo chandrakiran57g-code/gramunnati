@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
 import { notificationsService } from '@/api/cms';
@@ -35,6 +36,7 @@ function mapRow(row) {
     type,
     title: row.title || 'Notification',
     desc: row.message || row.body || '',
+    link: row.link || null,
     date: formatDate(row.created_at),
     read: Boolean(row.is_read),
     ...meta,
@@ -46,6 +48,7 @@ export default function Notifications() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
   const [filter, setFilter] = useState('all');
+  const navigate = useNavigate();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,9 +79,12 @@ export default function Notifications() {
 
   const markRead = async (id) => {
     const target = notifications.find(n => n.id === id);
-    if (!target || target.read) return;
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    await notificationsService.markAsRead(id).catch(() => {});
+    if (!target) return;
+    if (!target.read) {
+      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+      await notificationsService.markAsRead(id).catch(() => {});
+    }
+    if (target.link) navigate(target.link);
   };
 
   const filtered = filter === 'all' ? notifications : filter === 'unread' ? notifications.filter(n => !n.read) : notifications.filter(n => n.type === filter);

@@ -1,0 +1,1 @@
+import{t as e}from"./supabaseClient-BDBFmYE6.js";var t=`Log in again from the admin login page. If it keeps failing, your session may have expired.`;async function n(){let{data:{session:n}}=await e.auth.getSession();if(n?.user)return{ok:!0};throw Error(`Your admin session has expired. ${t}`)}async function r(e){return await n(),e()}export{n,r as t};

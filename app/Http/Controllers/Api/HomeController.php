@@ -17,6 +17,7 @@ use App\Models\SuccessStory;
 use App\Models\Testimonial;
 use App\Models\Village;
 use App\Models\Volunteer;
+use App\Support\PublicCache;
 use App\Support\SettingsStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,12 @@ class HomeController extends Controller
 {
     public function pageData(): JsonResponse
     {
-        return response()->json([
+        return response()->json(PublicCache::remember('home:page-data', fn () => $this->pageDataArray()));
+    }
+
+    private function pageDataArray(): array
+    {
+        return [
             'stats' => $this->statsArray(),
             'villages' => Village::query()->where('is_active', true)->where('is_featured', true)->limit(6)->get(),
             'schools' => School::query()->where('is_active', true)->where('is_featured', true)->limit(6)->get(),
@@ -53,15 +59,20 @@ class HomeController extends Controller
                 ->where('payment_status', 'success')
                 ->groupBy('target_type')
                 ->get(),
-        ]);
+        ];
     }
 
     public function stats(): JsonResponse
     {
-        return response()->json($this->statsArray());
+        return response()->json(PublicCache::remember('home:stats', fn () => $this->statsArray()));
     }
 
     public function impact(): JsonResponse
+    {
+        return response()->json(PublicCache::remember('home:impact', fn () => $this->impactArray()));
+    }
+
+    private function impactArray(): array
     {
         $metricRows = ImpactMetric::query()
             ->where('metricable_type', 'site')
@@ -87,32 +98,46 @@ class HomeController extends Controller
                     ->count()),
         ];
 
-        return response()->json([
+        return [
             'metrics' => $metrics,
             'stateStats' => $this->stateStats(),
-        ]);
+        ];
     }
 
+    /**
+     * Per-state rollup in a fixed number of grouped queries (previously 1 + 3×N
+     * queries, one set per state).
+     */
     private function stateStats(): array
     {
         $states = \App\Models\State::query()->where('is_active', true)->get(['id', 'name']);
 
-        return $states->map(function ($state) {
-            $villageIds = Village::query()->where('state_id', $state->id)->pluck('id');
-            $villages = Village::query()->where('state_id', $state->id)->where('is_active', true)->count();
-            $schools = School::query()->whereIn('village_id', $villageIds)->where('is_active', true)->count();
-            $donations = (float) Donation::query()
-                ->where('payment_status', 'success')
-                ->whereIn('village_id', $villageIds)
-                ->sum('amount');
+        $villagesByState = Village::query()
+            ->where('is_active', true)
+            ->groupBy('state_id')
+            ->selectRaw('state_id, COUNT(*) as total')
+            ->pluck('total', 'state_id');
 
-            return [
-                'state' => $state->name,
-                'villages' => $villages,
-                'schools' => $schools,
-                'donations' => $donations,
-            ];
-        })
+        $schoolsByState = School::query()
+            ->join('villages', 'villages.id', '=', 'schools.village_id')
+            ->where('schools.is_active', true)
+            ->groupBy('villages.state_id')
+            ->selectRaw('villages.state_id as state_id, COUNT(*) as total')
+            ->pluck('total', 'state_id');
+
+        $donationsByState = Donation::query()
+            ->join('villages', 'villages.id', '=', 'donations.village_id')
+            ->where('donations.payment_status', 'success')
+            ->groupBy('villages.state_id')
+            ->selectRaw('villages.state_id as state_id, SUM(donations.amount) as total')
+            ->pluck('total', 'state_id');
+
+        return $states->map(fn ($state) => [
+            'state' => $state->name,
+            'villages' => (int) ($villagesByState[$state->id] ?? 0),
+            'schools' => (int) ($schoolsByState[$state->id] ?? 0),
+            'donations' => (float) ($donationsByState[$state->id] ?? 0),
+        ])
             ->filter(fn ($row) => $row['villages'] > 0 || $row['schools'] > 0 || $row['donations'] > 0)
             ->sortByDesc(fn ($row) => $row['villages'] + $row['schools'])
             ->take(8)

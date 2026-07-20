@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Support\PublicCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -258,7 +259,7 @@ class AdminTableController extends Controller
 
             return response()->json(['data' => $row, 'error' => null]);
         } catch (\Throwable $e) {
-            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
+            return $this->serverError($e);
         }
     }
 
@@ -292,6 +293,7 @@ class AdminTableController extends Controller
             }
 
             $row = $model::query()->create($payload);
+            PublicCache::flush();
 
             if ($table === 'donations' && ($row->payment_status ?? '') === 'success') {
                 $number = $row->receipt_number ?: ('RCP-'.now()->format('Y').'-'.str_pad((string) $row->id, 5, '0', STR_PAD_LEFT));
@@ -316,7 +318,7 @@ class AdminTableController extends Controller
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
+            return $this->serverError($e);
         }
     }
 
@@ -335,6 +337,7 @@ class AdminTableController extends Controller
             $payload = $this->columnsOnly($table, $request->except(['filters', 'order', 'limit', 'offset']));
             $payload = $this->validateTablePayload($table, $payload);
             $row->fill($payload)->save();
+            PublicCache::flush();
 
             $row = $row->fresh();
             $freshWith = self::WITH[$table] ?? [];
@@ -347,8 +350,25 @@ class AdminTableController extends Controller
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]], 500);
+            return $this->serverError($e);
         }
+    }
+
+    /**
+     * Log the exception and return a safe 500. The stack trace is only exposed
+     * when the app is in debug mode (never in production).
+     */
+    private function serverError(\Throwable $e): JsonResponse
+    {
+        report($e);
+
+        $error = ['message' => 'Something went wrong while saving. Please try again.'];
+        if (config('app.debug')) {
+            $error['message'] = $e->getMessage();
+            $error['trace'] = $e->getTraceAsString();
+        }
+
+        return response()->json(['data' => null, 'error' => $error], 500);
     }
 
     /**
@@ -478,6 +498,7 @@ class AdminTableController extends Controller
             }
 
             $row->delete();
+            PublicCache::flush();
 
             if ($user) {
                 try {
@@ -491,7 +512,7 @@ class AdminTableController extends Controller
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
-            return response()->json(['data' => null, 'error' => ['message' => $e->getMessage()]], 500);
+            return $this->serverError($e);
         }
     }
 
@@ -509,6 +530,7 @@ class AdminTableController extends Controller
             ['key' => $data['key']],
             ['value' => $value]
         );
+        PublicCache::flush();
 
         return response()->json(['data' => $row, 'error' => null]);
     }

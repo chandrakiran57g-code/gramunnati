@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { base44 } from '@/api/base44Client';
-import { Heart, CheckCircle, Shield, Users, TreePine, School } from 'lucide-react';
+import { donationCheckout, loadRazorpayCheckout } from '@/api/entities';
+import { Heart, CheckCircle, Clock, Shield, Users, TreePine, School } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,8 +28,9 @@ export default function Donate() {
     message: '',
     is_anonymous: false,
   });
-  const [step, setStep] = useState('form'); // form | processing | success
+  const [step, setStep] = useState('form'); // form | processing | success | pledged
   const [selectedPreset, setSelectedPreset] = useState(500);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleAmountSelect = (amt) => {
     setSelectedPreset(amt);
@@ -44,29 +45,78 @@ export default function Donate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.donor_name || !form.amount || form.amount < 10) return;
+    setErrorMsg('');
     setStep('processing');
+
+    let donation;
     try {
-      const receiptNo = `CMSR-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(Math.random()*99999).toString().padStart(5,'0')}`;
-      await base44.entities.Donation.create({
+      donation = await donationCheckout.createDonation({
         donor_name: form.donor_name,
-        email: form.email,
-        mobile: form.mobile,
+        email: form.email || undefined,
+        mobile: form.mobile || undefined,
         amount: form.amount,
         target_type: form.target_type,
         village_id: form.village_id || undefined,
         school_id: form.school_id || undefined,
         project_id: form.project_id || undefined,
-        message: form.message,
+        message: form.message || undefined,
         is_anonymous: form.is_anonymous,
-        payment_status: 'success',
-        payment_gateway: 'demo',
-        receipt_number: receiptNo,
-        transaction_id: `TXN${Date.now()}`,
       });
-      setStep('success');
-    } catch {
+    } catch (err) {
+      setErrorMsg(err?.message || 'Could not record your donation. Please try again.');
       setStep('form');
+      return;
     }
+
+    // Attempt to start online payment. If the gateway isn't configured yet, the
+    // donation stays "pending" and we thank the donor as a recorded pledge.
+    let order = null;
+    try {
+      order = await donationCheckout.createOrder(donation.id);
+    } catch {
+      order = null;
+    }
+
+    if (!order || order.configured === false || !order.order_id) {
+      setStep('pledged');
+      return;
+    }
+
+    const ready = await loadRazorpayCheckout();
+    if (!ready || !window.Razorpay) {
+      setStep('pledged');
+      return;
+    }
+
+    const rzp = new window.Razorpay({
+      key: order.key_id,
+      order_id: order.order_id,
+      amount: order.amount,
+      currency: order.currency || 'INR',
+      name: 'CMSR',
+      description: `${form.target_type} donation`,
+      prefill: { name: form.donor_name, email: form.email, contact: form.mobile },
+      theme: { color: '#e11d48' },
+      handler: async (resp) => {
+        try {
+          await donationCheckout.verify(donation.id, {
+            razorpay_order_id: resp.razorpay_order_id,
+            razorpay_payment_id: resp.razorpay_payment_id,
+            razorpay_signature: resp.razorpay_signature,
+          });
+          setStep('success');
+        } catch (err) {
+          setErrorMsg(err?.message || 'We could not confirm your payment. If money was debited, contact us.');
+          setStep('form');
+        }
+      },
+      modal: { ondismiss: () => setStep('form') },
+    });
+    rzp.on('payment.failed', () => {
+      setErrorMsg('Payment failed or was cancelled. Please try again.');
+      setStep('form');
+    });
+    rzp.open();
   };
 
   if (step === 'processing') {
@@ -77,6 +127,32 @@ export default function Donate() {
           <h2 className="font-heading text-xl font-bold mb-2">Processing Your Donation...</h2>
           <p className="text-muted-foreground">Please wait a moment.</p>
         </div>
+      </div>
+    );
+  }
+
+  if (step === 'pledged') {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background px-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full text-center bg-white rounded-3xl p-10 shadow-2xl border border-border"
+        >
+          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Clock className="w-10 h-10 text-primary" />
+          </div>
+          <h2 className="font-heading text-3xl font-bold text-foreground mb-3">Thank You! 🙏</h2>
+          <p className="text-muted-foreground mb-2">
+            Your pledge of <span className="font-bold text-donation text-xl">₹{form.amount.toLocaleString('en-IN')}</span> has been recorded.
+          </p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Online payments are being set up. Our team will contact you shortly with payment details to complete your donation.
+          </p>
+          <Button onClick={() => { setStep('form'); setForm(f => ({...f, amount: 500, customAmount: '', message: ''})); }} className="w-full brand-gradient text-white border-0 rounded-xl">
+            Done
+          </Button>
+        </motion.div>
       </div>
     );
   }
@@ -131,6 +207,11 @@ export default function Donate() {
           <div className="lg:col-span-3">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-2xl border border-border p-8 shadow-sm">
               <h2 className="font-heading text-xl font-bold mb-2">Donation Details</h2>
+              {errorMsg && (
+                <div className="mb-4 rounded-xl bg-destructive/10 border border-destructive/20 p-3 text-sm text-destructive">
+                  {errorMsg}
+                </div>
+              )}
               {/* Step indicators */}
               <div className="flex items-center gap-1 mb-6 text-xs">
                 {[
@@ -276,18 +357,14 @@ export default function Donate() {
               </div>
 
               <div className="bg-donation/5 border border-donation/20 rounded-2xl p-5 mt-4">
-                <div className="text-donation font-bold text-2xl font-heading mb-1">₹2.5 Crore+</div>
-                <div className="text-sm text-muted-foreground">Total donations raised through our platform</div>
-                <div className="mt-3 grid grid-cols-2 gap-2 text-center text-xs">
-                  <div className="bg-white rounded-lg p-2 border border-border">
-                    <div className="font-bold text-primary">1,200+</div>
-                    <div className="text-muted-foreground">Villages Helped</div>
-                  </div>
-                  <div className="bg-white rounded-lg p-2 border border-border">
-                    <div className="font-bold text-school">450+</div>
-                    <div className="text-muted-foreground">Schools Supported</div>
-                  </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <Heart className="w-5 h-5 text-donation fill-donation/20" />
+                  <span className="font-semibold text-sm">Where your donation goes</span>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Every contribution directly supports village and school development projects.
+                  You'll receive a donation receipt by email for your records once your payment is confirmed.
+                </p>
               </div>
             </motion.div>
           </div>

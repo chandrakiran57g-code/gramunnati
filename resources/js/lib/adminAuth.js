@@ -1,17 +1,13 @@
 import { supabase } from '@/api/supabaseClient';
 import { apiFetch, ensureCsrf } from '@/api/apiClient';
-import { ADMIN_CREDENTIALS } from '@/lib/adminCredentials';
 
 const ADMIN_SESSION_KEY = 'cmsr_admin_session';
 
-export { ADMIN_CREDENTIALS };
+const ADMIN_ROLE_NAMES = ['Super Admin', 'SuperAdmin'];
 
-export function validateAdminCredentials(email, password) {
-  const normalizedEmail = email.trim().toLowerCase();
-  return (
-    normalizedEmail === ADMIN_CREDENTIALS.email.toLowerCase()
-    && password === ADMIN_CREDENTIALS.password
-  );
+function hasAdminRole(payload) {
+  const roles = payload?.roles || [];
+  return roles.some((name) => ADMIN_ROLE_NAMES.includes(name));
 }
 
 export function isAdminAuthenticated() {
@@ -35,44 +31,35 @@ export async function clearAdminSession() {
   try {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     await supabase.auth.signOut();
-    await ensureCsrf();
-    await apiFetch('/auth/logout', { method: 'POST' });
   } catch {
     /* ignore */
   }
 }
 
+/**
+ * Authenticate against the Laravel backend with the operator's own credentials
+ * and confirm the account holds a Super Admin role. No credentials are ever
+ * stored in the frontend — the server session cookie is the source of truth.
+ */
 export async function authenticateAdmin(email, password) {
-  if (!validateAdminCredentials(email, password)) {
-    return { ok: false, error: 'Invalid admin email or password' };
-  }
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email: ADMIN_CREDENTIALS.email,
-    password: ADMIN_CREDENTIALS.password,
-  });
-
-  if (error) {
-    return {
-      ok: false,
-      error: `Cannot sign in: ${error.message}. Run php artisan migrate:fresh --seed locally.`,
-    };
-  }
-
-  setAdminSession();
-
   try {
     await ensureCsrf();
-    await apiFetch('/auth/login', {
+    const payload = await apiFetch('/auth/login', {
       method: 'POST',
       body: { email: email.trim().toLowerCase(), password },
     });
-  } catch (err) {
-    return {
-      ok: false,
-      error: err.message || 'Could not start Laravel session — file uploads may fail. Refresh and try again.',
-    };
-  }
 
-  return { ok: true };
+    if (!hasAdminRole(payload)) {
+      await apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
+      return { ok: false, error: 'This account does not have admin access.' };
+    }
+
+    setAdminSession();
+    return { ok: true };
+  } catch (err) {
+    if (err?.status === 422 || err?.status === 401) {
+      return { ok: false, error: 'Invalid admin email or password.' };
+    }
+    return { ok: false, error: err?.message || 'Login failed. Please try again.' };
+  }
 }

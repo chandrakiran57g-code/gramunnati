@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Razorpay payment gateway. Keys can be set here via env, or (preferred for
+    // this deployment) in the admin Settings screen as `rzp_key` / `rzp_secret`.
+    'razorpay' => [
+        'key' => env('RAZORPAY_KEY'),
+        'secret' => env('RAZORPAY_SECRET'),
+    ],
+
 ];

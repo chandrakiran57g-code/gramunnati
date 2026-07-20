@@ -526,40 +526,27 @@ export const searchService = {
  * Notifications Service
  */
 export const notificationsService = {
-  async list(userId) {
-    const { data, error } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    if (error) throw error;
-    return data;
+  // All calls are scoped to the authenticated member server-side; the userId
+  // argument is kept for backwards compatibility but is not sent.
+  async list() {
+    const res = await apiFetch('/notifications');
+    return res?.data ?? [];
   },
 
   async markAsRead(id) {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ is_read: true, read_at: new Date().toISOString() })
-      .eq('id', id);
-    if (error) throw error;
+    await apiFetch(`/notifications/${id}/read`, { method: 'POST' });
   },
 
-  async markAllAsRead(userId) {
-    const { error } = await supabase
-      .from('notifications')
-      .update({ is_read: true, read_at: new Date().toISOString() })
-      .eq('user_id', userId)
-      .eq('is_read', false);
-    if (error) throw error;
+  async markAllAsRead() {
+    await apiFetch('/notifications/read-all', { method: 'POST' });
   },
 
-  async getUnreadCount(userId) {
-    const { count, error } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('is_read', false);
-    if (error) return 0;
-    return count || 0;
+  async getUnreadCount() {
+    try {
+      const res = await apiFetch('/notifications/unread-count');
+      return res?.count ?? 0;
+    } catch {
+      return 0;
+    }
   },
 };
