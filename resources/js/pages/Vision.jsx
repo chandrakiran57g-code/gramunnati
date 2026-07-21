@@ -31,7 +31,7 @@ export default function Vision() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <HeroScrollSection size="page">
-        <div className="hero-gradient py-20 px-4">
+        <div className="hero-gradient py-16 sm:py-20 px-4">
           <div className="max-w-5xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Eye className="w-16 h-16 mx-auto mb-6 opacity-70" />
@@ -44,7 +44,7 @@ export default function Vision() {
       </HeroScrollSection>
 
       {/* Mission */}
-      <section className="py-20 bg-white">
+      <section className="py-10 sm:py-12 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <Target className="w-10 h-10 text-primary mx-auto mb-4" />
@@ -72,7 +72,7 @@ export default function Vision() {
       </section>
 
       {/* 8 Pillars */}
-      <section className="py-20 bg-gradient-to-b from-green-50/30 to-white">
+      <section className="py-10 sm:py-12 bg-gradient-to-b from-green-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="font-heading text-3xl font-bold mb-3">Eight Pillars of Development</h2>
@@ -92,7 +92,7 @@ export default function Vision() {
       </section>
 
       {/* Objectives */}
-      <section className="py-20 bg-primary">
+      <section className="py-10 sm:py-12 bg-primary">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <Star className="w-10 h-10 text-donation mx-auto mb-4" />

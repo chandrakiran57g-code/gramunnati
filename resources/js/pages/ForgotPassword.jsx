@@ -31,6 +31,7 @@ export default function ForgotPassword() {
   if (sent) {
     return (
       <AuthLayout
+        showPublicChrome
         icon={CheckCircle}
         title="Check your email"
         subtitle={`Password reset link sent to ${email}`}
@@ -49,6 +50,7 @@ export default function ForgotPassword() {
 
   return (
     <AuthLayout
+      showPublicChrome
       icon={KeyRound}
       title="Forgot password?"
       subtitle="Enter your email to receive a reset link"

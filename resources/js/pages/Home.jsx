@@ -18,10 +18,6 @@ export default function Home() {
         <HeroSection />
       </div>
 
-      <div id="home-impact" data-home-section="home-impact">
-        <ImpactCounter stats={data?.stats} loading={isLoading} />
-      </div>
-
       <div id="home-how-it-works" data-home-section="home-how-it-works">
         <HomeHowItWorks />
       </div>
@@ -32,6 +28,10 @@ export default function Home() {
 
       <div id="home-active-works" data-home-section="home-active-works">
         <HomeActiveWorks loading={isLoading} />
+      </div>
+
+      <div id="home-impact" data-home-section="home-impact">
+        <ImpactCounter stats={data?.stats} loading={isLoading} />
       </div>
 
       <div id="home-cta" data-home-section="home-cta">

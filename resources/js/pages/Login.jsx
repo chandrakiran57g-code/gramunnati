@@ -40,6 +40,7 @@ export default function Login() {
 
   return (
     <AuthLayout
+      showPublicChrome
       icon={LogIn}
       title="Welcome back"
       subtitle="Log in with your mobile number"

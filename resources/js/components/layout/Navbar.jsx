@@ -219,11 +219,6 @@ export default function Navbar() {
                   onMouseEnter={clearDropdownTimer}
                   onMouseLeave={closeDropdown}
                 >
-                  <div className="nav-dropdown-header px-4 py-2.5">
-                    <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
-                      {item.label}
-                    </span>
-                  </div>
                   {item.children.map((child) => (
                     <SmartLink
                       key={child.path + child.label}

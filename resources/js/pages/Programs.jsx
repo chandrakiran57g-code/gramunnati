@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cmsService } from '@/api/cms';
@@ -10,6 +10,7 @@ import { stripHtml } from '@/lib/stripHtml';
 
 export default function Programs() {
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const [programs, setPrograms] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,6 +45,7 @@ export default function Programs() {
               const title = localize(prog, 'title', lang) || prog.title;
               const description = localize(prog, 'description', lang) || prog.description || '';
               const icon = prog.icon || '🌾';
+              const detailHref = `/programs/${prog.slug}`;
               return (
                 <motion.div
                   key={prog.slug || prog.id}
@@ -51,22 +53,26 @@ export default function Programs() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.07 }}
-                  className="group bg-white rounded-2xl border border-brown-300 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                  onClick={() => navigate(detailHref)}
+                  role="link"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter') navigate(detailHref); }}
+                  className="group bg-white rounded-2xl border border-brown-300 p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
                 >
-                  <Link to={`/programs/${prog.slug}`}>
-                    <div className="w-14 h-14 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform overflow-hidden">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="w-14 h-14 shrink-0 bg-gray-50 rounded-2xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform overflow-hidden">
                       {String(icon).startsWith('http') ? <img src={icon} alt="" className="h-full w-full object-cover" /> : icon}
                     </div>
-                    <h3 className="font-heading font-bold text-lg mb-2 text-foreground">{title}</h3>
-                  </Link>
+                    <h3 className="font-heading font-bold text-lg text-foreground">{title}</h3>
+                  </div>
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed line-clamp-4">{stripHtml(description)}</p>
                   <div className="mt-4 flex flex-col gap-2">
-                    <Link to={`/programs/${prog.slug}`}>
+                    <Link to={detailHref} onClick={(e) => e.stopPropagation()}>
                       <Button size="sm" variant="outline" className="w-full text-xs border-brown-300 text-foreground">
                         Learn More <ArrowRight className="w-3 h-3 ml-1" />
                       </Button>
                     </Link>
-                    <Link to={`/donate?program=${prog.slug}`}>
+                    <Link to={`/donate?program=${prog.slug}`} onClick={(e) => e.stopPropagation()}>
                       <Button size="sm" className="w-full bg-service-agriculture text-white border-0 text-xs hover:opacity-90">
                         <Heart className="w-3 h-3 mr-1" /> Support This Program
                       </Button>

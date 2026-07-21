@@ -68,8 +68,6 @@ export default function Footer() {
   const footerLinks = parseFooterLinks(raw.footer_links) || DEFAULT_FOOTER_LINKS;
   const quoteEn = raw.footer_quote || '"Our Village – Our Responsibility – Our Development"';
   const quoteTe = raw.footer_quote_te || '"మన గ్రామం – మన బాధ్యత – మన అభివృద్ధి"';
-  const bottomText = raw.footer_bottom_text
-    || `© ${new Date().getFullYear()} ${siteName} — Village Development & School Empowerment Platform. All rights reserved.`;
 
   const socials = [
     { IconComp: Facebook, label: 'Facebook', url: normalizeExternalUrl(raw.footer_social_facebook) },
@@ -145,15 +143,6 @@ export default function Footer() {
                 Donate Now
               </Link>
             </div>
-          </div>
-        </div>
-
-        <div className="border-t border-white/10 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-brown-400">
-          <p>{bottomText}</p>
-          <div className="flex items-center gap-1">
-            <span>Made with</span>
-            <Heart className="w-3 h-3 text-red-500 fill-red-500" />
-            <span>for Rural India</span>
           </div>
         </div>
       </div>

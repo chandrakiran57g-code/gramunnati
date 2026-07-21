@@ -90,6 +90,7 @@ export default function Register() {
   if (success) {
     return (
       <AuthLayout
+        showPublicChrome
         icon={CheckCircle}
         title="Check your email"
         subtitle={email ? `We sent a confirmation link to ${email}` : "Account created successfully"}
@@ -108,6 +109,7 @@ export default function Register() {
 
   return (
     <AuthLayout
+      showPublicChrome
       icon={UserPlus}
       title="Create your account"
       subtitle="Sign up to get started"

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import SafeImage from '@/components/shared/SafeImage';
@@ -42,6 +42,7 @@ function translateCategoryName(category, t) {
 
 export function ActiveWorkCard({ item, index = 0 }) {
   const { t, lang } = useLanguage();
+  const navigate = useNavigate();
   const href = item.link || `/active-work/${item.slug}`;
   const cover = item.cover_image || item.card?.cover_image;
   const badge = translateBadge(item.badge || item.card?.badge || 'Featured', t);
@@ -54,7 +55,11 @@ export function ActiveWorkCard({ item, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.08 }}
-      className="home-feature-card group bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden flex flex-col h-full min-h-[380px]"
+      onClick={() => navigate(href)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(href); }}
+      className="home-feature-card group bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden flex flex-col h-full min-h-[380px] cursor-pointer"
     >
       <div className="relative h-44 shrink-0 overflow-hidden">
         <SafeImage src={cover} alt={name} fallbackIndex={index} width={600} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -70,14 +75,14 @@ export function ActiveWorkCard({ item, index = 0 }) {
         )}
         <div className="flex gap-2 mt-4 pt-2">
           {(item.card?.enable_details !== false) && (
-            <Link to={href} className="flex-1">
+            <Link to={href} className="flex-1" onClick={(e) => e.stopPropagation()}>
               <Button variant="outline" size="sm" className="w-full border-[#8B6914] text-[#8B6914] hover:bg-[#8B6914] hover:text-white text-xs">
                 {t('home.viewDetails')}
               </Button>
             </Link>
           )}
           {(item.card?.enable_donate !== false) && (
-            <Link to={item.donate_link || (item.link?.includes('/schools/') ? `/donate?type=school&school_id=${item.id}` : `/donate?type=village&village_id=${item.id}`)}>
+            <Link onClick={(e) => e.stopPropagation()} to={item.donate_link || (item.link?.includes('/schools/') ? `/donate?type=school&school_id=${item.id}` : `/donate?type=village&village_id=${item.id}`)}>
               <Button size="sm" className="donation-gradient text-white border-0 text-xs px-3">
                 <Heart className="w-3 h-3 mr-1" /> {t('home.donate')}
               </Button>

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Heart } from 'lucide-react';
 import { needsSupportService } from '@/api/needsSupport';
@@ -19,6 +19,7 @@ function plainText(htmlOrText) {
 
 function NeedSupportCard({ project, index = 0 }) {
   const { t, lang } = useLanguage();
+  const navigate = useNavigate();
   const name = localize(project, 'project_name', lang) || localize(project, 'title', lang) || localize(project, 'name', lang);
   const description = plainText(
     localize(project, 'short_description', lang) || localize(project, 'description', lang)
@@ -32,6 +33,7 @@ function NeedSupportCard({ project, index = 0 }) {
   const donateHref = project.slug
     ? `/donate?project_slug=${encodeURIComponent(project.slug)}`
     : `/donate?project_id=${project.id}`;
+  const cardHref = detailHref || donateHref;
 
   return (
     <motion.article
@@ -39,9 +41,13 @@ function NeedSupportCard({ project, index = 0 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       whileHover={{ y: -4 }}
-      className="home-feature-card flex flex-col h-full min-h-[320px] bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden"
+      onClick={() => navigate(cardHref)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(cardHref); }}
+      className="home-feature-card flex flex-col h-full min-h-[320px] bg-gray-50 rounded-2xl border border-[#D4B896] overflow-hidden cursor-pointer"
     >
-      <Link to={detailHref || donateHref} className="relative h-40 overflow-hidden block">
+      <Link to={detailHref || donateHref} onClick={(e) => e.stopPropagation()} className="relative h-40 overflow-hidden block">
         <SafeImage src={image} alt={name} fallbackIndex={index} width={480} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/90 to-transparent" />
         <span className="absolute top-2 left-2 home-urgent-badge text-[10px] px-2 py-0.5">{t('home.needsSupport')}</span>
@@ -52,7 +58,7 @@ function NeedSupportCard({ project, index = 0 }) {
       </Link>
       <div className="p-4 flex flex-col flex-1">
         {description && (
-          <Link to={detailHref || donateHref} className="text-sm text-[#5C4033]/75 line-clamp-2 mb-3 flex-1 hover:text-[#5C4033]">
+          <Link to={detailHref || donateHref} onClick={(e) => e.stopPropagation()} className="text-sm text-[#5C4033]/75 line-clamp-2 mb-3 flex-1 hover:text-[#5C4033]">
             {description}
           </Link>
         )}
@@ -69,6 +75,7 @@ function NeedSupportCard({ project, index = 0 }) {
           {detailHref && (
             <Link
               to={detailHref}
+              onClick={(e) => e.stopPropagation()}
               className="flex items-center justify-center w-full py-2 rounded-lg border border-[#8B6914] text-[#8B6914] text-sm font-semibold hover:bg-white transition-colors"
             >
               View details
@@ -76,6 +83,7 @@ function NeedSupportCard({ project, index = 0 }) {
           )}
           <Link
             to={donateHref}
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center gap-1.5 w-full py-2.5 rounded-lg bg-[#8B6914] text-amber-50 text-sm font-semibold hover:bg-[#6B5344] transition-colors"
           >
             <Heart className="w-4 h-4" />

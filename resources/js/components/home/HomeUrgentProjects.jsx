@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, Heart } from 'lucide-react';
 import SafeImage from '@/components/shared/SafeImage';
@@ -9,6 +9,7 @@ import { localize } from '@/lib/localizedContent';
 
 function ProjectCard({ project }) {
   const { t, lang } = useLanguage();
+  const navigate = useNavigate();
   const slug = project.slug;
   const name = localize(project, 'project_name', lang) || localize(project, 'title', lang) || localize(project, 'name', lang);
   const image = resolveImageUrl(project.cover_image || project.featured_image, 0, 600);
@@ -18,14 +19,19 @@ function ProjectCard({ project }) {
   const donateHref = slug
     ? `/donate?project_slug=${encodeURIComponent(slug)}`
     : `/donate?project_id=${project.id}`;
+  const cardHref = detailHref || donateHref;
 
   return (
     <motion.article
       whileHover={{ y: -4 }}
       transition={{ duration: 0.25 }}
-      className="home-urgent-card home-feature-card flex flex-col h-full min-h-[320px] lg:min-h-[340px]"
+      onClick={() => navigate(cardHref)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(cardHref); }}
+      className="home-urgent-card home-feature-card flex flex-col h-full min-h-[320px] lg:min-h-[340px] cursor-pointer"
     >
-      <Link to={detailHref || donateHref} className="relative h-36 lg:h-32 overflow-hidden rounded-t-xl block">
+      <Link to={detailHref || donateHref} onClick={(e) => e.stopPropagation()} className="relative h-36 lg:h-32 overflow-hidden rounded-t-xl block">
         <SafeImage src={image} alt={name} fallbackIndex={0} width={480} className="w-full h-full object-cover" loading="lazy" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#3D2914]/90 to-transparent" />
         {progress < 100 && (
@@ -48,6 +54,7 @@ function ProjectCard({ project }) {
           {detailHref && (
             <Link
               to={detailHref}
+              onClick={(e) => e.stopPropagation()}
               className="flex items-center justify-center w-full py-1.5 rounded-lg border border-[#8B6914] text-[#8B6914] text-xs font-semibold hover:bg-white/60 transition-colors"
             >
               Learn More
@@ -55,6 +62,7 @@ function ProjectCard({ project }) {
           )}
           <Link
             to={donateHref}
+            onClick={(e) => e.stopPropagation()}
             className="flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-[#8B6914] text-amber-50 text-xs font-semibold hover:bg-[#6B5344] transition-colors"
           >
             <Heart className="w-3.5 h-3.5" />

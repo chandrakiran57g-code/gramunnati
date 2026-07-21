@@ -102,7 +102,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-white">
       {/* ── Hero (static — no scroll redirect) ─────────────── */}
-      <div className="about-hero-shell relative overflow-hidden py-24 sm:py-32 px-4">
+      <div className="about-hero-shell relative overflow-hidden py-16 sm:py-20 px-4">
           <div className="about-hero-grain absolute inset-0" aria-hidden="true" />
           <div
             className="about-glow-orb absolute -left-20 top-16 h-56 w-56 rounded-full bg-[#2D6A4F]/40"
@@ -144,7 +144,7 @@ export default function About() {
       </div>
 
       {/* ── What is CMSR ───────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-white">
+      <section className="py-10 sm:py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <motion.div
             variants={fadeUp}
@@ -223,7 +223,7 @@ export default function About() {
       </section>
 
       {/* ── Who participates ───────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-white">
+      <section className="py-10 sm:py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-14">
             <SectionLabel>Our ecosystem</SectionLabel>
@@ -245,10 +245,12 @@ export default function About() {
                 viewport={{ once: true }}
                 className="group rounded-2xl border border-gray-200 bg-white p-6 hover:border-gray-300 hover:shadow-md transition-all duration-300"
               >
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
-                  <s.icon className="h-6 w-6" />
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-700">
+                    <s.icon className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-heading font-bold text-gray-900">{s.title}</h3>
                 </div>
-                <h3 className="font-heading font-bold text-gray-900 mb-2">{s.title}</h3>
                 <p className="text-sm text-gray-600 leading-relaxed">{s.desc}</p>
               </motion.div>
             ))}
@@ -257,7 +259,7 @@ export default function About() {
       </section>
 
       {/* ── How it works ─────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-white border-t border-gray-100">
+      <section className="py-10 sm:py-12 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-14">
             <SectionLabel>How it works</SectionLabel>
@@ -287,7 +289,7 @@ export default function About() {
       </section>
 
       {/* ── Eight Pillars ─────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-white border-t border-gray-100">
+      <section className="py-10 sm:py-12 bg-white border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-14">
             <SectionLabel>Eight pillars</SectionLabel>
@@ -311,10 +313,12 @@ export default function About() {
                 viewport={{ once: true, margin: '-40px' }}
                 className="rounded-2xl border border-gray-200 bg-white p-5 hover:shadow-md transition-shadow"
               >
-                <div className={`w-12 h-12 ${p.lightColor} rounded-xl flex items-center justify-center mb-3`}>
-                  <p.Icon className={`w-6 h-6 ${p.textColor}`} />
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`w-12 h-12 shrink-0 ${p.lightColor} rounded-xl flex items-center justify-center`}>
+                    <p.Icon className={`w-6 h-6 ${p.textColor}`} />
+                  </div>
+                  <h3 className={`font-semibold text-sm ${p.textColor}`}>{p.title}</h3>
                 </div>
-                <h3 className={`font-semibold text-sm mb-1 ${p.textColor}`}>{p.title}</h3>
                 <p className="text-xs text-gray-600 leading-relaxed">{p.desc}</p>
               </motion.div>
             ))}
@@ -323,7 +327,7 @@ export default function About() {
       </section>
 
       {/* ── Vision & Mission ───────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-white border-t border-gray-100">
+      <section className="py-10 sm:py-12 bg-white border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-2 gap-8">
             <motion.div
@@ -333,10 +337,12 @@ export default function About() {
               viewport={{ once: true }}
               className="rounded-3xl border border-gray-200 bg-white p-8 sm:p-10 shadow-sm"
             >
-              <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8F5EE]">
-                <Eye className="h-7 w-7 text-[#2D6A4F]" />
+              <div className="flex items-center gap-4 mb-4">
+                <div className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#E8F5EE]">
+                  <Eye className="h-7 w-7 text-[#2D6A4F]" />
+                </div>
+                <h3 className="font-heading text-2xl font-bold text-[#2D6A4F]">Our Vision</h3>
               </div>
-              <h3 className="font-heading text-2xl font-bold text-[#2D6A4F] mb-4">Our Vision</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 To create a nationwide digital ecosystem where every village and school has a visible identity,
                 enabling citizens, donors, and volunteers from across India and the world to participate in
@@ -355,10 +361,12 @@ export default function About() {
               viewport={{ once: true }}
               className="rounded-3xl border border-gray-200 bg-white p-8 sm:p-10 shadow-sm"
             >
-              <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[#EFF6FF]">
-                <Target className="h-7 w-7 text-[#2563EB]" />
+              <div className="flex items-center gap-4 mb-4">
+                <div className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#EFF6FF]">
+                  <Target className="h-7 w-7 text-[#2563EB]" />
+                </div>
+                <h3 className="font-heading text-2xl font-bold text-[#2563EB]">Our Mission</h3>
               </div>
-              <h3 className="font-heading text-2xl font-bold text-[#2563EB] mb-4">Our Mission</h3>
               <p className="text-gray-600 leading-relaxed mb-4">
                 To connect villagers, students, employees, NRVs (Non-Resident Villagers), volunteers, donors,
                 professionals, schools, and organizations on one platform — enabling collaborative village and
@@ -373,7 +381,7 @@ export default function About() {
       </section>
 
       {/* ── 2030 Objectives ────────────────────────────────── */}
-      <section className="py-20 sm:py-28 bg-gray-50 border-t border-gray-100">
+      <section className="py-10 sm:py-12 bg-gray-50 border-t border-gray-100">
         <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="text-center mb-12">
             <SectionLabel>Goals by 2030</SectionLabel>
@@ -404,7 +412,7 @@ export default function About() {
       </section>
 
       {/* ── CTA ────────────────────────────────────────────── */}
-      <section className="py-20 sm:py-24 bg-white border-t border-gray-100">
+      <section className="py-10 sm:py-12 bg-white border-t border-gray-100">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <MapPin className="h-10 w-10 text-gray-500 mx-auto mb-5" />

@@ -51,6 +51,7 @@ export default function ResetPassword() {
   if (success) {
     return (
       <AuthLayout
+        showPublicChrome
         icon={CheckCircle}
         title="Password updated!"
         subtitle="Your password has been successfully reset"
@@ -67,6 +68,7 @@ export default function ResetPassword() {
 
   return (
     <AuthLayout
+      showPublicChrome
       icon={KeyRound}
       title="Reset your password"
       subtitle="Enter a new password for your account"
