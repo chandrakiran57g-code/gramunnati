@@ -5,7 +5,7 @@ import { isProgramTemplate, getProgramTemplateMeta } from '@/lib/activeWorkTempl
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts';
-import { Heart, MapPin, ChevronLeft } from 'lucide-react';
+import { Heart, MapPin } from 'lucide-react';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import VillageInsightsCharts from '@/components/village/VillageInsightsCharts';
 import { safeText } from '@/lib/safeText';
@@ -83,7 +83,6 @@ export default function ActiveWorkDetail() {
           <img src={item.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={displayName} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">
-            <Link to="/" className="text-white/70 text-sm flex items-center gap-1 mb-2"><ChevronLeft className="w-4 h-4" /> Back</Link>
             <h1 className="font-heading text-3xl font-bold text-white">{programMeta?.icon ? `${programMeta.icon} ` : ''}{displayName}</h1>
             {item.location?.district && <p className="text-white/80 text-sm mt-1 flex items-center gap-1"><MapPin className="w-4 h-4" />{safeText(item.location.district)}</p>}
           </div>

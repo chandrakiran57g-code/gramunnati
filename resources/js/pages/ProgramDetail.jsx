@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, MapPin, School, Users, FolderOpen, Target } from 'lucide-react';
+import { Heart, MapPin, School, Users, FolderOpen, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cmsService } from '@/api/cms';
@@ -128,9 +128,6 @@ export default function ProgramDetail() {
         <img src={program.cover} alt={program.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-brown-900/90 via-brown-900/40 to-brown-900/20" />
         <div className="absolute bottom-8 left-0 right-0 max-w-5xl mx-auto px-4 sm:px-6">
-          <Link to="/programs" className="inline-flex items-center gap-1 text-white/80 hover:text-white text-sm mb-4">
-            <ArrowLeft className="w-4 h-4" /> Back to Programs
-          </Link>
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold text-white ${program.color} mb-3`}>
               {program.icon} Program

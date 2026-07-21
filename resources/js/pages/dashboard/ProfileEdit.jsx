@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Save, ArrowLeft, Camera, User, Phone, MapPin, Briefcase } from 'lucide-react';
+import { Save, Camera, User, Phone, MapPin, Briefcase } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -55,10 +55,6 @@ export default function ProfileEdit() {
     <div className="min-h-screen bg-background py-12 px-4">
       <div className="max-w-2xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Link to="/profile" className="flex items-center gap-1 text-muted-foreground hover:text-primary text-sm mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4" /> Back to Profile
-          </Link>
-
           <h1 className="font-heading text-3xl font-bold mb-8">Edit Profile</h1>
 
           <div className="bg-white rounded-2xl border border-border p-8">

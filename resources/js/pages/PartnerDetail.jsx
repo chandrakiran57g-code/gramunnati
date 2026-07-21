@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Building2, Globe, Mail, Phone, Calendar, ArrowLeft } from 'lucide-react';
+import { Building2, Globe, Mail, Phone, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
@@ -45,9 +45,6 @@ export default function PartnerDetail() {
       <HeroScrollSection size="page">
         <section className="hero-gradient py-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <Link to="/partners" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back to Partners
-            </Link>
             <div className="flex items-start gap-6">
               <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm overflow-hidden flex-shrink-0 flex items-center justify-center">
                 {partner.logo ? <img src={partner.logo} alt={partner.name} className="w-full h-full object-cover" /> : <Building2 className="w-10 h-10 text-white/60" />}

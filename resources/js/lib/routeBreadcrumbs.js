@@ -83,6 +83,28 @@ export function shouldShowBreadcrumbs(pathname, excludedPaths = DEFAULT_EXCLUDED
   return !excludedPaths.has(pathname);
 }
 
+// Member-portal pages render on a plain light background (no dark hero), so the
+// overlaid breadcrumb needs dark text there. Every other public page opens with
+// a dark hero banner, so it uses light text.
+const LIGHT_TOP_PREFIXES = [
+  '/profile',
+  '/my-donations',
+  '/my-receipts',
+  '/my-villages',
+  '/my-schools',
+  '/volunteer-profile',
+  '/my-activities',
+  '/notifications',
+  '/settings',
+];
+
+export function breadcrumbTone(pathname) {
+  const onLightTop = LIGHT_TOP_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+  return onLightTop ? 'onLight' : 'onDark';
+}
+
 function humanizeSlug(value) {
   if (!value) return '';
   return value

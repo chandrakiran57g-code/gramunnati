@@ -8,7 +8,6 @@ import { isServiceDirectorySlug, getServiceDirectoryConfig } from '@/lib/service
 import { PLATFORM_DATA_CHANGED } from '@/lib/platformRefresh';
 import ServiceDirectoryTable from '@/components/cms/ServiceDirectoryTable';
 import StructuredContent from '@/components/shared/StructuredContent';
-import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { localize, useLocalizedRecord } from '@/lib/localizedContent';
@@ -129,9 +128,6 @@ export default function CmsPageView() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
             <div className="relative z-10 flex h-full items-end">
               <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 pb-8">
-                <Link to="/" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-4 transition-colors">
-                  <ArrowLeft className="w-4 h-4" /> Back to Home
-                </Link>
                 <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   className="font-heading text-3xl sm:text-4xl font-bold mb-3 text-white">
                   {localized?.title || page.title}
@@ -147,9 +143,6 @@ export default function CmsPageView() {
         ) : (
           <section className="hero-gradient py-16">
             <div className="max-w-5xl mx-auto px-4 sm:px-6">
-              <Link to="/" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Back to Home
-              </Link>
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="font-heading text-3xl sm:text-4xl font-bold mb-4 text-white">
                 {localized?.title || page.title}

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { needsSupportService } from '@/api/needsSupport';
 import { homeService } from '@/api/home';
 import SafeImage from '@/components/shared/SafeImage';
@@ -121,9 +121,6 @@ export default function NeedSupport() {
       <HeroScrollSection size="page">
         <div className="brand-gradient py-16 px-4">
           <div className="max-w-7xl mx-auto text-white">
-            <Link to="/" className="inline-flex items-center gap-1 text-white/70 hover:text-white text-sm mb-4">
-              <ArrowLeft className="w-4 h-4" /> {t('nav.home') || 'Home'}
-            </Link>
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-3">{t('home.urgentTitle')}</h1>
               <p className="text-white/80 max-w-2xl">{t('home.urgentSubtitle')}</p>

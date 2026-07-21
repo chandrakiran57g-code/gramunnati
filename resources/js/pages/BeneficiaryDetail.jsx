@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Heart, MapPin, ArrowLeft } from 'lucide-react';
+import { Heart, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
@@ -46,9 +46,6 @@ export default function BeneficiaryDetail() {
       <HeroScrollSection size="page">
         <section className="hero-gradient py-16">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
-            <Link to="/beneficiaries" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> Back to Beneficiaries
-            </Link>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="font-heading text-3xl sm:text-4xl font-bold text-white mb-3">{localize(beneficiary, 'name') || beneficiary.name}</motion.h1>
             <div className="flex flex-wrap items-center gap-3">

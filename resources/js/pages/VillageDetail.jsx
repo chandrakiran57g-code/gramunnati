@@ -7,7 +7,7 @@ import { villagesService } from '@/api/entities';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
-import { MapPin, Users, School, FolderOpen, Heart, TreePine, Droplets, ChevronLeft, Star } from 'lucide-react';
+import { MapPin, Users, School, FolderOpen, Heart, TreePine, Droplets, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -175,9 +175,6 @@ export default function VillageDetail() {
           <img src={village.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={village.village_name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">
-            <Link to="/villages" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3 transition-colors">
-              <ChevronLeft className="w-4 h-4" /> Back to Villages
-            </Link>
             <h1 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-2">{localize(village, 'village_name') || village.village_name}</h1>
             <div className="flex flex-wrap items-center gap-3 text-white/80 text-sm">
               <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{safeText(village.district)}, {safeText(village.mandal)}</span>

@@ -6,7 +6,7 @@ import { schoolsService } from '@/api/entities';
 import { supabase } from '@/api/supabaseClient';
 import { useAuth } from '@/lib/AuthContext';
 import { toast } from 'sonner';
-import { MapPin, Heart, ChevronLeft, CheckCircle, XCircle, Star } from 'lucide-react';
+import { MapPin, Heart, CheckCircle, XCircle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -159,7 +159,6 @@ export default function SchoolDetail() {
           <img src={school.cover_image || 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=1200&q=80'} alt={school.school_name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">
-            <Link to="/schools" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Schools</Link>
             <div className="flex flex-wrap gap-2 mb-2">
               <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${schoolTypeColor[school.school_type]}`}>{schoolTypeLabel[school.school_type]}</span>
             </div>

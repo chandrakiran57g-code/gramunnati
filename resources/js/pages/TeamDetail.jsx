@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { Users, Mail, Phone, ArrowLeft, ChevronRight } from 'lucide-react';
+import { Users, Mail, Phone, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -70,9 +70,6 @@ export default function TeamDetail() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25" />
             <div className="relative z-10 flex h-full items-end">
               <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 pb-8">
-                <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-                  <ArrowLeft className="w-4 h-4" /> Back to Teams
-                </Link>
                 <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                   className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
                   {localizedGroup?.name || group.name}

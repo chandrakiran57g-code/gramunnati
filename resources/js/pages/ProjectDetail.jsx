@@ -1,7 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
-import { MapPin, Heart, ChevronLeft, Calendar, Target, TrendingUp, Clock, CheckCircle2, Circle } from 'lucide-react';
+import { MapPin, Heart, Calendar, Target, TrendingUp, Clock, CheckCircle2, Circle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
@@ -63,7 +63,6 @@ export default function ProjectDetail() {
           <img src={project.cover_image || 'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1200&q=80'} alt={project.project_name} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">
-            <Link to="/projects" className="flex items-center gap-1 text-white/70 hover:text-white text-sm mb-3"><ChevronLeft className="w-4 h-4" /> Back to Projects</Link>
             <div className="flex flex-wrap gap-2 mb-2">
               <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${categoryColors[project.category] || ''}`}>{project.category}</span>
               <span className={`text-xs font-semibold px-3 py-1 rounded-full bg-white/90 ${statusColors[project.status]}`}>{statusLabels[project.status]}</span>

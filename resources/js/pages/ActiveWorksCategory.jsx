@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Layers } from 'lucide-react';
+import { Layers } from 'lucide-react';
 import { activeWorkService } from '@/api/activeWork';
 import { ActiveWorkCard } from '@/components/home/HomeActiveWorks';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
@@ -65,9 +65,6 @@ export default function ActiveWorksCategory() {
       <HeroScrollSection size="page">
         <div className="brand-gradient py-16 px-4">
           <div className="max-w-7xl mx-auto text-white">
-            <Link to="/" className="inline-flex items-center gap-1 text-white/70 hover:text-white text-sm mb-4">
-              <ArrowLeft className="w-4 h-4" /> {t('nav.home') || 'Home'}
-            </Link>
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center gap-2 mb-2 text-white/70 text-sm">
                 <Layers className="w-4 h-4" /> {t('home.featuredTitle')}
