@@ -1,9 +1,18 @@
 import React, { useMemo } from 'react';
+import img2 from '@/assets/hero-parallax/2.png';
+import img3 from '@/assets/hero-parallax/3.png';
+import img4 from '@/assets/hero-parallax/4.png';
+import img5 from '@/assets/hero-parallax/5.png';
+import img6 from '@/assets/hero-parallax/6.png';
+import imgBike from '@/assets/hero-parallax/bike.png';
 
-// Assets are self-hosted under /public/hero-parallax to avoid depending on a
-// third-party CDN (the previous CodePen S3 bucket now returns 403, which is why
-// the animation disappeared). Layer "1" was never recoverable from the archive,
-// so layer "2" doubles as the closest foreground layer.
+// Assets are bundled by Vite (served from /build/assets) so they never depend on
+// the old third-party CodePen CDN, which now returns 403 and broke the
+// animation. Importing them also avoids the SPA catch-all route swallowing
+// requests for files under /public. Layer "1" was never recoverable from the
+// archive, so layer "2" doubles as the closest foreground layer.
+const imageUrls = { 2: img2, 3: img3, 4: img4, 5: img5, 6: img6, bike: imgBike };
+
 const layersData = [
   { className: 'layer-6', speed: '120s', size: '222px', zIndex: 1, image: '6' },
   { className: 'layer-5', speed: '95s', size: '311px', zIndex: 1, image: '5' },
@@ -20,7 +29,7 @@ export default function MountainVistaParallax() {
     () =>
       layersData
         .map((layer) => {
-          const url = `/hero-parallax/${layer.image}.png`;
+          const url = imageUrls[layer.image];
           return `
           .mountain-vista-hero .${layer.className} {
             background-image: url(${url});
