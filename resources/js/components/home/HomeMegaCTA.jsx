@@ -1,16 +1,12 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, Users, ArrowRight, BookOpen, HelpCircle } from 'lucide-react';
-import { homeService } from '@/api/home';
 import { VILLAGE_HERO_PHOTOS } from '@/lib/villageImages';
 import SafeImage from '@/components/shared/SafeImage';
-import { useLanguage } from '@/i18n/LanguageContext';
 
-export default function HomeMegaCTA({ stats, loading }) {
-  const { t } = useLanguage();
-
+export default function HomeMegaCTA() {
   return (
-    <section className="relative min-h-[360px] flex items-center overflow-hidden">
+    <section className="relative min-h-[220px] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <SafeImage
           src={VILLAGE_HERO_PHOTOS[5].url}
@@ -24,29 +20,19 @@ export default function HomeMegaCTA({ stats, loading }) {
         <div className="absolute inset-0 home-mega-cta-gradient" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 py-10 text-center">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <p className="text-amber-200/80 text-sm font-semibold tracking-wide mb-4 font-body">
-            {loading
-              ? '…'
-              : `${(stats?.villages || 0).toLocaleString('en-IN')}+ ${t('home.statGaon')} · ${homeService.formatINR(stats?.totalAmount || 0)} ${t('home.ctaRaised')}`}
-          </p>
           <h2
-            className="font-heading font-bold text-amber-50 mb-5 text-balance"
-            style={{ fontSize: 'clamp(2.25rem, 5vw, 3.75rem)', letterSpacing: '-0.03em' }}
+            className="font-heading font-bold text-amber-50 mb-6 text-balance"
+            style={{ fontSize: 'clamp(1.75rem, 4vw, 3rem)', letterSpacing: '-0.03em' }}
           >
-            One step today —
-            <br />
-            a transformed village tomorrow
+            One step today — a transformed village tomorrow
           </h2>
-          <p className="text-amber-100/70 text-lg max-w-xl mx-auto mb-6 font-body text-pretty">
-            Donors and volunteers worldwide on one platform. Join us.
-          </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             {/* Donate Now + Success Stories */}
             <div className="flex flex-col items-center gap-2">
