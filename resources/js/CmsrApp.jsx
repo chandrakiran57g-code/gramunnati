@@ -53,6 +53,7 @@ import Vision from '@/pages/Vision';
 
 // CMS-driven dynamic pages
 import CmsPageView from '@/pages/CmsPageView';
+import CmsPages from '@/pages/CmsPages';
 import Teams from '@/pages/Teams';
 import TeamDetail from '@/pages/TeamDetail';
 import PartnersPage from '@/pages/Partners';
@@ -191,6 +192,7 @@ const AuthenticatedApp = () => {
         <Route path="/compare" element={<Compare />} />
 
         {/* CMS Dynamic Pages */}
+        <Route path="/page" element={<CmsPages />} />
         <Route path="/page/:slug" element={<CmsPageView />} />
         <Route path="/active-works/category/:slug" element={<ActiveWorksCategory />} />
         <Route path="/need-support" element={<NeedSupport />} />
