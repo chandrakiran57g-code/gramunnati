@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Heart, Users, ArrowRight } from 'lucide-react';
 import VisionVideo from '@/components/home/VisionVideo';
@@ -6,6 +6,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 
 export default function HomeHowItWorks() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
 
   const steps = [
     {
@@ -80,18 +81,25 @@ export default function HomeHowItWorks() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="home-step-card group"
+              onClick={() => navigate(s.link)}
+              role="link"
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === 'Enter') navigate(s.link); }}
+              className="home-step-card group cursor-pointer"
             >
-              <div className="flex items-start justify-between mb-6">
-                <div className="home-step-icon">
-                  <s.icon className="w-5 h-5 text-[#8B6914]" />
+              <div className="flex items-center justify-between mb-4 gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="home-step-icon shrink-0">
+                    <s.icon className="w-5 h-5 text-[#8B6914]" />
+                  </div>
+                  <h3 className="font-heading text-xl font-bold text-[#3D2914]">{s.title}</h3>
                 </div>
-                <span className="text-4xl font-heading font-bold text-[#D4B896]/40 leading-none">{s.step}</span>
+                <span className="text-4xl font-heading font-bold text-[#D4B896]/40 leading-none shrink-0">{s.step}</span>
               </div>
-              <h3 className="font-heading text-xl font-bold text-[#3D2914] mb-2">{s.title}</h3>
               <p className="text-sm text-[#5C4033]/75 leading-relaxed mb-6 font-body flex-1">{s.desc}</p>
               <Link
                 to={s.link}
+                onClick={(e) => e.stopPropagation()}
                 className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8B6914] group-hover:gap-2.5 transition-all"
               >
                 {s.label}

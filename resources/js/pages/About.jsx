@@ -207,8 +207,10 @@ export default function About() {
               className="relative rounded-3xl border border-gray-200 bg-white p-8 shadow-[0_20px_60px_-20px_rgba(61,41,20,0.08)]"
             >
               <div className="absolute -top-3 -right-3 h-20 w-20 rounded-full bg-[#2D6A4F]/10 blur-2xl" aria-hidden="true" />
-              <TreePine className="h-10 w-10 text-[#2D6A4F] mb-5" />
-              <h3 className="font-heading text-xl font-bold text-gray-900 mb-3">Why it matters</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <TreePine className="h-10 w-10 shrink-0 text-[#2D6A4F]" />
+                <h3 className="font-heading text-xl font-bold text-gray-900">Why it matters</h3>
+              </div>
               <p className="text-gray-600 leading-relaxed mb-6">
                 As responsible citizens, we carry a social duty toward our communities. When villages grow greener,
                 schools gain quality classrooms, and youth find livelihoods — the entire nation moves forward.

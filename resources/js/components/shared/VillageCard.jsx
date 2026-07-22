@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, School, FolderOpen, Heart, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,10 +12,12 @@ import { useInstantNavigation } from '@/lib/instantNavigation';
 export default function VillageCard({ village: rawVillage, index = 0 }) {
   const { lang } = useLanguage();
   const instant = useInstantNavigation();
+  const navigate = useNavigate();
   const village = normalizeVillageRecord(rawVillage);
   const villageName = localize(village, 'village_name', lang);
   const shortDescription = localize(village, 'short_description', lang);
   const slug = village.slug || village.village_name?.toLowerCase().replace(/\s+/g, '-') || village.id;
+  const detailHref = `/villages/${slug}`;
 
   return (
     <motion.div
@@ -24,7 +26,11 @@ export default function VillageCard({ village: rawVillage, index = 0 }) {
       whileInView={instant ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={instant ? { duration: 0 } : { delay: index * 0.1, duration: 0.5 }}
-      className="group cs-hover-card bg-white rounded-2xl overflow-hidden border border-brown-300 hover:shadow-xl transition-all duration-300"
+      onClick={() => navigate(detailHref)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(detailHref); }}
+      className="group cs-hover-card bg-white rounded-2xl overflow-hidden border border-brown-300 hover:shadow-xl transition-all duration-300 cursor-pointer"
     >
       <div className="relative h-44 overflow-hidden">
         <SafeImage
@@ -79,12 +85,12 @@ export default function VillageCard({ village: rawVillage, index = 0 }) {
         </div>
 
         <div className="flex gap-2">
-          <Link to={`/villages/${slug}`} className="flex-1">
+          <Link to={detailHref} onClick={(e) => e.stopPropagation()} className="flex-1">
             <Button variant="outline" size="sm" className="w-full border-service-village text-service-village hover:bg-service-village hover:text-white text-xs">
               View Details
             </Button>
           </Link>
-          <Link to={`/donate?type=village&village_id=${village.id}`}>
+          <Link to={`/donate?type=village&village_id=${village.id}`} onClick={(e) => e.stopPropagation()}>
             <Button size="sm" className="donation-gradient text-white border-0 text-xs px-3">
               <Heart className="w-3 h-3 mr-1" />Donate
             </Button>

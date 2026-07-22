@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Users, BookOpen, Heart, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,8 +23,10 @@ const typeLabel = {
 
 export default function SchoolCard({ school, index = 0 }) {
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const schoolName = localize(school, 'school_name', lang);
   const slug = school.slug || school.school_name?.toLowerCase().replace(/\s+/g, '-') || school.id;
+  const detailHref = `/schools/${slug}`;
 
   return (
     <motion.div
@@ -32,7 +34,11 @@ export default function SchoolCard({ school, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group bg-white rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+      onClick={() => navigate(detailHref)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(detailHref); }}
+      className="group bg-white rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
     >
       {/* Image */}
       <div className="relative h-44 overflow-hidden">
@@ -84,12 +90,12 @@ export default function SchoolCard({ school, index = 0 }) {
         </div>
 
         <div className="flex gap-2">
-          <Link to={`/schools/${slug}`} className="flex-1">
+          <Link to={detailHref} onClick={(e) => e.stopPropagation()} className="flex-1">
             <Button variant="outline" size="sm" className="w-full border-school text-school hover:bg-school hover:text-white text-xs">
               View Details
             </Button>
           </Link>
-          <Link to={`/donate?type=school&school_id=${school.id}`}>
+          <Link to={`/donate?type=school&school_id=${school.id}`} onClick={(e) => e.stopPropagation()}>
             <Button size="sm" className="donation-gradient text-white border-0 text-xs px-3">
               <Heart className="w-3 h-3 mr-1" />Donate
             </Button>

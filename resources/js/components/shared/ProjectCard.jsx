@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Calendar, Heart, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -42,6 +42,7 @@ const statusColors = {
 
 export default function ProjectCard({ project, index = 0 }) {
   const { lang } = useLanguage();
+  const navigate = useNavigate();
   const projectName = localize(project, 'project_name', lang);
   const shortDescription = localize(project, 'short_description', lang);
   const slug = project.slug || project.project_name?.toLowerCase().replace(/\s+/g, '-') || project.id;
@@ -57,6 +58,7 @@ export default function ProjectCard({ project, index = 0 }) {
     ? Math.min(Math.round((project.raised_amount / project.budget_amount) * 100), 100)
     : project.progress_percentage || 0;
   const progressClass = categoryProgress[categoryName] || '[&>div]:bg-primary';
+  const detailHref = `/projects/${slug}`;
 
   return (
     <motion.div
@@ -64,9 +66,13 @@ export default function ProjectCard({ project, index = 0 }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="group bg-white rounded-2xl border border-brown-300 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+      onClick={() => navigate(detailHref)}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(detailHref); }}
+      className="group bg-white rounded-2xl border border-brown-300 overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
     >
-      <Link to={`/projects/${slug}`}>
+      <Link to={detailHref} onClick={(e) => e.stopPropagation()}>
         <div className="relative h-44 overflow-hidden">
           <SafeImage
             src={project.cover_image}
@@ -87,7 +93,7 @@ export default function ProjectCard({ project, index = 0 }) {
       </Link>
 
       <div className="p-5">
-        <Link to={`/projects/${slug}`}>
+        <Link to={detailHref} onClick={(e) => e.stopPropagation()}>
           <h3 className="font-heading font-bold text-base mb-1 group-hover:text-primary transition-colors line-clamp-1">
             {projectName}
           </h3>
@@ -122,7 +128,7 @@ export default function ProjectCard({ project, index = 0 }) {
           <Badge variant="outline" className={`text-xs ${statusColors[project.status] || ''}`}>
             {project.status}
           </Badge>
-          <Link to={`/donate?project=${slug}`}>
+          <Link to={`/donate?project=${slug}`} onClick={(e) => e.stopPropagation()}>
             <Button size="sm" className="donation-gradient text-white border-0 text-xs">
               <Heart className="w-3 h-3 mr-1" /> Support
             </Button>

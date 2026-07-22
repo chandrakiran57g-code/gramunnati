@@ -25,8 +25,10 @@ function ProgramCard({ program, index }) {
 
   const content = (
     <>
-      <span className="text-3xl sm:text-4xl mb-4 block">{program.icon}</span>
-      <h3 className="font-heading text-xl sm:text-2xl font-bold text-[#3D2914] mb-2">{program.title}</h3>
+      <div className="flex items-center gap-3 mb-2">
+        <span className="text-3xl sm:text-4xl shrink-0 leading-none">{program.icon}</span>
+        <h3 className="font-heading text-xl sm:text-2xl font-bold text-[#3D2914]">{program.title}</h3>
+      </div>
       <p className="text-sm text-[#5C4033]/80 leading-relaxed flex-1 font-body">{stripHtml(program.description)}</p>
     </>
   );
