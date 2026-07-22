@@ -28,7 +28,7 @@ export default function Beneficiaries() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <section className="hero-gradient py-20">
+        <section className="hero-gradient py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
               className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">Beneficiaries</motion.h1>
@@ -37,7 +37,7 @@ export default function Beneficiaries() {
         </section>
       </HeroScrollSection>
 
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex flex-wrap gap-2 mb-10 justify-center">
             {Object.entries({ all: 'All', ...typeLabels }).map(([key, label]) => (

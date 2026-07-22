@@ -59,7 +59,7 @@ export default function ProgramsBento({ programs = [], loading }) {
   const display = programs;
 
   return (
-    <section className="py-24 sm:py-28 home-programs-section relative overflow-hidden">
+    <section className="py-12 sm:py-16 home-programs-section relative overflow-hidden">
       <div className="absolute inset-0 home-programs-texture pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">

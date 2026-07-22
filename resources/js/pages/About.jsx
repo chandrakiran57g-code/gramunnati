@@ -102,7 +102,7 @@ export default function About() {
   return (
     <div className="min-h-screen bg-white">
       {/* ── Hero (static — no scroll redirect) ─────────────── */}
-      <div className="about-hero-shell relative overflow-hidden py-16 sm:py-20 px-4">
+      <div className="about-hero-shell relative overflow-hidden py-14 sm:py-16 px-4">
           <div className="about-hero-grain absolute inset-0" aria-hidden="true" />
           <div
             className="about-glow-orb absolute -left-20 top-16 h-56 w-56 rounded-full bg-[#2D6A4F]/40"

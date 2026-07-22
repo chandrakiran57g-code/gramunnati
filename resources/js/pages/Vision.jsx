@@ -31,7 +31,7 @@ export default function Vision() {
     <div className="min-h-screen bg-background">
       {/* Hero */}
       <HeroScrollSection size="page">
-        <div className="hero-gradient py-16 sm:py-20 px-4">
+        <div className="hero-gradient py-14 sm:py-16 px-4">
           <div className="max-w-5xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Eye className="w-16 h-16 mx-auto mb-6 opacity-70" />

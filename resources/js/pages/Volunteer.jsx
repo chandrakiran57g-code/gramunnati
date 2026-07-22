@@ -55,13 +55,13 @@ export default function Volunteer() {
         </div>
       </div>
 
-      <section className="bg-muted/30 py-16">
+      <section className="bg-muted/30 py-12 sm:py-16">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <VolunteerRegistrationForm programs={programs} />
         </div>
       </section>
 
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="mb-8 text-center font-heading text-2xl font-bold">Active Volunteers</h2>
           {loading ? (

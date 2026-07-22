@@ -47,7 +47,7 @@ export default function Teams() {
             </div>
           </section>
         ) : (
-          <section className="hero-gradient py-20">
+          <section className="hero-gradient py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
@@ -61,7 +61,7 @@ export default function Teams() {
         )}
       </HeroScrollSection>
 
-      <section className="py-16">
+      <section className="py-12 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

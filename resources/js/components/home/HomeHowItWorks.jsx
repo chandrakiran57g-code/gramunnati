@@ -36,7 +36,7 @@ export default function HomeHowItWorks() {
   ];
 
   return (
-    <section className="py-10 sm:py-12 relative overflow-hidden">
+    <section className="py-12 sm:py-16 relative overflow-hidden">
       <div className="absolute inset-0 home-vision-bg pointer-events-none" />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center mb-8">
