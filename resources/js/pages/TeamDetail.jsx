@@ -83,9 +83,6 @@ export default function TeamDetail() {
         ) : (
           <section className="hero-gradient py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6">
-              <Link to="/teams" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
-                <ArrowLeft className="w-4 h-4" /> Back to Teams
-              </Link>
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
                 {localizedGroup?.name || group.name}

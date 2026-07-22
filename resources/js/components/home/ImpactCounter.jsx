@@ -103,7 +103,7 @@ export default function ImpactCounter({ stats, loading }) {
               className="w-full h-full object-cover"
               loading="lazy"
             />
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-blue-800/80 to-indigo-900/90" />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-950/60 via-blue-800/50 to-indigo-900/60" />
           </div>
 
           <div className="relative z-10 w-full px-4 sm:px-6 py-10 text-center">
