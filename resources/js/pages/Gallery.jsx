@@ -21,7 +21,7 @@ export default function Gallery() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <div style={{ background: 'linear-gradient(135deg, #1B1B2F, #2D6A4F)' }} className="py-16 px-4">
+        <div style={{ background: 'linear-gradient(135deg, #1B1B2F, #2D6A4F)' }} className="py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Camera className="w-12 h-12 mx-auto mb-4 opacity-70" />

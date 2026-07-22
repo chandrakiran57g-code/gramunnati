@@ -55,7 +55,7 @@ export default function Projects() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <div style={{ background: 'linear-gradient(135deg, #7C3AED, #9333EA)' }} className="py-16 px-4">
+        <div style={{ background: 'linear-gradient(135deg, #7C3AED, #9333EA)' }} className="py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">

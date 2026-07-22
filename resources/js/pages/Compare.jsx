@@ -54,7 +54,7 @@ export default function Compare() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <div className="bg-gradient-to-r from-village to-school py-16 px-4">
+        <div className="bg-gradient-to-r from-village to-school py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <ArrowLeftRight className="w-12 h-12 mx-auto mb-4 opacity-70" />
             <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-3">Compare Villages</h1>

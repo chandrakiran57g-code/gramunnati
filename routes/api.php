@@ -89,6 +89,8 @@ Route::get('/search', [CmsController::class, 'search']);
 Route::post('/contact', [CmsController::class, 'contact'])->middleware('throttle:5,1');
 Route::post('/volunteers/register', [VolunteerController::class, 'register'])->middleware('throttle:5,1');
 
+Route::get('/donations/lookup', [DonationController::class, 'lookup'])->middleware('throttle:20,1');
+
 Route::middleware('throttle:12,1')->group(function () {
     Route::post('/donations', [DonationController::class, 'store']);
     Route::post('/donations/{id}/order', [DonationController::class, 'createOrder'])->whereNumber('id');

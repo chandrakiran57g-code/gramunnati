@@ -43,7 +43,7 @@ export default function PartnerDetail() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <section className="hero-gradient py-16">
+        <section className="hero-gradient py-10 sm:py-12">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
             <div className="flex items-start gap-6">
               <div className="w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm overflow-hidden flex-shrink-0 flex items-center justify-center">

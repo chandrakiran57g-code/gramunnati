@@ -56,7 +56,7 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <div className="brand-gradient py-16 px-4">
+        <div className="brand-gradient py-10 sm:py-12 px-4">
           <div className="max-w-3xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="font-heading text-4xl font-bold mb-6">Search CMSR Platform</h1>

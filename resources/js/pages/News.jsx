@@ -48,7 +48,7 @@ export default function News() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
-        <div className="school-gradient py-16 px-4">
+        <div className="school-gradient py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Newspaper className="w-12 h-12 mx-auto mb-4 opacity-70" />

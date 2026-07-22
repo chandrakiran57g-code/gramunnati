@@ -78,7 +78,7 @@ export default function StoryDetail() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
-        <div className="relative h-64 sm:h-96 overflow-hidden">
+        <div className="relative h-52 sm:h-64 overflow-hidden">
           <img src={story.featured_image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1200&q=80'} alt={title} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6 max-w-3xl">

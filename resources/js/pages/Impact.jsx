@@ -73,7 +73,7 @@ export default function Impact() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <HeroScrollSection size="page">
-        <div style={{ background: 'linear-gradient(135deg, #0F766E, #2D6A4F)' }} className="py-16 px-4">
+        <div style={{ background: 'linear-gradient(135deg, #0F766E, #2D6A4F)' }} className="py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <TrendingUp className="w-12 h-12 mx-auto mb-4 opacity-80" />
@@ -85,7 +85,7 @@ export default function Impact() {
       </HeroScrollSection>
 
       {/* Key Metrics */}
-      <section className="py-12 sm:py-16 bg-white">
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="font-heading text-3xl font-bold mb-3">National Statistics</h2>
@@ -117,7 +117,7 @@ export default function Impact() {
       </section>
 
       {/* State-wise breakdown */}
-      <section className="py-12 sm:py-16 bg-background">
+      <section className="py-8 sm:py-12 bg-background">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10">
             <div className="flex items-center gap-2 mb-2">
@@ -152,7 +152,7 @@ export default function Impact() {
       </section>
 
       {/* How it works */}
-      <section className="py-12 sm:py-16 bg-white">
+      <section className="py-8 sm:py-12 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
             <h2 className="font-heading text-3xl font-bold mb-3">How We Measure Impact</h2>

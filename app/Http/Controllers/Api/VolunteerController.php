@@ -27,13 +27,12 @@ class VolunteerController extends Controller
             'age' => 'nullable|integer|min:16|max:100',
         ]);
 
-        $year = now()->year;
-        $count = Volunteer::query()->whereYear('created_at', $year)->count();
-        $volunteerCode = $year.($count + 1);
-
+        // Public applications are always created as pending WITHOUT a volunteer
+        // ID. The ID is issued (and a welcome notification is sent) only when an
+        // admin approves the request — handled by the Volunteer model events.
         $volunteer = Volunteer::query()->create([
             ...$data,
-            'volunteer_code' => $volunteerCode,
+            'volunteer_code' => null,
             'status' => 'pending',
             'user_id' => $request->user()?->id,
         ]);
@@ -42,14 +41,14 @@ class VolunteerController extends Controller
             Notifier::send(
                 (int) $volunteer->user_id,
                 'system',
-                'Volunteer application received',
-                'Thanks for signing up to volunteer. Our team will review your application and contact you shortly.'
+                'Volunteering request received',
+                "Your volunteering request has been submitted successfully. We'll notify you upon approval."
             );
         }
 
         return response()->json([
             'data' => $volunteer,
-            'message' => 'Registration submitted. Our team will contact you shortly.',
+            'message' => "Your volunteering request has been submitted successfully. We'll notify you upon approval.",
         ], 201);
     }
 }

@@ -5,11 +5,16 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Donation;
 use App\Models\DonationReceipt;
+use App\Models\Profile;
+use App\Models\Role;
+use App\Models\User;
+use App\Models\UserCategory;
 use App\Support\Notifier;
 use App\Support\SettingsStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class DonationController extends Controller
 {
@@ -31,7 +36,20 @@ class DonationController extends Controller
             'project_id' => 'nullable|integer',
             'message' => 'nullable|string|max:2000',
             'is_anonymous' => 'nullable|boolean',
+            // Guest-donor profile fields — only used when the donor is not
+            // logged in, to register them in the users/profiles tables.
+            'profession' => 'nullable|string|max:255',
+            'state_id' => 'nullable|integer',
+            'district_id' => 'nullable|integer',
+            'mandal_name' => 'nullable|string|max:255',
         ]);
+
+        // Logged-in donors keep their own user_id. Guest donors are registered
+        // (or matched to an existing account) so every donation ties to a user.
+        $userId = $request->user()?->id;
+        if (! $userId) {
+            $userId = $this->resolveGuestDonor($data);
+        }
 
         $donation = Donation::query()->create([
             'donor_name' => $data['donor_name'],
@@ -47,11 +65,124 @@ class DonationController extends Controller
             'is_anonymous' => (bool) ($data['is_anonymous'] ?? false),
             'payment_status' => 'pending',
             'payment_gateway' => 'razorpay',
-            'user_id' => $request->user()?->id,
+            'user_id' => $userId,
             'donated_at' => now(),
         ]);
 
         return response()->json($donation, 201);
+    }
+
+    /**
+     * Register a guest donor into the existing users + profiles tables (or
+     * match an existing account by email/mobile) and return the user id to
+     * attach to the donation. A random password is generated so the future
+     * WhatsApp/email flow can send the donor their login credentials.
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function resolveGuestDonor(array $data): ?int
+    {
+        $mobile = isset($data['mobile']) ? preg_replace('/\D/', '', (string) $data['mobile']) : '';
+        $email = ! empty($data['email']) ? strtolower(trim((string) $data['email'])) : null;
+
+        // Match an existing account first so we never create duplicates.
+        $user = null;
+        if ($email) {
+            $user = User::query()->whereRaw('LOWER(email) = ?', [$email])->first();
+        }
+        if (! $user && strlen($mobile) >= 10) {
+            $profile = Profile::query()
+                ->where('mobile', $mobile)
+                ->orWhere('mobile', '+91'.$mobile)
+                ->first();
+            $user = $profile?->user;
+        }
+        if ($user) {
+            return (int) $user->id;
+        }
+
+        // Need at least one contact handle to register a new donor.
+        if (strlen($mobile) < 10 && ! $email) {
+            return null;
+        }
+
+        $loginEmail = $email ?: ($mobile ? $mobile.'@cmsr.local' : Str::uuid().'@cmsr.local');
+        if ($existing = User::query()->whereRaw('LOWER(email) = ?', [strtolower($loginEmail)])->first()) {
+            return (int) $existing->id;
+        }
+
+        $password = Str::random(12);
+
+        $user = User::query()->create([
+            'name' => $data['donor_name'] ?: 'Donor',
+            'email' => $loginEmail,
+            'password' => $password, // hashed via the User model cast
+        ]);
+
+        Profile::query()->create([
+            'user_id' => $user->id,
+            'full_name' => $data['donor_name'] ?? null,
+            'mobile' => $mobile ?: null,
+            'email' => $email,
+            'profession' => $data['profession'] ?? null,
+            'state_id' => $data['state_id'] ?? null,
+            'district_id' => $data['district_id'] ?? null,
+            'mandal_name' => $data['mandal_name'] ?? null,
+            'initial_password' => $password,
+        ]);
+
+        if ($memberRole = Role::query()->where('name', 'Member')->first()) {
+            $user->roles()->syncWithoutDetaching([$memberRole->id]);
+        }
+        if ($citizen = UserCategory::query()->where('slug', 'citizen')->first()) {
+            $user->categories()->syncWithoutDetaching([$citizen->id]);
+        }
+
+        return (int) $user->id;
+    }
+
+    /**
+     * Look up a returning donor by mobile so the donate form can auto-fill
+     * their details. Requires a full 10-digit number to reduce enumeration.
+     */
+    public function lookup(Request $request): JsonResponse
+    {
+        $mobile = preg_replace('/\D/', '', (string) $request->query('mobile', ''));
+        if (strlen($mobile) < 10) {
+            return response()->json(['found' => false]);
+        }
+
+        $profile = Profile::query()
+            ->with('user')
+            ->where('mobile', $mobile)
+            ->orWhere('mobile', '+91'.$mobile)
+            ->first();
+
+        if ($profile) {
+            $email = $profile->email;
+            if (! $email && $profile->user && ! str_ends_with((string) $profile->user->email, '@cmsr.local')) {
+                $email = $profile->user->email;
+            }
+
+            return response()->json(['found' => true, 'donor' => [
+                'donor_name' => $profile->full_name ?: ($profile->user->name ?? ''),
+                'email' => $email,
+                'profession' => $profile->profession,
+                'state_id' => $profile->state_id,
+                'district_id' => $profile->district_id,
+                'mandal_name' => $profile->mandal_name,
+            ]]);
+        }
+
+        $donation = Donation::query()->where('mobile', $mobile)->latest('id')->first();
+        if ($donation) {
+            return response()->json(['found' => true, 'donor' => [
+                'donor_name' => $donation->donor_name,
+                'email' => $donation->email,
+            ]]);
+        }
+
+        return response()->json(['found' => false]);
     }
 
     /**

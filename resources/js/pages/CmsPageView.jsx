@@ -123,7 +123,7 @@ export default function CmsPageView() {
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
         {page.featured_image ? (
-          <section className="relative h-64 sm:h-80 overflow-hidden">
+          <section className="relative h-48 sm:h-60 overflow-hidden">
             <img src={page.featured_image} alt={localized?.title || page.title} className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
             <div className="relative z-10 flex h-full items-end">
@@ -141,7 +141,7 @@ export default function CmsPageView() {
             </div>
           </section>
         ) : (
-          <section className="hero-gradient py-16">
+          <section className="hero-gradient py-10 sm:py-12">
             <div className="max-w-5xl mx-auto px-4 sm:px-6">
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="font-heading text-3xl sm:text-4xl font-bold mb-4 text-white">

@@ -8,9 +8,9 @@ function GalleryColumn({ label, badgeClass, images }) {
         <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide ${badgeClass}`}>{label}</span>
         <span className="text-xs text-muted-foreground">{images.length} photo{images.length === 1 ? '' : 's'}</span>
       </div>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4">
         {images.map((src, i) => (
-          <div key={`${src}-${i}`} className="aspect-square overflow-hidden rounded-xl">
+          <div key={`${src}-${i}`} className="aspect-square overflow-hidden rounded-lg">
             <img src={src} alt={label} className="h-full w-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" />
           </div>
         ))}

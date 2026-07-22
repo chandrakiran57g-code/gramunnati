@@ -292,12 +292,25 @@ const entities = {
 };
 
 // ─── Auth Compatibility ─────────────────
+const ADMIN_ROLE_NAMES = ['Super Admin', 'SuperAdmin'];
+
 const auth = {
   async me() {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return null;
-    const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-    return { ...user, ...profile, email: user.email };
+    // Read directly from /auth/user so we also get the account roles. Admin
+    // credentials must never surface as a logged-in user on the public site —
+    // treat an admin session as logged-out here (the admin panel has its own
+    // auth and is unaffected).
+    let payload = null;
+    try {
+      payload = await apiFetch('/auth/user');
+    } catch {
+      return null;
+    }
+    if (!payload?.user) return null;
+    const roles = payload?.roles || [];
+    if (roles.some((name) => ADMIN_ROLE_NAMES.includes(name))) return null;
+    const profile = payload?.profile || {};
+    return { ...payload.user, ...profile, email: payload.user.email };
   },
   async loginViaEmailPassword(email, password) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

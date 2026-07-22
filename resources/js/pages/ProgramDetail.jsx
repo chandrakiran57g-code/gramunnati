@@ -124,7 +124,7 @@ export default function ProgramDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative h-72 sm:h-96 overflow-hidden">
+      <div className="relative h-52 sm:h-64 overflow-hidden">
         <img src={program.cover} alt={program.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-brown-900/90 via-brown-900/40 to-brown-900/20" />
         <div className="absolute bottom-8 left-0 right-0 max-w-5xl mx-auto px-4 sm:px-6">

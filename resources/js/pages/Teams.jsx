@@ -31,7 +31,7 @@ export default function Teams() {
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="page">
         {pageBanner ? (
-          <section className="relative h-64 sm:h-80 overflow-hidden">
+          <section className="relative h-48 sm:h-60 overflow-hidden">
             <img src={bannerSrc(pageBanner)} alt="Our Teams" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/25" />
             <div className="relative z-10 flex h-full items-end">
@@ -47,7 +47,7 @@ export default function Teams() {
             </div>
           </section>
         ) : (
-          <section className="hero-gradient py-16">
+          <section className="hero-gradient py-10 sm:py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
               <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 className="font-heading text-4xl sm:text-5xl font-bold text-white mb-4">
@@ -61,7 +61,7 @@ export default function Teams() {
         )}
       </HeroScrollSection>
 
-      <section className="py-12 sm:py-16">
+      <section className="py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

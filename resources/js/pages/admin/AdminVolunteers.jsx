@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { cmsService } from '@/api/cms';
 import { supabase } from '@/api/supabaseClient';
+import { apiFetch } from '@/api/apiClient';
 import { adminDbMutation } from '@/lib/adminDb';
 import AdminShell from '@/components/admin/AdminShell';
 import AdminImageUpload from '@/components/admin/AdminMediaUpload';
@@ -128,22 +129,32 @@ export default function AdminVolunteers() {
     }
   };
 
-  const handleEdit = (v) => {
-    setEditId(v.id);
+  const handleEdit = async (v) => {
+    // The list is read through the public /db endpoint which hides contact PII
+    // (email/mobile/experience/…). Pull the full record from the admin endpoint
+    // so editing never blanks out those fields on save.
+    let full = v;
+    try {
+      const res = await apiFetch(`/admin/db/volunteers/${v.id}`);
+      if (res?.data) full = { ...v, ...res.data };
+    } catch {
+      /* fall back to the list row */
+    }
+    setEditId(full.id);
     setForm({
-      full_name: v.full_name || '',
-      email: v.email || '',
-      mobile: v.mobile || '',
-      state: v.state || '',
-      district: v.district || '',
-      occupation: v.occupation || '',
-      availability: v.availability || 'flexible',
-      skills: v.skills || [],
-      experience: v.experience || '',
-      photo: v.photo || '',
-      program_category: v.program_category || '',
-      status: v.status || (v.is_active === false ? 'inactive' : 'active'),
-      age: v.age || '',
+      full_name: full.full_name || '',
+      email: full.email || '',
+      mobile: full.mobile || '',
+      state: full.state || '',
+      district: full.district || '',
+      occupation: full.occupation || '',
+      availability: full.availability || 'flexible',
+      skills: Array.isArray(full.skills) ? full.skills : (full.skills || []),
+      experience: full.experience || '',
+      photo: full.photo || '',
+      program_category: full.program_category || '',
+      status: full.status || (full.is_active === false ? 'inactive' : 'active'),
+      age: full.age || '',
     });
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });

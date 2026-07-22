@@ -151,7 +151,7 @@ export default function HomeActiveWorks() {
   const isLoading = loading && sections.length === 0;
 
   return (
-    <section className="py-10 sm:py-12 bg-gray-50">
+    <section className="py-8 sm:py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="mb-5">
           <h2

@@ -79,7 +79,7 @@ export default function ActiveWorkDetail() {
   return (
     <div className="min-h-screen bg-background">
       <HeroScrollSection size="detail">
-        <div className="relative h-72 overflow-hidden">
+        <div className="relative h-52 sm:h-60 overflow-hidden">
           <img src={item.cover_image || 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&q=80'} alt={displayName} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
           <div className="absolute bottom-6 left-6 right-6">

@@ -1,5 +1,11 @@
 import { apiFetch } from './apiClient';
 
+const ADMIN_ROLE_NAMES = ['Super Admin', 'SuperAdmin'];
+
+function isAdminRoles(roles) {
+  return Array.isArray(roles) && roles.some((name) => ADMIN_ROLE_NAMES.includes(name));
+}
+
 export const authService = {
   async signUp({ email, password, fullName, mobile, firstName, lastName, profession, stateId, districtId, mandalName }) {
     const cleanMobile = String(mobile || '').replace(/\D/g, '');
@@ -48,6 +54,10 @@ export const authService = {
     try {
       const payload = await apiFetch('/auth/user');
       if (!payload?.user) return null;
+      // Admin credentials must never leak into the public site / member area.
+      // Treat an admin session as logged-out everywhere outside /admin (the
+      // admin panel authenticates through its own dedicated flow).
+      if (isAdminRoles(payload?.roles)) return null;
       return { user: payload.user };
     } catch {
       return null;

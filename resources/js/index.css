@@ -215,38 +215,39 @@
     );
   }
 
-  /* Home hero — fixed-height layout, consistent across screen sizes */
+  /* Home hero — fixed-height layout, consistent across screen sizes.
+     Kept compact so it stays fully visible at high desktop zoom (175–200%). */
   .hero-section-viewport {
-    height: 620px;
-    min-height: 620px;
+    height: 500px;
+    min-height: 500px;
     max-height: none;
   }
 
   @media (max-width: 640px) {
     .hero-section-viewport {
       height: auto;
-      min-height: 560px;
-      padding-top: 2rem;
-      padding-bottom: 2rem;
+      min-height: 460px;
+      padding-top: 1.5rem;
+      padding-bottom: 1.5rem;
     }
   }
 
   .hero-section-inner {
-    padding-top: 1.5rem;
-    padding-bottom: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     overflow: visible;
   }
 
   .hero-section-title {
-    font-size: 2.5rem;
+    font-size: 2.05rem;
     letter-spacing: -0.02em;
-    margin-bottom: 0.875rem;
+    margin-bottom: 0.75rem;
     overflow: visible;
   }
 
   @media (max-width: 640px) {
     .hero-section-title {
-      font-size: 1.875rem;
+      font-size: 1.75rem;
     }
   }
 

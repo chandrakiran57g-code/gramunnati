@@ -45,7 +45,7 @@ export default function Volunteer() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="w-full bg-gradient-to-br from-green-500 to-green-700 py-16 px-4 text-white">
+      <div className="w-full bg-gradient-to-br from-green-500 to-green-700 py-10 sm:py-12 px-4 text-white">
         <div className="mx-auto max-w-7xl text-center">
           <Users className="mx-auto mb-4 h-12 w-12 opacity-90" />
           <h1 className="font-heading text-4xl font-bold sm:text-5xl">Our Volunteers</h1>
@@ -55,13 +55,13 @@ export default function Volunteer() {
         </div>
       </div>
 
-      <section className="bg-muted/30 py-12 sm:py-16">
+      <section className="bg-muted/30 py-8 sm:py-12">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
           <VolunteerRegistrationForm programs={programs} />
         </div>
       </section>
 
-      <section className="py-12 sm:py-16">
+      <section className="py-8 sm:py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <h2 className="mb-8 text-center font-heading text-2xl font-bold">Active Volunteers</h2>
           {loading ? (

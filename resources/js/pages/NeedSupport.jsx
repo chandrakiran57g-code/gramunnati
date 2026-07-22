@@ -119,7 +119,7 @@ export default function NeedSupport() {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroScrollSection size="page">
-        <div className="brand-gradient py-16 px-4">
+        <div className="brand-gradient py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-white">
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
               <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-3">{t('home.urgentTitle')}</h1>

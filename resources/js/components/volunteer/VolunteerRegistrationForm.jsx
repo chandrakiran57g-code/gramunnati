@@ -77,10 +77,9 @@ export default function VolunteerRegistrationForm({ programs = [] }) {
         className="rounded-2xl border border-green-200 bg-green-50 p-8 text-center"
       >
         <CheckCircle className="mx-auto mb-4 h-12 w-12 text-green-600" />
-        <h3 className="font-heading text-xl font-bold">Thank you for registering!</h3>
+        <h3 className="font-heading text-xl font-bold">Request submitted!</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Your application has been received
-          {typeof submitted === 'string' ? ` (Ref: ${submitted})` : ''}. Our team will review it and contact you soon.
+          Your volunteering request has been submitted successfully. We&apos;ll notify you upon approval.
         </p>
         <Button
           type="button"

@@ -51,7 +51,7 @@ export default function MemberDirectory() {
 
   return (
     <div className="min-h-screen bg-background">
-      <section className="brand-gradient py-16">
+      <section className="brand-gradient py-10 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

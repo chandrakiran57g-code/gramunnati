@@ -63,7 +63,7 @@ export default function ActiveWorksCategory() {
   return (
     <div className="min-h-screen bg-gray-50">
       <HeroScrollSection size="page">
-        <div className="brand-gradient py-16 px-4">
+        <div className="brand-gradient py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-white">
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center gap-2 mb-2 text-white/70 text-sm">

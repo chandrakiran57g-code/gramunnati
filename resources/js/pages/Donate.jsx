@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { donationCheckout, loadRazorpayCheckout } from '@/api/entities';
+import { apiFetch } from '@/api/apiClient';
 import { Heart, CheckCircle, Clock, Shield, Users, TreePine, School } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { HeroScrollSection } from '@/components/ui/container-scroll-animation';
+import { useAuth } from '@/lib/AuthContext';
+import { useGeoPickers } from '@/hooks/useGeoPickers';
 
 const _urlParams = new URLSearchParams(window.location.search);
 const defaultType = _urlParams.get('type') || 'general';
@@ -15,10 +18,14 @@ const defaultType = _urlParams.get('type') || 'general';
 const AMOUNTS = [100, 500, 1000, 2500, 5000, 10000];
 
 export default function Donate() {
+  const { isAuthenticated, profile, user } = useAuth();
+  const geo = useGeoPickers();
   const [form, setForm] = useState({
     donor_name: '',
     email: '',
     mobile: '',
+    profession: '',
+    mandal_name: '',
     amount: 500,
     customAmount: '',
     target_type: defaultType,
@@ -31,6 +38,50 @@ export default function Donate() {
   const [step, setStep] = useState('form'); // form | processing | success | pledged
   const [selectedPreset, setSelectedPreset] = useState(500);
   const [errorMsg, setErrorMsg] = useState('');
+  const [autofilled, setAutofilled] = useState(false);
+  const lookupTimer = useRef(null);
+
+  // Logged-in donors: prefill name/email/mobile from their account and hide the
+  // extra profile fields (they are already registered — 8a).
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    const fullName = profile?.full_name || user?.user_metadata?.full_name || user?.name || '';
+    const mobile = profile?.mobile || user?.user_metadata?.mobile || '';
+    const email = profile?.email || (String(user?.email || '').endsWith('@cmsr.local') ? '' : user?.email || '');
+    setForm((f) => ({
+      ...f,
+      donor_name: f.donor_name || fullName,
+      email: f.email || email,
+      mobile: f.mobile || mobile,
+    }));
+  }, [isAuthenticated, profile, user]);
+
+  // Guest donors: when a full 10-digit mobile is entered, auto-fill details
+  // from a previous donation / registration (8c).
+  const runDonorLookup = (mobileRaw) => {
+    const mobile = String(mobileRaw || '').replace(/\D/g, '');
+    if (isAuthenticated || mobile.length !== 10) return;
+    if (lookupTimer.current) clearTimeout(lookupTimer.current);
+    lookupTimer.current = setTimeout(async () => {
+      try {
+        const res = await apiFetch(`/donations/lookup?mobile=${mobile}`);
+        if (res?.found && res.donor) {
+          const d = res.donor;
+          setForm((f) => ({
+            ...f,
+            donor_name: d.donor_name || f.donor_name,
+            email: d.email || f.email,
+            profession: d.profession || f.profession,
+            mandal_name: d.mandal_name || f.mandal_name,
+          }));
+          if (d.state_id) geo.setFromRecord({ state_id: d.state_id, district_id: d.district_id });
+          setAutofilled(true);
+        }
+      } catch {
+        /* ignore lookup failures */
+      }
+    }, 450);
+  };
 
   const handleAmountSelect = (amt) => {
     setSelectedPreset(amt);
@@ -61,6 +112,15 @@ export default function Donate() {
         project_id: form.project_id || undefined,
         message: form.message || undefined,
         is_anonymous: form.is_anonymous,
+        // Guest-donor registration fields (ignored for logged-in donors).
+        ...(isAuthenticated
+          ? {}
+          : {
+              profession: form.profession || undefined,
+              state_id: geo.geoIds.state_id || undefined,
+              district_id: geo.geoIds.district_id || undefined,
+              mandal_name: form.mandal_name || undefined,
+            }),
       });
     } catch (err) {
       setErrorMsg(err?.message || 'Could not record your donation. Please try again.');
@@ -190,7 +250,7 @@ export default function Donate() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <HeroScrollSection size="page">
-        <div className="donation-gradient py-16 px-4">
+        <div className="donation-gradient py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
               <Heart className="w-12 h-12 mx-auto mb-4 fill-white/20" />
@@ -291,9 +351,73 @@ export default function Donate() {
                   </div>
                   <div>
                     <Label htmlFor="mobile">Mobile</Label>
-                    <Input id="mobile" value={form.mobile} onChange={e => setForm(f => ({...f, mobile: e.target.value}))} placeholder="10-digit number" className="rounded-xl mt-1" />
+                    <Input
+                      id="mobile"
+                      value={form.mobile}
+                      onChange={e => {
+                        const val = e.target.value;
+                        setAutofilled(false);
+                        setForm(f => ({ ...f, mobile: val }));
+                        runDonorLookup(val);
+                      }}
+                      placeholder="10-digit number"
+                      className="rounded-xl mt-1"
+                      inputMode="numeric"
+                      maxLength={13}
+                    />
                   </div>
                 </div>
+
+                {autofilled && (
+                  <div className="rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-xs text-green-700">
+                    We found your earlier details and filled them in. You can edit anything before donating.
+                  </div>
+                )}
+
+                {/* Guest donors provide profile details so we can register them
+                    and send a receipt / login later. Logged-in donors skip this. */}
+                {!isAuthenticated && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label htmlFor="profession">Profession</Label>
+                      <Input id="profession" value={form.profession} onChange={e => setForm(f => ({...f, profession: e.target.value}))} placeholder="e.g. Teacher, Farmer" className="rounded-xl mt-1" />
+                    </div>
+                    <div>
+                      <Label htmlFor="state">State</Label>
+                      <select
+                        id="state"
+                        value={geo.stateId}
+                        onChange={e => geo.setStateId(e.target.value)}
+                        className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm"
+                      >
+                        <option value="">Select state</option>
+                        {geo.states.map((s) => (
+                          <option key={s.id} value={s.id}>{s.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="district">District</Label>
+                      <select
+                        id="district"
+                        value={geo.districtId}
+                        onChange={e => geo.setDistrictId(e.target.value)}
+                        disabled={!geo.stateId}
+                        className="mt-1 w-full rounded-xl border border-input bg-background px-3 py-2 text-sm disabled:opacity-60"
+                      >
+                        <option value="">Select district</option>
+                        {geo.districts.map((d) => (
+                          <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label htmlFor="mandal">Mandal</Label>
+                      <Input id="mandal" value={form.mandal_name} onChange={e => setForm(f => ({...f, mandal_name: e.target.value}))} placeholder="Your mandal" className="rounded-xl mt-1" />
+                    </div>
+                  </div>
+                )}
+
                 <div>
                   <Label htmlFor="message">Message (Optional)</Label>
                   <Textarea id="message" value={form.message} onChange={e => setForm(f => ({...f, message: e.target.value}))} placeholder="A message of encouragement..." className="rounded-xl mt-1 h-20" />

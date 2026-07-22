@@ -5,7 +5,7 @@ export default function HomePartners({ partners = [], loading }) {
   if (!loading && partners.length === 0) return null;
 
   return (
-    <section className="py-12 sm:py-16 bg-gray-50">
+    <section className="py-8 sm:py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center mb-10">
         <h2 className="font-heading font-bold text-[#3D2914] text-xl sm:text-2xl mb-2">
           Saath mein kaam karne wale

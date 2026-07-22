@@ -48,7 +48,7 @@ export default function Villages() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <HeroScrollSection size="page">
-        <div className="brand-gradient py-16 px-4">
+        <div className="brand-gradient py-10 sm:py-12 px-4">
           <div className="max-w-7xl mx-auto text-center text-white">
             <motion.div initial={heroEnter} animate={{ opacity: 1, y: 0 }}>
               <div className="flex items-center justify-center gap-2 mb-3 text-white/70 text-sm">
