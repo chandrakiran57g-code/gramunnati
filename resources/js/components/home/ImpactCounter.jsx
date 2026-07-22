@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, useInView } from 'framer-motion';
-import { TreePine, School, Users, Heart } from 'lucide-react';
+import { TreePine, School, Users, Heart, BookOpen, HelpCircle } from 'lucide-react';
 import { homeService } from '@/api/home';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { VILLAGE_HERO_PHOTOS } from '@/lib/villageImages';
+import SafeImage from '@/components/shared/SafeImage';
 
 const STAT_META = [
   { key: 'villages', labelKey: 'statGaon', icon: TreePine, color: 'text-[#8B6914]', bg: 'bg-[#8B6914]/10' },
@@ -35,7 +38,7 @@ function CountUp({ end, duration = 2000 }) {
 export default function ImpactCounter({ stats, loading }) {
   const { t } = useLanguage();
   return (
-    <section className="py-10 bg-gray-50 border-y border-gray-100">
+    <section className="py-12 sm:py-16 bg-gray-50 border-y border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,6 +86,65 @@ export default function ImpactCounter({ stats, loading }) {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="relative mt-10 overflow-hidden rounded-2xl"
+        >
+          <div className="absolute inset-0">
+            <SafeImage
+              src={VILLAGE_HERO_PHOTOS[5].url}
+              alt="Farmers in village fields"
+              fallbackIndex={5}
+              width={1920}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-950/90 via-blue-800/80 to-indigo-900/90" />
+          </div>
+
+          <div className="relative z-10 w-full px-4 sm:px-6 py-10 text-center">
+            <h2
+              className="font-heading font-bold text-white mb-5 whitespace-nowrap"
+              style={{ fontSize: 'clamp(1.1rem, 5.5vw, 2.5rem)', letterSpacing: '-0.02em' }}
+            >
+              Today&apos;s step &mdash; Tomorrow&apos;s village
+            </h2>
+            <div className="flex flex-wrap gap-2.5 justify-center">
+              <Link
+                to="/donate"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-[#E8C547] text-[#1e3a5f] font-semibold text-sm hover:bg-[#F5D76E] transition-colors shadow-md shadow-black/20"
+              >
+                <Heart className="w-4 h-4" />
+                Donate Now
+              </Link>
+              <Link
+                to="/volunteer"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                Become a Volunteer
+              </Link>
+              <Link
+                to="/stories"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+              >
+                <BookOpen className="w-4 h-4" />
+                Success Stories
+              </Link>
+              <Link
+                to="/faqs"
+                className="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg border border-white/40 text-white font-semibold text-sm hover:bg-white/10 transition-colors"
+              >
+                <HelpCircle className="w-4 h-4" />
+                FAQs
+              </Link>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </section>
   );

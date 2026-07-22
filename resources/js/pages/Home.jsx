@@ -5,7 +5,6 @@ import ImpactCounter from '@/components/home/ImpactCounter';
 import HomeHowItWorks from '@/components/home/HomeHowItWorks';
 import HomeUrgentProjects from '@/components/home/HomeUrgentProjects';
 import HomeActiveWorks from '@/components/home/HomeActiveWorks';
-import HomeMegaCTA from '@/components/home/HomeMegaCTA';
 import HomeExitTracker from '@/components/home/HomeExitTracker';
 
 export default function Home() {
@@ -32,10 +31,6 @@ export default function Home() {
 
       <div id="home-impact" data-home-section="home-impact">
         <ImpactCounter stats={data?.stats} loading={isLoading} />
-      </div>
-
-      <div id="home-cta" data-home-section="home-cta">
-        <HomeMegaCTA stats={data?.stats} loading={isLoading} />
       </div>
     </div>
   );
